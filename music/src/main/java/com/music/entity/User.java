@@ -28,7 +28,7 @@ public class User {
     private String profileImage; // 프로필 이미지 URL
 
     @Column(name = "is_verified", nullable = false) // BOOLEAN, NULL 불가능
-    private boolean isVerified; // 사용자 인증 여부
+    private boolean Verified; // 사용자 인증 여부
 
     @Column(name = "created_at", nullable = false) // DATETIME, NULL 불가능
     private LocalDateTime createdAt; // 계정 생성 시간
