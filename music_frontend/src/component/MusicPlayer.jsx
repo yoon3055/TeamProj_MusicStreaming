@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 
 import '../styles/MusicPlayer.css'; // ✨ CSS 파일 임포트
+import noSongImage from '../assets/default-cover.jpg';
 
 const MusicPlayer = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const MusicPlayer = () => {
     title: '재생 중인 곡 없음',
     artist: '선택해주세요',
     albumId: null, // 구매 버튼을 위해 albumId 추가
-    coverUrl: 'https://via.placeholder.com/60/333333/FFFFFF?text=No+Song',
+    coverUrl: noSongImage,
   };
 
   // ✅ 이퀄라이저 효과 로직
@@ -94,18 +95,19 @@ const MusicPlayer = () => {
     }
   };
 
-  const handleTogglePlay = () => {
-    if (isPlaying) {
-      pauseSong();
-    } else {
-      playSong(currentSong);
-    }
-  };
+const handleTogglePlay = () => {
+  if (!currentSong) return alert('재생할 곡을 선택해주세요');
+  if (isPlaying) {
+    pauseSong();
+  } else {
+    playSong(currentSong);
+  }
+};
 
-  const handleVolumeChange = (e) => {
-    const newVolume = parseInt(e.target.value, 10);
-    setVolume(newVolume);
-  };
+ const handleVolumeChange = (e) => {
+  const newVolume = parseInt(e.target.value, 10) / 100; // 0~1로 변환
+  setVolume(newVolume);
+};
 
   const handleProgressChange = (e) => {
     const newProgress = parseInt(e.target.value, 10);

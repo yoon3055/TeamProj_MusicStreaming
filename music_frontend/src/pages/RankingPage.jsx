@@ -30,6 +30,7 @@ const RankingPage = () => {
       setRankingData(res.data.items);
       setTotalPages(Math.ceil(res.data.total / ITEMS_PER_PAGE));
     } catch (err) {
+       console.error('API 호출 실패:', err);
       setError('랭킹 데이터를 불러오는 데 실패했습니다.');
       setRankingData([]);
     } finally {

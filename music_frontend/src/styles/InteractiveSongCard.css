@@ -1,62 +1,48 @@
-/* src/styles/interactivesongcard.css */
-.interactive-song-card-container {
-  background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  border-radius: 0.5rem; /* rounded-lg */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
-  padding: 1rem; /* p-4 */
+.song-card {
+  position: relative;
+  background: #1c1c1c;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 12px;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease; /* transition-shadow transition-colors duration-300 */
-  flex-shrink: 0;
-  width: 16rem; /* w-64 */
+  transition: background 0.3s ease;
 }
 
-.interactive-song-card-container:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-lg */
-  background-color: var(--flo-bg-light); /* hover:bg-gray-700 */
+.song-card:hover {
+  background: #2c2c2c;
 }
 
-.interactive-song-card-details {
-  display: flex;
-  align-items: center;
-  gap: 1rem; /* gap-4 */
+.song-card-cover {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
-.interactive-song-card-cover {
-  width: 4rem; /* w-16 */
-  height: 4rem; /* h-16 */
-  border-radius: 0.375rem; /* rounded-md */
-  object-fit: cover;
+.song-card-info {
+  margin-top: 10px;
+  color: white;
 }
 
-.interactive-song-card-text-content {
-  display: flex;
-  flex-direction: column;
+.song-card-title {
+  font-size: 1rem;
+  font-weight: 600;
 }
 
-.interactive-song-card-title {
-  font-weight: 600; /* font-semibold */
-  color: var(--flo-text-white);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* truncate */
+.song-card-artist {
+  font-size: 0.875rem;
+  color: #ccc;
 }
 
-.interactive-song-card-artist {
-  font-size: 0.875rem; /* text-sm */
-  color: var(--flo-text-gray); /* text-gray-400 */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* truncate */
-}
-
-.interactive-song-card-quality-badge {
-  font-size: 0.75rem; /* text-xs */
-  margin-top: 0.25rem; /* mt-1 */
-  padding: 0.125rem 0.5rem; /* px-2 py-0.5 */
-  background-color: #065f46; /* bg-emerald-700 */
-  color: #a7f3d0; /* text-emerald-200 */
-  border-radius: 9999px; /* rounded-full */
-  display: inline-block;
-  align-self: flex-start; /* self-start */
-  font-weight: 500;
+.song-card-play-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import '../styles/AlbumiconPage.css'; // ✨ CSS 파일 임포트
+import albumPlaceholder from '../assets/K-055.jpg';
 
 const AlbumIcon = ({ album, size = 'md' }) => {
   return (
@@ -13,7 +14,7 @@ const AlbumIcon = ({ album, size = 'md' }) => {
       title={album.title} // 툴팁으로 앨범 제목 표시 (텍스트가 없으므로)
     >
       <img
-        src={album.coverUrl || 'https://via.placeholder.com/48/333333/FFFFFF?text=A'}
+         src={album.coverUrl || albumPlaceholder}
         alt={album.title}
         className="album-icon-image" // ✨ 클래스 적용
       />

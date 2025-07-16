@@ -1,34 +1,33 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import axios from 'axios'; // 🌐 백엔드 통신을 위한 axios 임포트
-import { Link } from 'react-router-dom'; // 장르, 아티스트 링크용
-import PropTypes from 'prop-types'; // PropTypes 사용을 위해 임포트
+// eslint-disable-next-line no-unused-vars
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-import SongFilterBar from '../component/SongFilterBar'; // 고음질 필터 바
-import Pagination from '../component/Pagination'; // 페이지네이션
-import FilterButtons from '../component/FilterButtons'; // 국내/해외/종합 필터 버튼
-import AlbumCard from '../component/Albumcard'; // 앨범 카드
-import InteractiveSongCard from '../component/InteractiveSongCard'; // 인터랙티브 송 카드
-import { MusicPlayerContext } from '../context/MusicPlayerContext'; // 음악 재생 Context
+import SongFilterBar from '../component/SongFilterBar';
+import Pagination from '../component/Pagination';
+import FilterButtons from '../component/FilterButtons';
+import AlbumCard from '../component/Albumcard';
+import InteractiveSongCard from '../component/InteractiveSongCard';
+import { MusicPlayerContext } from '../context/MusicPlayerContext';
+
+import '../styles/RecommendPage.css';
 
 // --- 내부 컴포넌트 정의 ---
-// 장르 카드 컴포넌트 (RecommendPage 내에서만 사용될 수 있는 작은 컴포넌트)
+// 장르 카드 컴포넌트
 const GenreCard = ({ genre }) => {
   return (
     <Link
-      to={`/genres/${genre.id}`} // 🌐 장르 상세 페이지 링크 (백엔드에서 장르 ID를 통해 상세 정보 제공)
-      className="
-        flex flex-col items-center justify-center p-4 rounded-lg bg-gray-800
-        shadow-md hover:bg-gray-700 transition-colors duration-200
-        cursor-pointer group relative overflow-hidden h-40 w-40 text-center
-      "
+      to={`/genres/${genre.id}`}
+      className="genre-card"
     >
       <img
-        src={genre.imageUrl || 'https://via.placeholder.com/150/333333/FFFFFF?text=Genre'}
+        src={genre.imageUrl || '/images/K-52.jpg'} // ✨ 로컬 이미지 폴백
         alt={genre.name}
-        className="w-full h-full object-cover absolute inset-0 group-hover:scale-110 transition-transform duration-300"
+        className="genre-card-image"
       />
-      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <h3 className="text-white text-lg font-semibold z-10">{genre.name}</h3>
+      <div className="genre-card-overlay">
+        <h3 className="genre-card-title">{genre.name}</h3>
       </div>
     </Link>
   );
@@ -41,24 +40,20 @@ GenreCard.propTypes = {
   }).isRequired,
 };
 
-// 아티스트 카드 컴포넌트 (RecommendPage 내에서만 사용될 수 있는 작은 컴포넌트)
+// 아티스트 카드 컴포넌트
 const ArtistCard = ({ artist }) => {
   return (
     <Link
-      to={`/artist/${artist.id}`} // 🌐 아티스트 상세 페이지 링크 (백엔드에서 아티스트 ID를 통해 상세 정보 제공)
-      className="
-        flex flex-col items-center p-4 rounded-lg bg-gray-800
-        shadow-md hover:bg-gray-700 transition-colors duration-200
-        cursor-pointer w-40 h-auto text-center
-      "
+      to={`/artist/${artist.id}`}
+      className="artist-card"
     >
       <img
-        src={artist.profileImageUrl || 'https://via.placeholder.com/100/333333/FFFFFF?text=Artist'}
+        src={artist.profileImageUrl || '/images/K-52.jpg'} // ✨ 로컬 이미지 폴백
         alt={artist.name}
-        className="w-24 h-24 rounded-full object-cover mb-2"
+        className="artist-card-image"
       />
-      <h3 className="text-white text-base font-semibold truncate w-full">{artist.name}</h3>
-      {artist.genre && <p className="text-gray-400 text-xs truncate w-full">{artist.genre}</p>}
+      <h3 className="artist-card-name">{artist.name}</h3>
+      {artist.genre && <p className="artist-card-genre">{artist.genre}</p>}
     </Link>
   );
 };
@@ -73,69 +68,122 @@ ArtistCard.propTypes = {
 // --- 내부 컴포넌트 정의 끝 ---
 
 
-const ITEMS_PER_PAGE = 12; // 각 섹션의 페이지당 아이템 수
+// ✨ 로컬 이미지 경로 배열 및 이미지 인덱스 관리 (중복 사용)
+const LOCAL_IMAGE_PATHS = [
+  '/images/K-52.jpg',
+  '/images/K-53.jpg',
+  '/images/K-54.jpg',
+  '/images/K-55.jpg',
+];
+let imageIndex = 0; // 컴포넌트 외부에서 관리하여 계속 순환하도록 함
+
+const getNextLocalImage = () => {
+  const path = LOCAL_IMAGE_PATHS[imageIndex % LOCAL_IMAGE_PATHS.length];
+  imageIndex++;
+  return path;
+};
+
+// --- 더미 데이터 (디자인 확인용, 실제 API 대체) ---
+const DUMMY_ALBUMS = [
+  { id: 'da1', title: '봄날의 멜로디', artist: '플로이', coverUrl: getNextLocalImage() },
+  { id: 'da2', title: '어느 맑은 날', artist: '클로버', coverUrl: getNextLocalImage() },
+  { id: 'da3', title: '향기로운 기억', artist: '레몬트리', coverUrl: getNextLocalImage() },
+  { id: 'da4', title: '새벽 감성 재즈', artist: '재즈캣', coverUrl: getNextLocalImage() },
+  { id: 'da5', title: '도시의 불빛', artist: '나이트시티', coverUrl: getNextLocalImage() },
+  { id: 'da6', title: '별이 빛나는 밤', artist: '우주소녀', coverUrl: getNextLocalImage() },
+  { id: 'da7', title: '나른한 오후', artist: '티타임즈', coverUrl: getNextLocalImage() },
+  { id: 'da8', title: '기억 속 여름', artist: '써머블루', coverUrl: getNextLocalImage() },
+];
+
+const DUMMY_SONGS = [
+  { id: 'ds1', title: '환상속의 그대', artist: '플로아', coverUrl: getNextLocalImage(), isHighQuality: true },
+  { id: 'ds2', title: '고요한 숲', artist: '멜로디온', coverUrl: getNextLocalImage(), isHighQuality: false },
+  { id: 'ds3', title: '비밀 정원', artist: '에코', coverUrl: getNextLocalImage(), isHighQuality: true },
+  { id: 'ds4', title: '어둠을 걷고', artist: '스타라이트', coverUrl: getNextLocalImage(), isHighQuality: false },
+  { id: 'ds5', title: '새로운 시작', artist: '브리즈', coverUrl: getNextLocalImage(), isHighQuality: true },
+  { id: 'ds6', title: '푸른 하늘', artist: '윈드보이', coverUrl: getNextLocalImage(), isHighQuality: false },
+];
+
+const DUMMY_GENRES = [
+  { id: 'dg1', name: '발라드', imageUrl: getNextLocalImage() },
+  { id: 'dg2', name: '댄스', imageUrl: getNextLocalImage() },
+  { id: 'dg3', name: '힙합', imageUrl: getNextLocalImage() },
+  { id: 'dg4', name: 'R&B', imageUrl: getNextLocalImage() },
+  { id: 'dg5', name: '재즈', imageUrl: getNextLocalImage() },
+  { id: 'dg6', name: '인디', imageUrl: getNextLocalImage() },
+];
+
+const DUMMY_ARTISTS = [
+  { id: 'da_a1', name: '별빛가수', profileImageUrl: getNextLocalImage(), genre: '발라드' },
+  { id: 'da_a2', name: '댄스신', profileImageUrl: getNextLocalImage(), genre: '댄스' },
+  { id: 'da_a3', name: '힙통령', profileImageUrl: getNextLocalImage(), genre: '힙합' },
+  { id: 'da_a4', name: '소울보컬', profileImageUrl: getNextLocalImage(), genre: 'R&B' },
+  { id: 'da_a5', name: '재즈퀸', profileImageUrl: getNextLocalImage(), genre: '재즈' },
+  { id: 'da_a6', name: '포크맨', profileImageUrl: getNextLocalImage(), genre: '인디' },
+];
+// --- 더미 데이터 끝 ---
+
+
+const ITEMS_PER_PAGE = 12;
 const HOT_NEW_FILTERS = [
   { label: '종합', value: 'all' },
   { label: '국내', value: 'domestic' },
   { label: '해외', value: 'international' },
 ];
-const POPULAR_ARTIST_FILTERS = [
-  { label: '종합', value: 'all' },
-  { label: '국내', value: 'domestic' },
-  { label: '해외', value: 'international' },
-];
+const POPULAR_ARTIST_FILTERS = HOT_NEW_FILTERS;
 
 
 const RecommendPage = () => {
-  // 🌐 MusicPlayerContext에서 음악 재생 함수를 가져옵니다.
   const { playSong } = useContext(MusicPlayerContext);
 
-  // 1. 고음질 필터 상태 (SongFilterBar와 연동)
   const [filterHighQuality, setFilterHighQuality] = useState(false);
 
-  // 2. 오늘 발매 음악 섹션 상태
   const [todayAlbums, setTodayAlbums] = useState([]);
-  const [todayAlbumsLoading, setTodayAlbumsLoading] = useState(true);
+  const [todayAlbumsLoading, setTodayAlbumsLoading] = useState(false);
   const [todayAlbumsError, setTodayAlbumsError] = useState(null);
   const [todayAlbumsCurrentPage, setTodayAlbumsCurrentPage] = useState(1);
-  const [todayAlbumsTotal, setTodayAlbumsTotal] = useState(0); // 🌐 백엔드에서 받아올 총 아이템 수
+  const [todayAlbumsTotal, setTodayAlbumsTotal] = useState(DUMMY_ALBUMS.length);
 
-  // 3. HOT & NEW 섹션 상태
   const [hotNewSongs, setHotNewSongs] = useState([]);
-  const [hotNewLoading, setHotNewLoading] = useState(true);
+  const [hotNewLoading, setHotNewLoading] = useState(false);
   const [hotNewError, setHotNewError] = useState(null);
   const [hotNewCurrentPage, setHotNewCurrentPage] = useState(1);
-  const [hotNewTotal, setHotNewTotal] = useState(0); // 🌐 백엔드에서 받아올 총 아이템 수
-  const [hotNewFilter, setHotNewFilter] = useState('all'); // 국내/해외/종합 필터
+  const [hotNewTotal, setHotNewTotal] = useState(DUMMY_SONGS.length);
+  const [hotNewFilter, setHotNewFilter] = useState('all');
 
-  // 4. 장르 섹션 상태
   const [genres, setGenres] = useState([]);
-  const [genresLoading, setGenresLoading] = useState(true);
+  const [genresLoading, setGenresLoading] = useState(false);
   const [genresError, setGenresError] = useState(null);
 
-  // 5. 인기 아티스트 섹션 상태
   const [popularArtists, setPopularArtists] = useState([]);
-  const [popularArtistsLoading, setPopularArtistsLoading] = useState(true);
+  const [popularArtistsLoading, setPopularArtistsLoading] = useState(false);
   const [popularArtistsError, setPopularArtistsError] = useState(null);
   const [popularArtistsCurrentPage, setPopularArtistsCurrentPage] = useState(1);
-  const [popularArtistsTotal, setPopularArtistsTotal] = useState(0); // 🌐 백엔드에서 받아올 총 아이템 수
-  const [popularArtistsFilter, setPopularArtistsFilter] = useState('all'); // 국내/해외/종합 필터
+  const [popularArtistsTotal, setPopularArtistsTotal] = useState(DUMMY_ARTISTS.length);
+  const [popularArtistsFilter, setPopularArtistsFilter] = useState('all');
 
 
   // --- 데이터 페칭 로직 (useCallback으로 함수 안정화) ---
 
-  // 🌐 오늘 발매 음악 페칭 (페이지네이션 적용)
+  // 🌐 오늘 발매 음악 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
   const fetchTodayAlbums = useCallback(async () => {
     setTodayAlbumsLoading(true);
     setTodayAlbumsError(null);
     try {
-      // 🌐 백엔드 API 호출: 최신 발매 앨범 목록
-      // 예시 엔드포인트: /api/albums/latest?page=1&limit=12
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/albums/latest`, {
-        params: { page: todayAlbumsCurrentPage, limit: ITEMS_PER_PAGE },
-      });
-      setTodayAlbums(res.data.albums); // 🌐 백엔드 응답 구조: { albums: [...], total: N }
-      setTodayAlbumsTotal(res.data.total);
+      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
+      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/albums/latest`, {
+      //   params: { page: todayAlbumsCurrentPage, limit: ITEMS_PER_PAGE },
+      // });
+      // setTodayAlbums(res.data.albums); // 🌐 백엔드 응답 구조: { albums: [...], total: N }
+      // setTodayAlbumsTotal(res.data.total);
+
+      // ✨ 더미 데이터 사용 (디자인 확인용)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const startIdx = (todayAlbumsCurrentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = startIdx + ITEMS_PER_PAGE;
+      setTodayAlbums(DUMMY_ALBUMS.slice(startIdx, endIdx));
+      setTodayAlbumsTotal(DUMMY_ALBUMS.length);
+
     } catch (err) {
       console.error('🌐 오늘 발매 앨범 가져오기 실패:', err);
       setTodayAlbumsError('오늘 발매 앨범을 불러오는 데 실패했습니다.');
@@ -143,25 +191,43 @@ const RecommendPage = () => {
     } finally {
       setTodayAlbumsLoading(false);
     }
-  }, [todayAlbumsCurrentPage]); // 🌐 페이지 변경 시 다시 페칭
+  }, [todayAlbumsCurrentPage]);
 
-  // 🌐 HOT & NEW 곡 페칭 (페이지네이션 및 필터 적용)
+  // 🌐 HOT & NEW 곡 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
   const fetchHotNewSongs = useCallback(async () => {
     setHotNewLoading(true);
     setHotNewError(null);
     try {
-      // 🌐 백엔드 API 호출: HOT & NEW 곡 목록
-      // 예시 엔드포인트: /api/songs/hot-new?page=1&limit=12&filter=all&highQuality=false
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/songs/hot-new`, {
-        params: {
-          page: hotNewCurrentPage,
-          limit: ITEMS_PER_PAGE,
-          filter: hotNewFilter, // 🌐 국내/해외/종합 필터 파라미터
-          highQuality: filterHighQuality, // 🌐 고음질 필터 파라미터
-        },
-      });
-      setHotNewSongs(res.data.songs); // 🌐 백엔드 응답 구조: { songs: [...], total: N }
-      setHotNewTotal(res.data.total);
+      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
+      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/songs/hot-new`, {
+      //   params: {
+      //     page: hotNewCurrentPage,
+      //     limit: ITEMS_PER_PAGE,
+      //     filter: hotNewFilter,
+      //     highQuality: filterHighQuality,
+      //   },
+      // });
+      // setHotNewSongs(res.data.songs); // 🌐 백엔드 응답 구조: { songs: [...], total: N }
+      // setHotNewTotal(res.data.total);
+
+      // ✨ 더미 데이터 사용 (디자인 확인용)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      let filteredSongs = DUMMY_SONGS;
+      if (hotNewFilter !== 'all') {
+        filteredSongs = DUMMY_SONGS.filter(song =>
+          (hotNewFilter === 'domestic' && song.artist.includes('플로')) ||
+          (hotNewFilter === 'international' && !song.artist.includes('플로'))
+        );
+      }
+      if (filterHighQuality) {
+        filteredSongs = filteredSongs.filter(song => song.isHighQuality);
+      }
+
+      const startIdx = (hotNewCurrentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = startIdx + ITEMS_PER_PAGE;
+      setHotNewSongs(filteredSongs.slice(startIdx, endIdx));
+      setHotNewTotal(filteredSongs.length);
+
     } catch (err) {
       console.error('🌐 HOT & NEW 곡 가져오기 실패:', err);
       setHotNewError('HOT & NEW 곡을 불러오는 데 실패했습니다.');
@@ -169,17 +235,21 @@ const RecommendPage = () => {
     } finally {
       setHotNewLoading(false);
     }
-  }, [hotNewCurrentPage, hotNewFilter, filterHighQuality]); // 🌐 페이지, 필터, 고음질 필터 변경 시 다시 페칭
+  }, [hotNewCurrentPage, hotNewFilter, filterHighQuality]);
 
-  // 🌐 장르 페칭 (페이지네이션 없음)
+  // 🌐 장르 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
   const fetchGenres = useCallback(async () => {
     setGenresLoading(true);
     setGenresError(null);
     try {
-      // 🌐 백엔드 API 호출: 모든 장르 목록
-      // 예시 엔드포인트: /api/genres
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/genres`);
-      setGenres(res.data);
+      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
+      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/genres`);
+      // setGenres(res.data);
+
+      // ✨ 더미 데이터 사용 (디자인 확인용)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setGenres(DUMMY_GENRES);
+
     } catch (err) {
       console.error('🌐 장르 가져오기 실패:', err);
       setGenresError('장르를 불러오는 데 실패했습니다.');
@@ -187,24 +257,38 @@ const RecommendPage = () => {
     } finally {
       setGenresLoading(false);
     }
-  }, []); // 🌐 의존성 없음: 컴포넌트 마운트 시 한 번만 페칭
+  }, []);
 
-  // 🌐 인기 아티스트 페칭 (페이지네이션 및 필터 적용)
+  // 🌐 인기 아티스트 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
   const fetchPopularArtists = useCallback(async () => {
     setPopularArtistsLoading(true);
     setPopularArtistsError(null);
     try {
-      // 🌐 백엔드 API 호출: 인기 아티스트 목록
-      // 예시 엔드포인트: /api/artists/popular?page=1&limit=12&filter=all
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/artists/popular`, {
-        params: {
-          page: popularArtistsCurrentPage,
-          limit: ITEMS_PER_PAGE,
-          filter: popularArtistsFilter, // 🌐 국내/해외/종합 필터 파라미터
-        },
-      });
-      setPopularArtists(res.data.artists); // 🌐 백엔드 응답 구조: { artists: [...], total: N }
-      setPopularArtistsTotal(res.data.total);
+      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
+      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/artists/popular`, {
+      //   params: {
+      //     page: popularArtistsCurrentPage,
+      //     limit: ITEMS_PER_PAGE,
+      //     filter: popularArtistsFilter,
+      //   },
+      // });
+      // setPopularArtists(res.data.artists); // 🌐 백엔드 응답 구조: { artists: [...], total: N }
+      // setPopularArtistsTotal(res.data.total);
+
+      // ✨ 더미 데이터 사용 (디자인 확인용)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      let filteredArtists = DUMMY_ARTISTS;
+      if (popularArtistsFilter !== 'all') {
+        filteredArtists = DUMMY_ARTISTS.filter(artist =>
+          (popularArtistsFilter === 'domestic' && artist.name.includes('가수')) ||
+          (popularArtistsFilter === 'international' && !artist.name.includes('가수'))
+        );
+      }
+      const startIdx = (popularArtistsCurrentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = startIdx + ITEMS_PER_PAGE;
+      setPopularArtists(filteredArtists.slice(startIdx, endIdx));
+      setPopularArtistsTotal(filteredArtists.length);
+
     } catch (err) {
       console.error('🌐 인기 아티스트 가져오기 실패:', err);
       setPopularArtistsError('인기 아티스트를 불러오는 데 실패했습니다.');
@@ -212,7 +296,7 @@ const RecommendPage = () => {
     } finally {
       setPopularArtistsLoading(false);
     }
-  }, [popularArtistsCurrentPage, popularArtistsFilter]); // 🌐 페이지, 필터 변경 시 다시 페칭
+  }, [popularArtistsCurrentPage, popularArtistsFilter]);
 
 
   // --- useEffect 호출 (각 페칭 함수가 변경될 때 실행) ---
@@ -223,15 +307,13 @@ const RecommendPage = () => {
 
 
   // --- 페이지네이션 및 필터 핸들러 ---
-  // HOT & NEW 필터 변경 핸들러
   const handleHotNewFilterChange = (filterValue) => {
     setHotNewFilter(filterValue);
-    setHotNewCurrentPage(1); // 필터 변경 시 1페이지로 리셋
+    setHotNewCurrentPage(1);
   };
-  // 인기 아티스트 필터 변경 핸들러
   const handlePopularArtistsFilterChange = (filterValue) => {
     setPopularArtistsFilter(filterValue);
-    setPopularArtistsCurrentPage(1); // 필터 변경 시 1페이지로 리셋
+    setPopularArtistsCurrentPage(1);
   };
 
 
@@ -242,25 +324,23 @@ const RecommendPage = () => {
 
 
   return (
-    // 최상위 컨테이너 (MainPage에서 이미 bg-gray-900 등을 설정하므로 여기서는 max-w, mx-auto만 유지)
-    <div className="text-white">
-      {/* 🌐 고음질 필터 바 (앱 전역의 고음질 설정에 영향을 줍니다.) */}
+    <div className="recommend-page-container">
       <SongFilterBar
         filterHighQuality={filterHighQuality}
         setFilterHighQuality={setFilterHighQuality}
       />
 
       {/* 1. 오늘 발매 음악 섹션 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4">오늘 발매 음악</h2>
+      <section className="recommend-section">
+        <h2 className="recommend-section-title">오늘 발매 음악</h2>
         {todayAlbumsLoading ? (
-          <div className="text-center py-10 text-gray-400">불러오는 중...</div>
+          <div className="recommend-loading-message">불러오는 중...</div>
         ) : todayAlbumsError ? (
-          <div className="text-center py-10 text-red-500">{todayAlbumsError}</div>
+          <div className="recommend-error-message">{todayAlbumsError}</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+          <div className="recommend-grid">
             {todayAlbums.length === 0 ? (
-              <p className="col-span-full text-center text-gray-400">발매된 앨범이 없습니다.</p>
+              <p className="recommend-empty-message">발매된 앨범이 없습니다.</p>
             ) : (
               todayAlbums.map((album) => (
                 <AlbumCard key={album.id} album={album} size="md" />
@@ -268,7 +348,6 @@ const RecommendPage = () => {
             )}
           </div>
         )}
-        {/* 🌐 페이지네이션 (총 페이지가 1보다 클 때만 표시) */}
         {todayAlbumsTotalPages > 1 && (
           <Pagination
             currentPage={todayAlbumsCurrentPage}
@@ -279,27 +358,24 @@ const RecommendPage = () => {
       </section>
 
       {/* 2. HOT & NEW 섹션 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4">HOT & NEW</h2>
-        {/* 🌐 필터 버튼 (국내/해외/종합) */}
+      <section className="recommend-section">
+        <h2 className="recommend-section-title">HOT & NEW</h2>
         <FilterButtons currentFilter={hotNewFilter} onFilterChange={handleHotNewFilterChange} filters={HOT_NEW_FILTERS} />
         {hotNewLoading ? (
-          <div className="text-center py-10 text-gray-400">불러오는 중...</div>
+          <div className="recommend-loading-message">불러오는 중...</div>
         ) : hotNewError ? (
-          <div className="text-center py-10 text-red-500">{hotNewError}</div>
+          <div className="recommend-error-message">{hotNewError}</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+          <div className="recommend-grid">
             {hotNewSongs.length === 0 ? (
-              <p className="col-span-full text-center text-gray-400">HOT & NEW 곡이 없습니다.</p>
+              <p className="recommend-empty-message">HOT & NEW 곡이 없습니다.</p>
             ) : (
               hotNewSongs.map((song) => (
-                // 🌐 InteractiveSongCard는 playSong 함수를 prop으로 받습니다.
                 <InteractiveSongCard key={song.id} song={song} onPlay={playSong} />
               ))
             )}
           </div>
         )}
-        {/* 🌐 페이지네이션 (총 페이지가 1보다 클 때만 표시) */}
         {hotNewTotalPages > 1 && (
           <Pagination
             currentPage={hotNewCurrentPage}
@@ -310,16 +386,16 @@ const RecommendPage = () => {
       </section>
 
       {/* 3. 장르 섹션 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4">장르</h2>
+      <section className="recommend-section">
+        <h2 className="recommend-section-title">장르</h2>
         {genresLoading ? (
-          <div className="text-center py-10 text-gray-400">불러오는 중...</div>
+          <div className="recommend-loading-message">불러오는 중...</div>
         ) : genresError ? (
-          <div className="text-center py-10 text-red-500">{genresError}</div>
+          <div className="recommend-error-message">{genresError}</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+          <div className="recommend-grid">
             {genres.length === 0 ? (
-              <p className="col-span-full text-center text-gray-400">장르가 없습니다.</p>
+              <p className="recommend-empty-message">장르가 없습니다.</p>
             ) : (
               genres.map((genre) => (
                 <GenreCard key={genre.id} genre={genre} />
@@ -330,18 +406,17 @@ const RecommendPage = () => {
       </section>
 
       {/* 4. 인기 아티스트 섹션 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4">인기 아티스트</h2>
-        {/* 🌐 필터 버튼 (국내/해외/종합) */}
+      <section className="recommend-section">
+        <h2 className="recommend-section-title">인기 아티스트</h2>
         <FilterButtons currentFilter={popularArtistsFilter} onFilterChange={handlePopularArtistsFilterChange} filters={POPULAR_ARTIST_FILTERS} />
         {popularArtistsLoading ? (
-          <div className="text-center py-10 text-gray-400">불러오는 중...</div>
+          <div className="recommend-loading-message">불러오는 중...</div>
         ) : popularArtistsError ? (
-          <div className="text-center py-10 text-red-500">{popularArtistsError}</div>
+          <div className="recommend-error-message">{popularArtistsError}</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-items-center">
+          <div className="recommend-grid">
             {popularArtists.length === 0 ? (
-              <p className="col-span-full text-center text-gray-400">인기 아티스트가 없습니다.</p>
+              <p className="recommend-empty-message">인기 아티스트가 없습니다.</p>
             ) : (
               popularArtists.map((artist) => (
                 <ArtistCard key={artist.id} artist={artist} />
@@ -349,7 +424,6 @@ const RecommendPage = () => {
             )}
           </div>
         )}
-        {/* 🌐 페이지네이션 (총 페이지가 1보다 클 때만 표시) */}
         {popularArtistsTotalPages > 1 && (
           <Pagination
             currentPage={popularArtistsCurrentPage}

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import '../styles/PlaylistDrawer.css'; // ✨ CSS 파일 임포트
+import playlistPlaceholder from '../assets/K-054.jpg';
 
 // --- PlaylistThemeCard 컴포넌트: 각 테마별 플레이리스트를 나타내는 카드 ---
 const PlaylistThemeCard = ({ playlist, onPlayTheme }) => {
@@ -12,7 +13,7 @@ const PlaylistThemeCard = ({ playlist, onPlayTheme }) => {
       {/* 1. 플레이리스트 상세 페이지로 이동하는 링크 영역 */}
       <Link to={`/playlist/${playlist.id}`} className="playlist-theme-card-link">
         <img
-          src={playlist.coverUrl || 'https://via.placeholder.com/160/333333/FFFFFF?text=Playlist'}
+          src={playlist.coverUrl || playlistPlaceholder}
           alt={playlist.title}
           className="playlist-theme-card-image"
         />

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import './footer.css'; // ✨ CSS 파일 임포트
+import '../styles/Footer.css'; // ✨ CSS 파일 임포트
 
 const Footer = () => {
   return (

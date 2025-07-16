@@ -5,6 +5,7 @@ import axios from 'axios'; // 🌐 백엔드 통신을 위한 axios 임포트
 import { AuthContext } from '../context/AuthContext'; // 🌐 AuthContext 임포트
 
 import '../styles/ArtistPage.css'; // ✨ CSS 파일 임포트
+import artistPlaceholder from '../assets/default-cover.jpg';
 
 const ArtistPage = () => {
   const { id } = useParams();
@@ -93,7 +94,7 @@ const ArtistPage = () => {
       {/* 아티스트 프로필 섹션 */}
       <div className="artist-profile-section">
         <img
-          src={artist.profileImageUrl || 'https://via.placeholder.com/200/333333/FFFFFF?text=Artist'}
+          src={artist.profileImageUrl || artistPlaceholder}
           alt={artist.name}
           className="artist-profile-image"
         />

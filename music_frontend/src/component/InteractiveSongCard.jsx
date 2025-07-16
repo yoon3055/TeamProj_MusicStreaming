@@ -2,29 +2,40 @@
 import React from 'react';
 import { motion } from 'framer-motion'; // framer-motion 임포트
 import PropTypes from 'prop-types';
+import defaultCover from '../assets/default-cover.jpg';
 
 import '../styles/InteractiveSongCard.css'; // ✨ CSS 파일 임포트
 
 const InteractiveSongCard = ({ song, onPlay }) => {
   return (
     <motion.div
-      // framer-motion을 통해 마우스 오버 시 확대, 클릭 시 축소 애니메이션 적용
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="interactive-song-card-container" /* ✨ 클래스 적용 */
+      className="interactive-song-card-container"
       onClick={() => onPlay(song)}
     >
-      <div className="interactive-song-card-details"> {/* ✨ 클래스 적용 */}
-        <img
-          src={song.coverUrl || 'https://via.placeholder.com/64/333333/FFFFFF?text=No+Cover'}
+      <div className="interactive-song-card-details">
+        <motion.img
+          src={song.coverUrl || defaultCover}
           alt={song.title}
-          className="interactive-song-card-cover" /* ✨ 클래스 적용 */
+          className="interactive-song-card-cover"
+          whileHover={{ rotate: 1 }}
         />
-        <div className="interactive-song-card-text-content"> {/* ✨ 클래스 적용 */}
-          <span className="interactive-song-card-title">{song.title}</span> {/* ✨ 클래스 적용 */}
-          <span className="interactive-song-card-artist">{song.artist}</span> {/* ✨ 클래스 적용 */}
+        <div className="interactive-song-card-text-content">
+          <span className="interactive-song-card-title">{song.title}</span>
+          <span className="interactive-song-card-artist">{song.artist}</span>
           {song.isHighQuality && (
-            <span className="interactive-song-card-quality-badge">고음질</span> {/* ✨ 클래스 적용 */}
+            <motion.span
+              className="interactive-song-card-quality-badge"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              고음질
+            </motion.span>
           )}
         </div>
       </div>
@@ -37,9 +48,9 @@ InteractiveSongCard.propTypes = {
     title: PropTypes.string.isRequired,
     artist: PropTypes.string.isRequired,
     coverUrl: PropTypes.string,
-    isHighQuality: PropTypes.bool,
+    isHighQuality: PropTypes.bool
   }).isRequired,
-  onPlay: PropTypes.func,
+  onPlay: PropTypes.func
 };
 
 export default InteractiveSongCard;

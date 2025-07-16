@@ -135,7 +135,7 @@
   padding: 1rem; /* p-4 */
   border-radius: 0.5rem; /* rounded-lg */
   background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
   transition: all 0.2s ease; /* transition-colors duration-200 */
   cursor: pointer;
   width: 10rem; /* w-40 */

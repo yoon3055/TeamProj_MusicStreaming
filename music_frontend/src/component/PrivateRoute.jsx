@@ -1,26 +1,21 @@
-// src/component/PrivateRoute.jsx
 import React, { useContext } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import PropTypes from 'prop-types';
 
-const PrivateRoute = ({ element }) => {
-  // 🌐 AuthContext에서 사용자 정보와 로딩 상태를 가져옵니다.
+const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
+  const location = useLocation();
 
-  // 🌐 로딩 중일 때는 아무것도 렌더링하지 않습니다.
-  // 로딩 UI는 이제 MainLayout의 LoadingToast가 담당합니다.
-  if (loading) {
-    return null;
+  // 로딩 중일 때는 null 반환(로딩 UI는 레이아웃에서 처리)
+  if (loading) return null;
+
+  // 로그인 안 되어 있으면 로그인 페이지로 리다이렉트
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // 사용자가 로그인되어 있으면 요청된 컴포넌트(element)를 렌더링하고,
-  // 그렇지 않으면 /login 페이지로 리다이렉트합니다.
-  return user ? element : <Navigate to="/login" />;
-};
-
-PrivateRoute.propTypes = {
-  element: PropTypes.node.isRequired,
+  // 로그인 되어 있으면 children 렌더링
+  return children;
 };
 
 export default PrivateRoute;

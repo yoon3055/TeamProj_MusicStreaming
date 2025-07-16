@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import K52 from '../assets/K-052.jpg';
+
 
 const Albumcard = ({ album, size = 'md' }) => {
   // `size` prop에 따라 카드의 크기를 동적으로 설정합니다.
@@ -36,8 +38,7 @@ const Albumcard = ({ album, size = 'md' }) => {
       `}
     >
       <Link to={`/album/${album.id}`} className="block"> {/* 전체 카드가 클릭 가능하도록 링크를 블록 요소로 만듭니다. */}
-        <img
-          src={album.coverUrl || 'https://via.placeholder.com/160/333333/FFFFFF?text=Album'}
+       <img src={K52} 
           alt={album.title}
           className={`
             w-full          /* 이미지가 카드 너비에 꽉 차도록 합니다. */

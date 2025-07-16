@@ -2,15 +2,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Albumcard from './Albumcard'; // Albumcard 컴포넌트 임포트
+import K52 from '../assets/K-052.jpg';
+import K53 from '../assets/K-053.jpg';
+import K54 from '../assets/K-054.jpg';
+import K55 from '../assets/K-055.jpg';
 
 import '../styles/GuestSideBarcontent.css'; // ✨ CSS 파일 임포트
 
 // 🌐 데모용 앨범 데이터 (실제로는 백엔드에서 가져와야 함)
 const mockAlbums = [
-  { id: 'album1', title: 'Chill Vibes', artist: 'Various', coverUrl: 'https://via.placeholder.com/150/FF00FF/FFFFFF?text=Chill' },
-  { id: 'album2', title: 'Focus Music', artist: 'Ambient Artists', coverUrl: 'https://via.placeholder.com/150/00FFFF/FFFFFF?text=Focus' },
-  { id: 'album3', title: 'Workout Hits', artist: 'Energetic Beats', coverUrl: 'https://via.placeholder.com/150/FFFF00/000000?text=Workout' },
-  { id: 'album4', title: 'Relaxing Jazz', artist: 'Jazz Masters', coverUrl: 'https://via.placeholder.com/150/AABBCC/FFFFFF?text=Jazz' },
+  { id: 'album1', title: 'Chill Vibes', artist: 'Various', coverUrl: K52 },
+  { id: 'album2', title: 'Focus Music', artist: 'Ambient Artists', coverUrl: K53 },
+  { id: 'album3', title: 'Workout Hits', artist: 'Energetic Beats', coverUrl: K54 },
+  { id: 'album4', title: 'Relaxing Jazz', artist: 'Jazz Masters', coverUrl: K55 },
 ];
 
 // 🌐 데모용 광고 데이터 (실제로는 백엔드에서 가져오거나 관리)

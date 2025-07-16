@@ -5,7 +5,7 @@ import axios from 'axios'; // 🌐 백엔드 통신을 위한 axios 임포트
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 import { AuthContext } from '../context/AuthContext'; // 🌐 AuthContext 임포트
 import Albumcard from '../component/Albumcard.jsx';
-import AlbumIcon from '../component/AlbumIconPage.jsx';
+import AlbumIcon from '../pages/AlbumIconPage.jsx';
 
 import '../styles/AlbumDetailPage.css'; // ✨ CSS 파일 임포트
 
