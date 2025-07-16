@@ -1,0 +1,58 @@
+/* src/styles/paymentpage.css */
+.payment-page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--flo-bg-dark); /* bg-gray-900 */
+  padding: 1.5rem; /* p-6 */
+  box-sizing: border-box;
+}
+
+.payment-card {
+  background-color: var(--flo-bg-medium); /* bg-gray-800 */
+  padding: 2rem; /* p-8 */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
+  max-width: 28rem; /* max-w-md */
+  width: 100%;
+  text-align: center;
+  border: 1px solid var(--flo-bg-medium); /* border border-gray-700 */
+  color: var(--flo-text-white);
+}
+
+.payment-title {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: bold;
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.payment-button {
+  width: 100%;
+  background-color: var(--flo-accent-emerald); /* bg-emerald-600 */
+  color: var(--flo-text-white);
+  font-weight: 600;
+  padding: 0.75rem; /* py-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+  transition: all 0.2s ease; /* transition-colors duration-200 */
+  border: none;
+  cursor: pointer;
+  outline: none; /* focus:outline-none */
+}
+
+.payment-button:hover {
+  background-color: #0d9488; /* hover:bg-emerald-700 */
+}
+
+.payment-button:focus {
+  box-shadow: 0 0 0 2px var(--flo-accent-emerald); /* focus:ring-2 focus:ring-emerald-500 */
+}
+
+/* .payment-options-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+} */

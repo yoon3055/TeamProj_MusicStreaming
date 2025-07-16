@@ -1,0 +1,86 @@
+/* src/styles/paymentsuccesspage.css */
+.payment-success-page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--flo-bg-dark); /* bg-gray-900 */
+  padding: 1.5rem; /* px-6 */
+  box-sizing: border-box;
+}
+
+.payment-success-card {
+  background-color: var(--flo-bg-medium); /* bg-gray-800 */
+  border-radius: 1.5rem; /* rounded-3xl */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
+  padding: 2.5rem; /* p-10 */
+  max-width: 28rem; /* max-w-md */
+  width: 100%;
+  text-align: center;
+  border: 1px solid var(--flo-accent-emerald); /* border border-emerald-700 */
+  color: var(--flo-text-white);
+}
+
+.payment-success-icon {
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--flo-accent-emerald); /* text-emerald-500 */
+  margin-bottom: 1.5rem; /* mb-6 */
+  width: 6rem; /* w-24 */
+  height: 6rem; /* h-24 */
+}
+
+.payment-success-title {
+  font-size: 2.25rem; /* text-4xl */
+  font-weight: 800; /* font-extrabold */
+  color: var(--flo-accent-emerald); /* text-emerald-500 */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.payment-success-message {
+  color: var(--flo-text-gray); /* text-gray-300 */
+  margin-bottom: 1.5rem; /* mb-6 */
+  font-size: 1.125rem; /* text-lg */
+}
+
+.payment-success-info-box {
+  background-color: var(--flo-bg-medium); /* bg-gray-700 */
+  border: 1px solid #065f46; /* border border-emerald-600 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 1rem; /* p-4 */
+  margin-bottom: 2rem; /* mb-8 */
+  text-align: left;
+}
+
+.payment-success-info-item {
+  font-weight: 600; /* font-semibold */
+  color: #6ee7b7; /* text-emerald-300 */
+  margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.payment-success-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.payment-success-info-value {
+  font-weight: normal; /* font-normal */
+  color: var(--flo-text-gray); /* text-gray-300 */
+}
+
+.payment-success-button {
+  display: inline-block;
+  background-color: var(--flo-accent-emerald); /* bg-emerald-600 */
+  color: var(--flo-text-white);
+  padding: 0.75rem 2rem; /* px-8 py-3 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+  transition: all 0.2s ease; /* transition-colors duration-200 */
+  text-decoration: none; /* Link 밑줄 제거 */
+}
+
+.payment-success-button:hover {
+  background-color: #0d9488; /* hover:bg-emerald-700 */
+}

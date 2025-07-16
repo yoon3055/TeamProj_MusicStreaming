@@ -1,0 +1,93 @@
+/* src/styles/playlistpage.css */
+.playlist-page-container {
+  width: 20rem; /* w-80 */
+  height: 100%; /* h-full */
+  background-color: var(--flo-bg-dark); /* bg-gray-900 */
+  color: var(--flo-text-white); /* text-white */
+  padding: 1.5rem; /* p-6 */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* overflow-y-auto */
+  box-sizing: border-box;
+}
+
+.playlist-page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--flo-text-gray);
+  font-size: 0.875rem; /* text-sm */
+}
+
+.playlist-page-title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: bold;
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.playlist-page-list-wrapper {
+  flex-grow: 1; /* flex-grow */
+  background-color: var(--flo-bg-medium); /* bg-gray-800 */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-lg */
+  border: 1px solid var(--flo-bg-medium); /* border border-gray-700 */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* overflow-y-auto */
+}
+
+.playlist-page-empty-message {
+  text-align: center;
+  color: var(--flo-text-gray);
+  padding: 0.75rem; /* p-3 */
+}
+
+.playlist-page-item {
+  padding: 0.75rem 1rem; /* py-3 px-4 */
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--flo-bg-medium); /* divide-y divide-gray-700 */
+  transition: background-color 0.15s ease; /* transition-colors duration-150 */
+}
+
+.playlist-page-item:last-child {
+  border-bottom: none; /* 마지막 아이템은 구분선 제거 */
+}
+
+.playlist-page-item:hover {
+  background-color: var(--flo-bg-light); /* hover:bg-gray-700 */
+}
+
+.playlist-page-item-cover {
+  width: 2.5rem; /* w-10 */
+  height: 2.5rem; /* h-10 */
+  border-radius: 0.375rem; /* rounded-md */
+  object-fit: cover;
+  margin-right: 0.75rem; /* mr-3 */
+  flex-shrink: 0;
+}
+
+.playlist-page-item-link {
+  font-size: 1rem; /* text-base */
+  font-weight: 500; /* font-medium */
+  color: var(--flo-accent-blue); /* text-blue-400 */
+  text-decoration: none;
+  flex-grow: 1; /* flex-grow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* truncate */
+  transition: text-decoration 0.2s ease;
+}
+
+.playlist-page-item-link:hover {
+  text-decoration: underline; /* hover:underline */
+}
+
+.playlist-page-item-song-count {
+  color: var(--flo-text-gray); /* text-gray-500 */
+  font-size: 0.875rem; /* text-sm */
+  margin-left: 0.5rem; /* ml-2 */
+  flex-shrink: 0;
+}

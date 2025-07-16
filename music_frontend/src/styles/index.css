@@ -1,0 +1,61 @@
+/* src/styles/index.css */
+
+/* FLO 컬러 팔레트 CSS 변수 */
+:root {
+  --flo-bg-dark: #121212; /* 기본 어두운 배경 (tailwind gray-900) */
+  --flo-bg-medium: #1f1f1f; /* 카드, 섹션 배경 (tailwind gray-800) */
+  --flo-bg-light: #282828; /* 더 밝은 카드 배경, 호버 시 (tailwind gray-700) */
+  --flo-text-white: #e0e0e0; /* 기본 밝은 텍스트 (tailwind white, gray-200) */
+  --flo-text-gray: #b3b3b3; /* 보조 텍스트 (tailwind gray-400, gray-500) */
+  --flo-accent-blue: #1e90ff; /* 파란색 강조 (tailwind blue-500, blue-600) */
+  --flo-accent-emerald: #10b981; /* 에메랄드 강조 (tailwind emerald-500, emerald-600) */
+  --flo-accent-red: #ef4444; /* 빨간색 강조 (tailwind red-500, red-600) */
+}
+
+/* 기본 바디 스타일 */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif; /* FLO 폰트 */
+  background-color: var(--flo-bg-dark); /* 기본 배경색 */
+  color: var(--flo-text-white); /* 기본 텍스트 색상 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 커스텀 애니메이션 정의 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 스크롤바 숨김 (Tailwind 플러그인 없이 직접 구현) */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

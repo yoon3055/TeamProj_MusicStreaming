@@ -1,0 +1,42 @@
+/* src/styles/pagination.css */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+  margin-top: 2rem; /* mt-8 */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.pagination-button {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 9999px; /* rounded-full */
+  background-color: var(--flo-bg-medium); /* bg-gray-700 */
+  color: var(--flo-text-white); /* text-white */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease; /* transition-colors duration-200 */
+  font-weight: 500;
+}
+
+.pagination-button:hover {
+  background-color: var(--flo-bg-light); /* hover:bg-gray-600 */
+}
+
+.pagination-button:disabled {
+  opacity: 0.5; /* disabled:opacity-50 */
+  cursor: not-allowed; /* disabled:cursor-not-allowed */
+}
+
+.pagination-button-active {
+  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+  color: var(--flo-text-white);
+}
+
+.pagination-button-active:hover {
+  background-color: var(--flo-accent-blue); /* 호버 시 색상 유지 */
+}
+
+.pagination-button-nav {
+  /* 이전/다음 버튼은 별도 스타일이 없으므로 기본 버튼 스타일 사용 */
+}

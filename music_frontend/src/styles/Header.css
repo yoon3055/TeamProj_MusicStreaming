@@ -1,0 +1,85 @@
+/* src/styles/header.css */
+.app-header {
+  background-color: var(--flo-bg-dark);
+  color: var(--flo-text-white);
+  padding: 1rem 1.5rem; /* py-4 px-6 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 40; /* z-40 */
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+  color: var(--flo-text-white);
+  text-decoration: none;
+  transition: color 0.2s ease; /* transition-colors duration-200 */
+}
+
+.header-logo-link:hover {
+  color: var(--flo-accent-blue); /* hover:text-blue-400 */
+}
+
+.header-logo-icon {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+  color: var(--flo-accent-blue); /* text-blue-500 */
+}
+
+.header-app-title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: bold;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* space-x-6 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.header-link {
+  color: var(--flo-text-gray); /* text-gray-300 */
+  text-decoration: none;
+  transition: color 0.2s ease; /* transition-colors duration-200 */
+  font-weight: 600;
+}
+
+.header-link:hover {
+  color: var(--flo-text-white); /* hover:text-white */
+}
+
+.header-button {
+  padding: 0.25rem 1rem; /* px-4 py-1 */
+  border-radius: 9999px; /* rounded-full */
+  transition: background-color 0.2s ease; /* transition-colors duration-200 */
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block; /* Link가 버튼처럼 보이도록 */
+}
+
+.header-button-login {
+  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+  color: white;
+}
+
+.header-button-login:hover {
+  background-color: #1a73e8; /* hover:bg-blue-700 */
+}
+
+.header-button-signup {
+  background-color: var(--flo-accent-emerald); /* bg-emerald-600 */
+  color: white;
+}
+
+.header-button-signup:hover {
+  background-color: #0d9488; /* hover:bg-emerald-700 */
+}
