@@ -114,4 +114,10 @@ public class UserService {
 
 
 
+=======
+    private void checkPwd(String pwd, String checkPwd) {
+        if (!pwd.equals(checkPwd)) {
+            throw new MemberException("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
 }

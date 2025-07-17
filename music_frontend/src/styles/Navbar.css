@@ -1,0 +1,81 @@
+/* src/styles/navbar.css */
+.app-navbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* space-x-6 */
+  font-size: 0.875rem; /* text-sm */
+  flex-grow: 1; /* flex-grow */
+  justify-content: center;
+}
+
+.navbar-link {
+  color: var(--flo-text-gray); /* text-gray-300 */
+  text-decoration: none;
+  transition: color 0.2s ease; /* transition-colors duration-200 */
+  font-weight: 600;
+}
+
+.navbar-link:hover {
+  color: var(--flo-text-white); /* hover:text-white */
+}
+
+.navbar-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 2rem; /* ml-8 */
+}
+
+.navbar-search-input {
+  width: 20rem; /* w-80 */
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 9999px; /* rounded-full */
+  background-color: var(--flo-bg-medium); /* bg-gray-700 */
+  color: var(--flo-text-white);
+  border: none;
+  outline: none; /* focus:outline-none */
+  box-shadow: none; /* focus:ring-0 */
+  transition: all 0.2s ease; /* transition-all duration-200 */
+}
+
+.navbar-search-input::placeholder {
+  color: var(--flo-text-gray); /* placeholder-gray-400 */
+}
+
+.navbar-search-input:focus {
+  box-shadow: 0 0 0 2px var(--flo-accent-blue); /* focus:ring-2 focus:ring-blue-500 */
+}
+
+.navbar-search-button {
+  position: absolute;
+  right: 0.75rem; /* right-3 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--flo-text-gray); /* text-gray-400 */
+  transition: color 0.2s ease; /* transition-colors duration-200 */
+}
+
+.navbar-search-button:hover {
+  color: var(--flo-text-white); /* hover:text-white */
+}
+
+.navbar-search-icon {
+  width: 1.25rem; /* w-5 */
+  height: 1.25rem; /* h-5 */
+}
+
+.navbar-advanced-search-button {
+  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+  color: var(--flo-text-white);
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 9999px; /* rounded-full */
+  transition: background-color 0.2s ease; /* transition-colors duration-200 */
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 1rem; /* ml-4 */
+}
+
+.navbar-advanced-search-button:hover {
+  background-color: #1a73e8; /* hover:bg-blue-700 */
+}

@@ -1,0 +1,31 @@
+/* src/styles/mainpage.css */
+.main-page-container {
+  flex: 1; /* flex-1 */
+  background: linear-gradient(135deg, #0f0f0f, #1f1f1f); /* bg-gradient-to-br from-gray-950 to-gray-800 */
+  color: var(--flo-text-white); /* text-white */
+  font-family: 'Segoe UI', sans-serif; /* font-sans */
+  box-sizing: border-box;
+}
+
+.main-page-content-area {
+  flex: 1; /* flex-1 */
+  padding: 1.5rem; /* p-6 */
+  overflow-y: auto; /* overflow-y-auto */
+  max-width: 100%; /* max-w-full */
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* 반응형 최대 너비 조정 (RecommendPage 내부에 설정되어있지만 컨테이너 역할이므로 다시 정의) */
+@media (min-width: 768px) { /* md: */
+  .main-page-content-area {
+    max-width: 56rem; /* max-w-4xl (896px) */
+  }
+}
+
+@media (min-width: 1024px) { /* lg: */
+  .main-page-content-area {
+    max-width: 72rem; /* max-w-6xl (1152px) */
+  }
+}
