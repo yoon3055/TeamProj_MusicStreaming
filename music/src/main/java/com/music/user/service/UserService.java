@@ -145,5 +145,4 @@ public class UserService {
             throw new MemberException("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
     }
-
 }
