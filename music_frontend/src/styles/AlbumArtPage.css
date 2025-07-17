@@ -1,0 +1,21 @@
+.album-art-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.album-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .album-art-page {
+    padding: 10px;
+  }
+  .album-list {
+    grid-template-columns: 1fr;
+  }
+}

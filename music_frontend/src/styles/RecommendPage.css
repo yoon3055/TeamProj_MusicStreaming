@@ -1,0 +1,176 @@
+/* src/styles/recommendpage.css */
+.recommend-page-container {
+  color: var(--flo-text-white);
+  padding: 2rem 1.5rem; /* py-8 px-6 */
+  max-width: 1280px; /* max-w-6xl */
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.recommend-section {
+  margin-bottom: 3rem; /* mb-12 */
+}
+
+.recommend-section-title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: bold;
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.recommend-loading-message,
+.recommend-error-message,
+.recommend-empty-message {
+  text-align: center;
+  padding-top: 2.5rem; /* py-10 */
+  padding-bottom: 2.5rem;
+  font-size: 1.125rem; /* text-lg */
+}
+
+.recommend-loading-message {
+  color: var(--flo-text-gray); /* text-gray-400 */
+}
+
+.recommend-error-message {
+  color: var(--flo-accent-red); /* text-red-500 */
+}
+
+.recommend-empty-message {
+  color: var(--flo-text-gray); /* text-gray-400 */
+  grid-column: 1 / -1; /* col-span-full */
+}
+
+.recommend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* grid-cols-2 */
+  gap: 1.5rem; /* gap-6 */
+  justify-items: center;
+}
+
+/* 반응형 그리드 조정 */
+@media (min-width: 640px) { /* sm: */
+  .recommend-grid {
+    grid-template-columns: repeat(3, 1fr); /* sm:grid-cols-3 */
+  }
+}
+
+@media (min-width: 768px) { /* md: */
+  .recommend-grid {
+    grid-template-columns: repeat(4, 1fr); /* md:grid-cols-4 */
+  }
+}
+
+@media (min-width: 1024px) { /* lg: */
+  .recommend-grid {
+    grid-template-columns: repeat(5, 1fr); /* lg:grid-cols-5 */
+  }
+}
+
+@media (min-width: 1280px) { /* xl: */
+  .recommend-grid {
+    grid-template-columns: repeat(6, 1fr); /* xl:grid-cols-6 */
+  }
+}
+
+/* --- 내부 컴포넌트 스타일 --- */
+
+/* GenreCard 스타일 */
+.genre-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem; /* p-4 */
+  border-radius: 0.5rem; /* rounded-lg */
+  background-color: var(--flo-bg-medium); /* bg-gray-800 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+  transition: all 0.2s ease; /* transition-colors duration-200 */
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  height: 10rem; /* h-40 */
+  width: 10rem; /* w-40 */
+  text-align: center;
+  text-decoration: none; /* Link 밑줄 제거 */
+}
+
+.genre-card:hover {
+  background-color: var(--flo-bg-light); /* hover:bg-gray-700 */
+}
+
+.genre-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  transition: transform 0.3s ease; /* transition-transform duration-300 */
+}
+
+.genre-card:hover .genre-card-image {
+  transform: scale(1.1); /* group-hover:scale-110 */
+}
+
+.genre-card-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* bg-black bg-opacity-50 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.genre-card-title {
+  color: var(--flo-text-white);
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  z-index: 10; /* z-10 */
+}
+
+/* ArtistCard 스타일 */
+.artist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem; /* p-4 */
+  border-radius: 0.5rem; /* rounded-lg */
+  background-color: var(--flo-bg-medium); /* bg-gray-800 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+  transition: all 0.2s ease; /* transition-colors duration-200 */
+  cursor: pointer;
+  width: 10rem; /* w-40 */
+  height: auto;
+  text-align: center;
+  text-decoration: none; /* Link 밑줄 제거 */
+  color: var(--flo-text-white); /* 기본 텍스트 색상 */
+}
+
+.artist-card:hover {
+  background-color: var(--flo-bg-light); /* hover:bg-gray-700 */
+}
+
+.artist-card-image {
+  width: 6rem; /* w-24 */
+  height: 6rem; /* h-24 */
+  border-radius: 9999px; /* rounded-full */
+  object-fit: cover;
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.artist-card-name {
+  font-size: 1rem; /* text-base */
+  font-weight: 600; /* font-semibold */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* truncate */
+  width: 100%;
+}
+
+.artist-card-genre {
+  color: var(--flo-text-gray); /* text-gray-400 */
+  font-size: 0.75rem; /* text-xs */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* truncate */
+  width: 100%;
+}
