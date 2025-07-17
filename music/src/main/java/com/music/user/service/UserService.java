@@ -2,19 +2,11 @@ package com.music.user.service;
 
 import com.music.user.dto.UserDto;
 import com.music.user.entity.User;
-import com.music.jwt.JwtTokenUtil;
 import com.music.user.repository.UserRepository;
-import com.music.request.SignupRequest;
-import com.music.request.LoginRequest;
+
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +44,8 @@ public class UserService {
                 .isVerified(true)
                 .createdAt(LocalDateTime.now())
                 .build();
+        // DB에 저장
+        userRepository.save(user);
 
         // 저장 후 Response DTO로 변환하여 반환
         return UserDto.Response.from(userRepository.save(user));
@@ -114,10 +108,5 @@ public class UserService {
 
 
 
-=======
-    private void checkPwd(String pwd, String checkPwd) {
-        if (!pwd.equals(checkPwd)) {
-            throw new MemberException("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
+
 }
