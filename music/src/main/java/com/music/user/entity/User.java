@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 사용자 정보를 저장하는 엔티티
+ */
 @Entity
 @Getter
 @Setter

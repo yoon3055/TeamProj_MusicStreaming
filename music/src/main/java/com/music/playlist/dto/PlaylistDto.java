@@ -77,4 +77,14 @@ public class PlaylistDto {
             );
         }
     }
+    
+    @Getter @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class VisibilityRequest {
+        private boolean isPublic;   // true = 공개, false = 비공개
+    }
+
+    
 }

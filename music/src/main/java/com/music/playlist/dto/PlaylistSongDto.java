@@ -35,7 +35,7 @@ public class PlaylistSongDto {
             return Response.builder()
                     .playlistId(playlistSong.getPlaylistId())
                     .song(SongInfo.from(playlistSong.getSong()))
-                    .order(playlistSong.getOrder())
+                    .order(playlistSong.getSongOrder())   // ★ getOrder() → getSongOrder()
                     .build();
         }
     }

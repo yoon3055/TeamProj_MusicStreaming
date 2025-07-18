@@ -9,8 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime; // 날짜와 시간 필드를 위해 import
 
+@AllArgsConstructor
+@Builder
 @Entity // 이 클래스가 JPA 엔티티임을 나타냅니다.
 @Table(name = "user_subscription") // 테이블 이름 명시
 public class UserSubscription {
