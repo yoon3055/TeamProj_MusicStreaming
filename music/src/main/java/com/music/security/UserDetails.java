@@ -1,7 +1,6 @@
 package com.music.security;
 
 import org.springframework.security.core.GrantedAuthority;
-
 import java.io.Serializable;
 import java.util.Collection;
 

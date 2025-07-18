@@ -1,6 +1,5 @@
 package com.music.security;
 
-
 import com.music.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,14 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
-
     private final UserRepository userRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        LOGGER.info("[loadUserByUsername] loadUserByUsername 수행. email : {}", email);
-
+        LOGGER.info("[loadUserByUsername] perform loadUserByUsername. email: {}", email);
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
     }

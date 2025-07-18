@@ -1,6 +1,5 @@
 package com.music.jwt;
 
-
 import com.music.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
@@ -15,12 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-
 import java.util.Date;
 import java.util.List;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +33,6 @@ public class JwtTokenProvider {
 
     private Key key;
 
-
     @PostConstruct
     protected void init() {
         LOGGER.info("[init] JwtTokenProvider 내 secretKey 초기화 시작");
@@ -44,7 +40,6 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
         LOGGER.info("[init] JwtTokenProvider 내 secretKey 초기화 완료");
     }
-
 
     public String createToken(String email, List<String> roles) {
         LOGGER.info("[createToken] 토큰 생성 시작");
@@ -62,7 +57,6 @@ public class JwtTokenProvider {
         LOGGER.info("[createToken] 토큰 생성 완료");
         return token;
     }
-
 
     public Authentication getAuthentication(String token) {
         LOGGER.info("[getAuthentication] 토큰 인증 정보 조회 시작");
@@ -84,7 +78,6 @@ public class JwtTokenProvider {
         return info;
     }
 
-
     public String resolveToken(HttpServletRequest request) {
         LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
         return request.getHeader("X-AUTH-TOKEN");
@@ -103,5 +96,4 @@ public class JwtTokenProvider {
             return false;
         }
     }
-
 }
