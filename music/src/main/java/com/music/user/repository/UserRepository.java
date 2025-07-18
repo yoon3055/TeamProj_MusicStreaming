@@ -10,20 +10,16 @@ import java.util.Optional; // Optional은 결과가 없을 수도 있는 경우�
 // JpaRepository<엔티티 타입, 엔티티의 ID 타입>
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
-    // email 필드는 UNIQUE 속성을 가지고 있으므로, 이메일을 통해 User를 조회하는 메서드를 추가하는 것이 일반적입니다.
-    // Optional<User>를 반환하여 해당 이메일의 사용자가 없을 경우 null 대신 Optional.empty()를 반환하도록 합니다.
+    // email로 사용자 찾기
     Optional<User> findByEmail(String email);
 
-
-    // 닉네임이 UNIQUE는 아니지만, 닉네임으로 조회하는 경우도 있을 수 있습니다.
-    // 만약 닉네임이 UNIQUE라면 findByNickname(String nickname)을 사용할 수 있습니다.
-    // 여기서는 여러 사용자가 같은 닉네임을 가질 수 있다고 가정하고 List를 반환합니다.
-    // List<User> findByNickname(String nickname);
-
-    // 이메일 존재 여부 확인 (회원가입 시 중복 체크 등)
+    // 이메일 존재 여부 확인
     boolean existsByEmail(String email);
 
-    // 닉네임 존재 여부 확인 (닉네임 중복 체크)
+    // 닉네임 존재 여부 확인
     boolean existsByNickname(String nickname);
+
+    // getByUid 메소드 제거 (User 엔티티에 uid 필드가 없음)
+    // User getByUid(String uid) 제거
 }
+

@@ -3,14 +3,11 @@ package com.music.user.dto;
 import com.music.user.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@ToString
 public class UserDto {
 
     @Getter @Setter
