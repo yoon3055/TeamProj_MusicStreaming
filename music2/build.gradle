@@ -35,6 +35,77 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 표준 API
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // 실제 구현체 (JWT 생성,서명,검증 기능)
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT 페이로드를 JSON 형식으로 처리
+
+	// =================================================
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// runtimeOnly 'com.h2database:h2'
+
+	// JPA
+	//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	//Spring 에서 제공해주는 유효성 검사 라이브러리 : form에서 빈값이나 글자수 제한
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	//modelmapper 라이브러리   : dto 필드의 값을 Entity 클래스에 매핑
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.9'
+
+	//oracle 라이브러리
+	//implementation 'com.oracle.database.jdbc:ojdbc10'
+	implementation 'com.oracle.database.jdbc:ojdbc11'
+
+	//MySQL Driver
+	implementation 'com.mysql:mysql-connector-j'
+
+	//JDBC
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+	// MyBatis : Spring Boot 3.2.x 버젼일때 3.0.3으로 설정
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+//	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-test'
+
+	//test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+
+	//JWT 라이브러리 : Spring Boot 3.0 이상
+	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+	// swagger
+	//swagger UI : Spring Boot 3.0 기본 내장됨.
+	//0. SpringBoot 3.0.0 이상부터는 springfox가 아닌 springdoc-openapi-ui 라이브러리를 사용해야 합니다. springfox <== 지원 중단됨
+	// http://localhost:3000/swagger-ui/index.html <== UI
+	// http://localhost:3000/v3/api-docs <== JSON
+	// 사용법 : https://colabear754.tistory.com/99
+
+//	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// xml bind
+//    implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '2.3.2'
+	implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '3.0.1'
+	implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '3.0.1'
+
+
+
+
+
 }
 
 tasks.named('test') {
