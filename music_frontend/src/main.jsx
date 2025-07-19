@@ -34,6 +34,19 @@ import LibraryPage from './pages/LibraryPage';
 import AdvancedSearchPage from './pages/AdvancedSearchPage';
 import RankingPage from './pages/RankingPage';
 
+// PlaylistDrawer 컴포넌트 임포트 (라우팅 가능한 페이지로 사용)
+import PlaylistDrawer from './component/PlaylistDrawer';
+
+// ✨✨✨✨✨ CSS 파일 임포트 추가 ✨✨✨✨✨
+// 가장 전역적이고 공통적인 스타일부터 먼저 로드합니다.
+import './styles/MainLayout.css';        // 전역 CSS 변수 (var(--flo-...) 등) 및 메인 레이아웃 스타일
+import './styles/AlbumCardPage.css';        // Albumcard 컴포넌트의 스타일
+import './styles/PlaylistDrawer.css';   // PlaylistDrawer 컴포넌트의 스타일 (캐러셀용)
+import './styles/PlaylistPage.css';     // PlaylistPage 컴포넌트의 스타일 (텍스트 목록용)
+import './styles/RecommendPage.css';    // RecommendPage 컴포넌트의 스타일 (캐러셀, 그리드 등)
+import './styles/SidebarContent.css';   // SidebarContent 컴포넌트의 스타일 (사이드바 전체 구조)
+
+
 const router = createBrowserRouter(
   [
     {
@@ -44,6 +57,8 @@ const router = createBrowserRouter(
         { path: 'explore', element: <RankingPage /> },
         { path: 'library', element: <PrivateRoute element={<LibraryPage />} /> },
         { path: 'advanced-search', element: <AdvancedSearchPage /> },
+        // ✨ 중복된 라우트 정의 제거 (아래 줄은 유지, 위에 중복된 줄을 삭제해야 함)
+        { path: 'playlists/featured', element: <PlaylistDrawer title="추천 테마 플레이리스트" /> },
         { path: 'subscription-plans', element: <PrivateRoute element={<SubscriptionPage />} /> },
         { path: 'my-subscription', element: <PrivateRoute element={<UserSubscriptionHistory />} /> },
         { path: 'recommend', element: <RecommendPage /> },
@@ -58,6 +73,7 @@ const router = createBrowserRouter(
         { path: 'comments', element: <CommentsPage /> },
         { path: 'payment-success', element: <PaymentSuccessPage /> },
         { path: 'payment-fail', element: <PaymentFailPage /> },
+
         { path: '*', element: <Navigate to="/" replace /> },
       ],
     },
@@ -72,6 +88,7 @@ const router = createBrowserRouter(
   }
 );
 
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
@@ -80,4 +97,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </MusicPlayerProvider>
     </AuthProvider>
   </React.StrictMode>
-);
+);  

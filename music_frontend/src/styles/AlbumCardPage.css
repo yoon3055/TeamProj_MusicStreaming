@@ -1,0 +1,165 @@
+
+
+/* --- Albumcard 공통 기본 스타일 --- */
+.album-card {
+  flex-shrink: 0;
+  background-color: var(--flo-secondary-bg);
+  border-radius: 12px;
+  border: 5px solid var(--flo-accent-color); /* 테두리 상시 표시 */
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-sizing: border-box; /* 패딩, 보더 포함 너비 계산 */
+  /* 그리드 컨테이너 내부에서는 width가 1fr에 의해 결정되므로, 여기에 고정 width 주면 안됨. */
+  /* 단, 캐러셀에서만 고정 너비 사용 */
+}
+
+.album-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.album-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 15px; /* md, lg 기본 패딩 */
+}
+.album-card-image {
+  width: 100%;
+  height: 180px; /* md, lg 기본 높이 */
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.album-card-info {
+  text-align: left;
+}
+.album-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--flo-accent-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.album-card-artist {
+  font-size: 0.9rem;
+  color: var(--flo-accent-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* 앨범/곡 메타 정보 (곡 수, 업데이트 날짜) - size="sm"에서는 숨겨짐 */
+.album-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--flo-accent-color);
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.album-card-song-count {
+  font-weight: 500;
+  color: var(--flo-accent-color);
+}
+
+/* --- size="md" (기본값) 스타일 --- */
+.album-card-md {
+  width: 180px; /* 고정 너비 */
+}
+
+/* --- size="lg" 스타일 --- */
+.album-card-lg {
+  width: 220px; /* 큰 카드 너비 */
+}
+.album-card-lg .album-card-image {
+  height: 220px;
+}
+.album-card-lg .album-card-title {
+  font-size: 1.2rem;
+}
+.album-card-lg .album-card-artist {
+  font-size: 1rem;
+}
+
+
+/* --- size="sm" (사이드바 최적화 - 앱 아이콘 배치처럼) 스타일 --- */
+.album-card-sm {
+  /* ✨ 가로세로 비율을 유지하며 작게 만듦 (정사각형에 가까움) */
+  width: calc(50% - 7.5px); /* SidebarContent.css의 15px gap을 고려하여 2열 배치 */
+  max-width: 100px; /* 너무 커지지 않도록 최대 너비 제한 (예: 100px) */
+  min-width: 80px; /* 너무 작아지지 않도록 최소 너비 제한 */
+  aspect-ratio: 1 / 1.3; /* 이미지 포함 약간 세로로 긴 앱 아이콘 형태 */
+  
+  /* flex-basis: calc(50% - 7.5px); */ /* 또는 이 방식으로 Flex 아이템 크기 제어 */
+
+  background-color: transparent; /* ✨ 사이드바에선 배경 투명 */
+  box-shadow: none; /* ✨ 사이드바에선 그림자 제거 */
+  border: none; /* ✨ 사이드바에선 테두리 제거 (아이콘처럼 보이도록) */
+  display: flex;
+  flex-direction: column; /* 이미지 위, 텍스트 아래 */
+  align-items: center; /* 이미지, 텍스트 중앙 정렬 */
+  padding: 0; /* ✨ 패딩 없음 */
+  transition: transform 0.1s ease; /* 호버 시 미세한 반응 */
+}
+
+.album-card-sm:hover {
+  transform: translateY(-2px); /* 살짝 위로 이동 */
+  box-shadow: none; /* 그림자 없음 */
+}
+
+.album-card-sm .album-card-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0; /* ✨ 링크 패딩 없음 */
+  width: 100%; /* 링크가 부모 카드 너비만큼 차지 */
+}
+
+.album-card-sm .album-card-image {
+  width: 80px; /* ✨ 이미지 크기 */
+  height: 80px; /* ✨ 이미지 크기 */
+  border-radius: 12px; /* ✨ 더 둥근 모서리 (앱 아이콘 형태) */
+  object-fit: cover;
+  margin-bottom: 5px; /* 이미지와 텍스트 사이 간격 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 아이콘에 그림자 */
+}
+
+.album-card-sm .album-card-info {
+  text-align: center; /* ✨ 텍스트 중앙 정렬 */
+  padding: 0 2px; /* 좌우 살짝 패딩 */
+}
+
+.album-card-sm .album-card-title {
+  font-size: 0.85rem; /* ✨ 폰트 크기 작게 */
+  font-weight: 500;
+  color: var(--flo-text-primary); /* ✨ 기본 텍스트 색상 */
+  margin-bottom: 2px;
+  line-height: 1.2;
+  white-space: normal; /* ✨ 줄바꿈 허용 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box; /* 웹킷 기반 브라우저에서 여러 줄 말줄임표 */
+  -webkit-line-clamp: 2; /* 두 줄까지 표시 */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.album-card-sm .album-card-artist {
+  font-size: 0.75rem; /* ✨ 폰트 크기 더 작게 */
+  color: var(--flo-text-secondary); /* ✨ 보조 텍스트 색상 */
+  white-space: normal; /* ✨ 줄바꿈 허용 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box; /* 여러 줄 말줄임표 */
+  -webkit-line-clamp: 1; /* 한 줄만 표시 */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  margin-top: 0; /* ✨ 겹치지 않게 마진 조정 */
+}

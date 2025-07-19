@@ -37,6 +37,18 @@
   background-color: var(--flo-accent-blue); /* 호버 시 색상 유지 */
 }
 
-.pagination-button-nav {
-  /* 이전/다음 버튼은 별도 스타일이 없으므로 기본 버튼 스타일 사용 */
+.carousel-nav-button {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(var(--flo-accent-color-rgb), 0.8);
+  color: var(--flo-text-white);
+  border-radius: 50%;
+}
+.pagination-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--flo-border-color);
+}
+.pagination-dot.active {
+  background-color: var(--flo-accent-color);
 }

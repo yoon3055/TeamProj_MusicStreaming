@@ -8,11 +8,12 @@ import Footer from './Footer';
 import LoadingToast from './LoadingToast';
 
 import PlaylistPage from '../pages/PlaylistPage'; // 로그인 사용자용 사이드바
-import GuestSidebarContent from './GuestSidebarContent'; // 비로그인 사용자용 사이드바
+
 
 import { AuthContext } from '../context/AuthContext';
 
 import '../styles/MainLayout.css';
+import SidebarContent from './SidebarContent';
 
 export default function MainLayout() {
   const { user, loading: authLoading } = useContext(AuthContext);
@@ -41,7 +42,7 @@ export default function MainLayout() {
         </main>
 
         <aside className="main-sidebar-area">
-          {user ? <PlaylistPage /> : <GuestSidebarContent />}
+          {user ? <PlaylistPage /> : <SidebarContent />}
         </aside>
       </div>
 
