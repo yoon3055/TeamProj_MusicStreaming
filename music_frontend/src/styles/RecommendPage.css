@@ -1,176 +1,423 @@
-/* src/styles/recommendpage.css */
+
+/* src/styles/RecommendPage.css */
 .recommend-page-container {
-  color: var(--flo-text-white);
-  padding: 2rem 1.5rem; /* py-8 px-6 */
-  max-width: 1280px; /* max-w-6xl */
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
   box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .recommend-section {
-  margin-bottom: 3rem; /* mb-12 */
+  padding: 15px;
+  border: 2px solid var(--flo-accent-color);
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(0, 123, 255, 0.7), rgba(255, 64, 129, 0.3));
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-.recommend-section-title {
-  font-size: 1.5rem; /* text-2xl */
-  font-weight: bold;
-  margin-bottom: 1rem; /* mb-4 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--flo-accent-color);
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--flo-border-color);
+  
+}
+
+.button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.song-filter-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.filter-modal-content {
+  background: var(--flo-secondary-bg);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  max-width: 90%;
+}
+
+.filter-modal-content h3 {
+  margin-top: 0;
+  color: var(--flo-accent-color);
+}
+
+.filter-select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid var(--flo-border-color);
+  border-radius: 8px;
+  background: var(--flo-background);
+  color: var(--flo-accent-color);
+  font-size: 0.9rem;
+}
+
+.filter-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.filter-button {
+  padding: 8px 16px;
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.filter-button:hover {
+  background-color: var(--flo-accent-color-hover);
+  transform: scale(1.05);
+}
+
+.filter-button:active {
+  transform: scale(0.95);
+}
+
+.filter-button.cancel {
+  background-color: var(--flo-border-color);
+}
+
+.filter-button.cancel:hover {
+  background-color: var(--flo-text-secondary);
+}
+
+.card-carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  max-width: 100%;
+}
+
+.genres-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.album-card, .artist-card, .genre-card {
+  flex-shrink: 0;
+  width: 180px;
+  background-color: var(--flo-secondary-bg);
+  border-radius: 12px;
+  border: 2px solid var(--flo-accent-color);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.album-card:hover, .artist-card:hover, .genre-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.album-card-image, .artist-card-image, .genre-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.artist-card-image {
+  border-radius: 50%;
+}
+
+.genre-card-image {
+  width: 120px;
+  height: 120px;
+}
+
+.album-card-title, .artist-card-name, .genre-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--flo-accent-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.artist-card-genre {
+  font-size: 0.85rem;
+  color: var(--flo-accent-color);
+  margin-top: 4px;
+}
+
+.carousel-nav-button {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(var(--flo-accent-color-rgb), 0.8);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carousel-nav-button:hover {
+  background-color: var(--flo-accent-color-hover);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-nav-button:disabled {
+  background-color: var(--flo-border-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.carousel-nav-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pagination-dots-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+.pagination-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--flo-border-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination-dot.active {
+  background-color: var(--flo-accent-color);
+  transform: scale(1.2);
+}
+
+.pagination-dot:hover:not(.active) {
+  background-color: var(--flo-text-secondary);
+}
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 .recommend-loading-message,
 .recommend-error-message,
 .recommend-empty-message {
   text-align: center;
-  padding-top: 2.5rem; /* py-10 */
-  padding-bottom: 2.5rem;
-  font-size: 1.125rem; /* text-lg */
+  color: var(--flo-accent-color);
+  font-size: 0.9rem;
 }
 
-.recommend-loading-message {
-  color: var(--flo-text-gray); /* text-gray-400 */
-}
-
-.recommend-error-message {
-  color: var(--flo-accent-red); /* text-red-500 */
-}
-
-.recommend-empty-message {
-  color: var(--flo-text-gray); /* text-gray-400 */
-  grid-column: 1 / -1; /* col-span-full */
-}
-
-.recommend-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* grid-cols-2 */
-  gap: 1.5rem; /* gap-6 */
-  justify-items: center;
-}
-
-/* 반응형 그리드 조정 */
-@media (min-width: 640px) { /* sm: */
-  .recommend-grid {
-    grid-template-columns: repeat(3, 1fr); /* sm:grid-cols-3 */
-  }
-}
-
-@media (min-width: 768px) { /* md: */
-  .recommend-grid {
-    grid-template-columns: repeat(4, 1fr); /* md:grid-cols-4 */
-  }
-}
-
-@media (min-width: 1024px) { /* lg: */
-  .recommend-grid {
-    grid-template-columns: repeat(5, 1fr); /* lg:grid-cols-5 */
-  }
-}
-
-@media (min-width: 1280px) { /* xl: */
-  .recommend-grid {
-    grid-template-columns: repeat(6, 1fr); /* xl:grid-cols-6 */
-  }
-}
-
-/* --- 내부 컴포넌트 스타일 --- */
-
-/* GenreCard 스타일 */
-.genre-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem; /* p-4 */
-  border-radius: 0.5rem; /* rounded-lg */
-  background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
-  transition: all 0.2s ease; /* transition-colors duration-200 */
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  height: 10rem; /* h-40 */
-  width: 10rem; /* w-40 */
-  text-align: center;
-  text-decoration: none; /* Link 밑줄 제거 */
-}
-
-.genre-card:hover {
-  background-color: var(--flo-bg-light); /* hover:bg-gray-700 */
-}
-
-.genre-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  inset: 0;
-  transition: transform 0.3s ease; /* transition-transform duration-300 */
-}
-
-.genre-card:hover .genre-card-image {
-  transform: scale(1.1); /* group-hover:scale-110 */
-}
-
-.genre-card-overlay {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* bg-black bg-opacity-50 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.genre-card-title {
-  color: var(--flo-text-white);
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 600; /* font-semibold */
-  z-index: 10; /* z-10 */
-}
-
-/* ArtistCard 스타일 */
+/* 장르 카드와 아티스트 카드 공통 기본 스타일 */
+.genre-card,
 .artist-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem; /* p-4 */
-  border-radius: 0.5rem; /* rounded-lg */
-  background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
-  transition: all 0.2s ease; /* transition-colors duration-200 */
-  cursor: pointer;
-  width: 10rem; /* w-40 */
-  height: auto;
+  justify-content: center; /* 수직 가운데 정렬 */
+  align-items: center;     /* 수평 가운데 정렬 */
   text-align: center;
-  text-decoration: none; /* Link 밑줄 제거 */
-  color: var(--flo-text-white); /* 기본 텍스트 색상 */
+  text-decoration: none;   /* 링크 밑줄 제거 */
+  position: relative;
+  color: var(--flo-accent-color);
+  transition: color 0.3s ease;
 }
 
-.artist-card:hover {
-  background-color: var(--flo-bg-light); /* hover:bg-gray-700 */
-}
-
-.artist-card-image {
-  width: 6rem; /* w-24 */
-  height: 6rem; /* h-24 */
-  border-radius: 9999px; /* rounded-full */
-  object-fit: cover;
-  margin-bottom: 0.5rem; /* mb-2 */
-}
-
-.artist-card-name {
-  font-size: 1rem; /* text-base */
-  font-weight: 600; /* font-semibold */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* truncate */
-  width: 100%;
-}
-
+/* 내부 텍스트 요소 z-index 조절 */
+.genre-card-title,
+.artist-card-name,
 .artist-card-genre {
-  color: var(--flo-text-gray); /* text-gray-400 */
-  font-size: 0.75rem; /* text-xs */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* truncate */
-  width: 100%;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+}
+
+/* 장르 카드 오버레이 - 기본은 투명 */
+.genre-card-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  z-index: 1;
+}
+
+/* 호버 시 오버레이 배경색 어둡게 */
+.genre-card:hover .genre-card-overlay,
+.artist-card:hover::before {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 아티스트 카드는 ::before로 오버레이 추가 */
+.artist-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  z-index: 1;
+}
+
+/* 호버 시 텍스트 색상을 흰색으로 */
+.genre-card:hover .genre-card-title,
+.artist-card:hover .artist-card-name,
+.artist-card:hover .artist-card-genre {
+  color: #fff;
+  z-index: 2;
+}
+/* 장르 카드 텍스트 중앙 정렬 */
+.genre-card {
+  position: relative;
+}
+
+.genre-card-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  pointer-events: none;
+}
+
+.genre-card:hover .genre-card-title {
+  opacity: 1;
+}
+
+/* 아티스트 카드 텍스트도 항상 중앙 정렬 */
+.artist-card-name {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--flo-accent-color);
+  text-align: center;
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.artist-card:hover .artist-card-name {
+  color: #ffffff;
+}
+
+.carousel-nav-button:disabled {
+  background-color: gray !important;  /* 💡 더 명확한 색상 */
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(80%);
+  box-shadow: none;
+}
+
+.carousel-nav-button:disabled:hover {
+  background-color: gray !important;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .album-card, .artist-card, .genre-card {
+    width: 150px;
+  }
+  .album-card-image, .artist-card-image {
+    height: 150px;
+  }
+  .genre-card-image {
+    width: 100px;
+    height: 100px;
+  }
+  .carousel-nav-button {
+    width: 32px;
+    height: 32px;
+  }
+  .carousel-nav-button svg {
+    width: 18px;
+    height: 18px;
+  }
+  .pagination-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-card, .artist-card, .genre-card {
+    width: 135px;
+  }
+  .album-card-image, .artist-card-image {
+    height: 135px;
+  }
+  .genre-card-image {
+    width: 90px;
+    height: 90px;
+  }
+  .carousel-nav-button {
+    width: 28px;
+    height: 28px;
+  }
+  .carousel-nav-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .pagination-dot {
+    width: 6px;
+    height: 6px;
+  }
 }
