@@ -1,0 +1,116 @@
+/* src/styles/CategoryCard.css */
+.category-card {
+  position: relative;
+  width: 160px; /* 그리드 레이아웃에 맞게 유지 */
+  height: auto; /* 콘텐츠에 맞게 자동 조정 */
+  background-color: var(--flo-secondary-bg, #f8f9fa);
+  border: 2px solid var(--flo-accent-color, #007bff);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.category-card-image {
+  width: 100px; /* GenreCard와 동일 */
+  height: 100px; /* GenreCard와 동일 */
+  object-fit: cover;
+  border-radius: 50%; /* 원형 이미지 */
+  margin-bottom: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.category-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  z-index: 1;
+}
+
+.category-card:hover .category-card-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* 호버 시 어두운 배경 */
+}
+
+.category-card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffffff; /* 호버 시 보이게 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.category-card-subtitle {
+  font-size: 0.85rem;
+  color: #ffffff;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.category-card:hover .category-card-title,
+.category-card:hover .category-card-subtitle {
+  opacity: 1; /* 호버 시 텍스트 표시 */
+}
+
+/* 포커스 상태 (접근성) */
+.category-card:focus {
+  outline: 2px solid var(--flo-accent-color-hover, #0056b3);
+  outline-offset: 2px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .category-card {
+    width: 140px;
+  }
+  .category-card-image {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-card {
+    width: 120px;
+  }
+  .category-card-image {
+    width: 80px;
+    height: 80px;
+  }
+}   

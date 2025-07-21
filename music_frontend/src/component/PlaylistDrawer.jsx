@@ -2,9 +2,8 @@
 import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
+import CategoryCard from '../component/CategoryCard'; // 통합된 카드 컴포넌트
 import Albumcard from '../component/Albumcard';
-import ArtistCard from '../pages/ArtistPage';
-import GenreCard from '../component/GenreCard'; // GenreCard 추가 (추가 정의 필요)
 import '../styles/PlaylistDrawer.css';
 
 // ✅ 백엔드 실패 시 기본 더미 데이터
@@ -25,7 +24,7 @@ const DUMMY_FEATURED_PLAYLISTS = [
   { id: 'fp1', title: 'FLO 추천! 힐링 음악', artist: 'Various Artists', coverUrl: '/images/K-057.jpg', songCount: 20, updatedAt: '2024.07.10', genre: '발라드' },
 ];
 
-const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlayTheme, cardType = 'album' }) => {
+const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlayTheme, cardType = 'album', gridLayout = false, cardsPerPage = 6, className }) => {
   const { playSong } = useContext(MusicPlayerContext);
 
   const [items, setItems] = useState([]);
@@ -33,10 +32,9 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const CARDS_PER_PAGE = 5;
-  const totalPages = Math.ceil(items.length / CARDS_PER_PAGE) || 1;
-  const startIndex = currentPage * CARDS_PER_PAGE;
-  const visibleItems = items.slice(startIndex, startIndex + CARDS_PER_PAGE);
+  const totalPages = Math.ceil(items.length / cardsPerPage) || 1;
+  const startIndex = currentPage * cardsPerPage;
+  const visibleItems = items.slice(startIndex, startIndex + cardsPerPage);
 
   const containerRef = useRef(null);
 
@@ -46,25 +44,11 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
     setError(null);
     try {
       await new Promise(resolve => setTimeout(resolve, 300)); // 시뮬레이션
-      let data = [];
-      switch (sectionType) {
-        case 'todayAlbums':
-          data = initialData || DUMMY_ALBUMS;
-          break;
-        case 'hotNewSongs':
-          data = initialData || DUMMY_SONGS;
-          break;
-        case 'genres':
-          data = initialData || DUMMY_GENRES;
-          break;
-        case 'popularArtists':
-          data = initialData || DUMMY_ARTISTS;
-          break;
-        case 'featuredPlaylists':
-          data = initialData || DUMMY_FEATURED_PLAYLISTS;
-          break;
-        default:
-          data = initialData || DUMMY_FEATURED_PLAYLISTS;
+      let data = initialData || [];
+      if (!data.length) {
+        data = sectionType === 'genres' ? DUMMY_GENRES :
+               sectionType === 'popularArtists' ? DUMMY_ARTISTS :
+               sectionType === 'featuredPlaylists' ? DUMMY_FEATURED_PLAYLISTS : [];
       }
       setItems(data);
     } catch (err) {
@@ -81,7 +65,7 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
   }, [fetchData]);
 
   const handlePlay = useCallback((item) => {
-    if (playSong) {
+    if (playSong && cardType === 'album') {
       playSong({
         id: item.id,
         title: item.title,
@@ -90,7 +74,7 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
       });
       alert(`${item.title} - ${item.artist || 'Various Artists'} 재생 시작!`);
     }
-  }, [playSong]);
+  }, [playSong, cardType]);
 
   const handlePageChange = useCallback((pageIndex) => {
     const newPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
@@ -105,20 +89,12 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
     if (currentPage < totalPages - 1) handlePageChange(currentPage + 1);
   };
 
-  useEffect(() => {
-    if (containerRef.current) {
-      const scrollX = containerRef.current.offsetWidth * currentPage;
-      containerRef.current.scrollTo({ left: scrollX, behavior: 'smooth' });
-    }
-  }, [currentPage]);
-
   // cardType에 따른 카드 렌더링 함수
   const renderCard = (item) => {
     switch (cardType) {
       case 'artist':
-        return <ArtistCard key={item.id} artist={item} />;
       case 'genre':
-        return <GenreCard key={item.id} genre={item} />;
+        return <CategoryCard key={item.id} item={item} type={cardType} />;
       case 'album':
       default:
         return (
@@ -127,6 +103,7 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
             album={item}
             size="md"
             onPlay={() => (onPlayTheme || handlePlay)(item)}
+            className="album-card"
           />
         );
     }
@@ -136,7 +113,7 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
   if (error) console.warn(error);
 
   return (
-    <section className="recommend-section carousel-section-wrapper">
+    <section className={`recommend-section ${className || ''}`}>
       <div className="section-title">
         <h3>{title || ""}</h3>
         <div className="controls-container">
@@ -161,9 +138,15 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
       </div>
 
       <div className="carousel-viewport-mask" ref={containerRef}>
-        <div className="card-carousel">
-          {visibleItems.map(renderCard)}
-        </div>
+        {gridLayout ? (
+          <div className="card-grid" style={{ height: 'auto' }}>
+            {visibleItems.map(renderCard)}
+          </div>
+        ) : (
+          <div className="card-carousel">
+            {visibleItems.map(renderCard)}
+          </div>
+        )}
 
         <div className="pagination-dots-container">
           {Array.from({ length: totalPages }).map((_, idx) => (
@@ -187,10 +170,16 @@ PlaylistDrawer.propTypes = {
   filterButtons: PropTypes.node,
   onPlayTheme: PropTypes.func,
   cardType: PropTypes.oneOf(['album', 'artist', 'genre']),
+  gridLayout: PropTypes.bool,
+  cardsPerPage: PropTypes.number,
+  className: PropTypes.string,
 };
 
 PlaylistDrawer.defaultProps = {
   cardType: 'album',
+  gridLayout: false,
+  cardsPerPage: 6, // 3x2 그리드에 맞게 6으로 설정
+  className: '',
 };
 
 export default PlaylistDrawer;

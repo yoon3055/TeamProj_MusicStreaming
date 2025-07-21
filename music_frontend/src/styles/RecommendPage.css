@@ -1,423 +1,343 @@
+  /* src/styles/RecommendPage.css */
 
-/* src/styles/RecommendPage.css */
-.recommend-page-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-width: 100%;
-}
 
-.recommend-section {
-  padding: 15px;
-  border: 2px solid var(--flo-accent-color);
-  border-radius: 12px;
-  background: linear-gradient(90deg, rgba(0, 123, 255, 0.7), rgba(255, 64, 129, 0.3));
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  max-width: 100%;
-  overflow-x: hidden;
-}
+  .recommend-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--flo-accent-color);
-  margin-bottom: 15px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--flo-border-color);
-  
-}
+  .recommend-section {
+    padding: 15px;
+    border: 2px solid var(--flo-accent-color);
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(0, 123, 255, 0.7), rgba(255, 64, 129, 0.3));
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    overflow-x: hidden;
+  }
 
-.button {
-  padding: 5px 10px;
-  cursor: pointer;
-}
-.button.disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
+  .recommend-section.popular-artists,
+  .recommend-section.genres {
+    padding: 15px;
+    margin: 0;
+  }
 
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--flo-accent-color);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--flo-border-color);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3열 */
+    grid-template-rows: auto; /* 자동으로 행 높이 조정 */
+    gap: 15px;
+    max-width: 100%;
+    height: auto; /* 높이 동적 조정 */
+  }
+
+  .card-carousel {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    max-width: 100%;
+  }
+
+  .album-card, .category-card {
+    flex-shrink: 0;
+    width: 160px; /* 그리드 레이아웃에 맞게 유지 */
+    height: auto; /* 콘텐츠에 맞게 자동 조정 */
+    background-color: var(--flo-secondary-bg);
+    border-radius: 12px;
+    border: 2px solid var(--flo-accent-color);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+    position: relative;
+  }
+
+  .album-card:hover, .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .album-card-image, .category-card-image {
+    width: 100px; /* GenreCard와 동일 */
+    height: 100px; /* GenreCard와 동일 */
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
+
+  .category-card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+  }
+
+  .category-card-subtitle {
+    font-size: 0.85rem;
+    color: #ffffff;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+  }
+
+  .category-card:hover .category-card-title,
+  .category-card:hover .category-card-subtitle {
+    opacity: 1;
+  }
+
+  .category-card-overlay {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+    z-index: 1;
+  }
+
+  .category-card:hover .category-card-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .carousel-nav-button {
+    width: 36px;
+    height: 36px;
+    background-color: rgba(var(--flo-accent-color-rgb), 0.8);
+    color: var(--flo-text-white);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    z-index: 10; /* 버튼이 다른 요소 위에 표시되도록 */
+  }
+
+  .carousel-nav-button:hover {
+    background-color: var(--flo-accent-color-hover);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .carousel-nav-button:disabled {
+    background-color: gray !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+    filter: grayscale(80%);
+    box-shadow: none;
+  }
+
+  .carousel-nav-button:disabled:hover {
+    background-color: gray !important;
+    box-shadow: none;
+  }
+
+  .carousel-nav-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pagination-dots-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .pagination-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--flo-border-color);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .pagination-dot.active {
+    background-color: var(--flo-accent-color);
+    transform: scale(1.2);
+  }
+
+  .pagination-dot:hover:not(.active) {
+    background-color: var(--flo-text-secondary);
+  }
+
+  .controls-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .recommend-loading-message,
+  .recommend-error-message,
+  .recommend-empty-message {
+    text-align: center;
+    color: var(--flo-accent-color);
+    font-size: 0.9rem;
+  }
+
+  /* 기존 SongFilterBarContainer 스타일은 유지 */
 .song-filter-bar-container {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  position: relative; /* <-- 이 속성이 가장 중요합니다. */
+  gap: 10px;
+  padding: 10px 15px;
+  background-color: var(--flo-primary-bg);
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  user-select: none;
 }
 
-.filter-modal {
-  position: fixed;
-  top: 0;
+  .filter-button {
+    background-color: var(--flo-accent-color);
+    color: var(--flo-text-white);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .filter-button:hover {
+    background-color: var(--flo-accent-color-hover);
+  }
+
+
+  /* 장르 필터 옵션 팝업 스타일 */
+ .genre-filter-options-popup {
+  position: absolute;
+  top: 100%;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.filter-modal-content {
-  background: var(--flo-secondary-bg);
-  padding: 20px;
-  border-radius: 12px;
+  margin-top: 8px;
+  background-color: var(--flo-primary-bg);
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  width: 300px;
-  max-width: 90%;
-}
-
-.filter-modal-content h3 {
-  margin-top: 0;
-  color: var(--flo-accent-color);
-}
-
-.filter-select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 16px;
+  padding: 10px;
+  min-width: 300px; /* 가로 넓이 충분히 확보 */
+  z-index: 1000;
   border: 1px solid var(--flo-border-color);
-  border-radius: 8px;
-  background: var(--flo-background);
-  color: var(--flo-accent-color);
-  font-size: 0.9rem;
+}
+/* 4행 3열 그리드 설정 */
+.filter-options-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 3열 고정 */
+  grid-template-rows: repeat(3, auto);  /* 4행 고정 */
+  gap: 10px 20px; /* 행 간격 10px, 열 간격 20px */
+  padding: 5px 0;
 }
 
-.filter-modal-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-}
-
-.filter-button {
-  padding: 8px 16px;
-  background-color: var(--flo-accent-color);
-  color: var(--flo-text-white);
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.filter-button:hover {
-  background-color: var(--flo-accent-color-hover);
-  transform: scale(1.05);
-}
-
-.filter-button:active {
-  transform: scale(0.95);
-}
-
-.filter-button.cancel {
-  background-color: var(--flo-border-color);
-}
-
-.filter-button.cancel:hover {
-  background-color: var(--flo-text-secondary);
-}
-
-.card-carousel {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 20px;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  max-width: 100%;
-}
-
-.genres-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
-
-.album-card, .artist-card, .genre-card {
-  flex-shrink: 0;
-  width: 180px;
-  background-color: var(--flo-secondary-bg);
-  border-radius: 12px;
-  border: 2px solid var(--flo-accent-color);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.album-card:hover, .artist-card:hover, .genre-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.album-card-image, .artist-card-image, .genre-card-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 8px;
-}
-
-.artist-card-image {
-  border-radius: 50%;
-}
-
-.genre-card-image {
-  width: 120px;
-  height: 120px;
-}
-
-.album-card-title, .artist-card-name, .genre-card-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--flo-accent-color);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: 0;
-}
-
-.artist-card-genre {
-  font-size: 0.85rem;
-  color: var(--flo-accent-color);
-  margin-top: 4px;
-}
-
-.carousel-nav-button {
-  width: 36px;
-  height: 36px;
-  background-color: rgba(var(--flo-accent-color-rgb), 0.8);
-  color: var(--flo-text-white);
-  border: none;
-  border-radius: 50%;
+ /* 개별 옵션 스타일 유지 */
+.filter-option-item {
   display: flex;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--flo-text-primary);
+  font-size: 0.95rem;
 }
 
-.carousel-nav-button:hover {
-  background-color: var(--flo-accent-color-hover);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
 
-.carousel-nav-button:disabled {
-  background-color: var(--flo-border-color);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.carousel-nav-button svg {
-  width: 20px;
-  height: 20px;
-}
-
-.pagination-dots-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 12px;
-  gap: 8px;
-}
-
-.pagination-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: var(--flo-border-color);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.pagination-dot.active {
-  background-color: var(--flo-accent-color);
-  transform: scale(1.2);
-}
-
-.pagination-dot:hover:not(.active) {
-  background-color: var(--flo-text-secondary);
-}
-
-.controls-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-end;
-}
-
-.recommend-loading-message,
-.recommend-error-message,
-.recommend-empty-message {
-  text-align: center;
+ .filter-option-item:hover {
+  background-color: var(--flo-primary-bg-hover);
   color: var(--flo-accent-color);
-  font-size: 0.9rem;
 }
 
-/* 장르 카드와 아티스트 카드 공통 기본 스타일 */
-.genre-card,
-.artist-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* 수직 가운데 정렬 */
-  align-items: center;     /* 수평 가운데 정렬 */
-  text-align: center;
-  text-decoration: none;   /* 링크 밑줄 제거 */
-  position: relative;
-  color: var(--flo-accent-color);
-  transition: color 0.3s ease;
+ .filter-option-item input[type="radio"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--flo-accent-color);
 }
 
-/* 내부 텍스트 요소 z-index 조절 */
-.genre-card-title,
-.artist-card-name,
-.artist-card-genre {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-}
-
-/* 장르 카드 오버레이 - 기본은 투명 */
-.genre-card-overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: 12px;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
-  z-index: 1;
-}
-
-/* 호버 시 오버레이 배경색 어둡게 */
-.genre-card:hover .genre-card-overlay,
-.artist-card:hover::before {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-/* 아티스트 카드는 ::before로 오버레이 추가 */
-.artist-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: 12px;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
-  z-index: 1;
-}
-
-/* 호버 시 텍스트 색상을 흰색으로 */
-.genre-card:hover .genre-card-title,
-.artist-card:hover .artist-card-name,
-.artist-card:hover .artist-card-genre {
-  color: #fff;
-  z-index: 2;
-}
-/* 장르 카드 텍스트 중앙 정렬 */
-.genre-card {
-  position: relative;
-}
-
-.genre-card-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 2;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #ffffff;
-  text-align: center;
-  pointer-events: none;
-}
-
-.genre-card:hover .genre-card-title {
-  opacity: 1;
-}
-
-/* 아티스트 카드 텍스트도 항상 중앙 정렬 */
-.artist-card-name {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--flo-accent-color);
-  text-align: center;
-  pointer-events: none;
-  transition: color 0.3s ease;
-}
-
-.artist-card:hover .artist-card-name {
-  color: #ffffff;
-}
-
-.carousel-nav-button:disabled {
-  background-color: gray !important;  /* 💡 더 명확한 색상 */
-  cursor: not-allowed;
-  opacity: 0.5;
-  filter: grayscale(80%);
-  box-shadow: none;
-}
-
-.carousel-nav-button:disabled:hover {
-  background-color: gray !important;
-  box-shadow: none;
-}
-
-@media (max-width: 768px) {
-  .album-card, .artist-card, .genre-card {
-    width: 150px;
+  /* 선택된 라디오 버튼의 텍스트 색상 강조 (선택 사항) */
+  .filter-option-item input[type="radio"]:checked + span { /* input 바로 뒤 span 태그를 감싸는 경우 */
+    color: var(--flo-accent-color);
+    font-weight: 600;
   }
-  .album-card-image, .artist-card-image {
-    height: 150px;
-  }
-  .genre-card-image {
-    width: 100px;
-    height: 100px;
-  }
-  .carousel-nav-button {
-    width: 32px;
-    height: 32px;
-  }
-  .carousel-nav-button svg {
-    width: 18px;
-    height: 18px;
-  }
-  .pagination-dot {
-    width: 8px;
-    height: 8px;
-  }
-}
 
-@media (max-width: 480px) {
-  .album-card, .artist-card, .genre-card {
-    width: 135px;
+  /* 혹은 선택된 항목 자체를 강조 */
+  .filter-option-item input[type="radio"]:checked {
+    /* 라디오 버튼 자체의 체크 표시 색상 변경 */
+    accent-color: var(--flo-accent-color); /* 최신 브라우저에서 체크 표시 색상 변경 */
   }
-  .album-card-image, .artist-card-image {
-    height: 135px;
+
+
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
+    .card-grid {
+      grid-template-columns: repeat(2, 1fr); /* 작은 화면에서 2열 */
+    }
+    .album-card, .category-card {
+      width: 140px;
+    }
+    .album-card-image, .category-card-image {
+      width: 90px;
+      height: 90px;
+    }
   }
-  .genre-card-image {
-    width: 90px;
-    height: 90px;
+
+  @media (max-width: 480px) {
+    .card-grid {
+      grid-template-columns: 1fr; /* 매우 작은 화면에서 1열 */
+    }
+    .album-card, .category-card {
+      width: 120px;
+    }
+    .album-card-image, .category-card-image {
+      width: 80px;
+      height: 80px;
+    }
   }
-  .carousel-nav-button {
-    width: 28px;
-    height: 28px;
-  }
-  .carousel-nav-button svg {
-    width: 16px;
-    height: 16px;
-  }
-  .pagination-dot {
-    width: 6px;
-    height: 6px;
-  }
-}
