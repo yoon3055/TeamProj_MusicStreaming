@@ -1,98 +1,67 @@
-/* src/styles/playlistdrawer.css */
-.playlist-drawer-section {
-  margin-top: 2rem; /* my-8 */
-  margin-bottom: 3rem; /* mb-12 (MainLayout의 children에서 p-6으로 패딩이 들어가므로) */
-  max-width: 1280px; /* max-w-6xl */
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
 
-.playlist-drawer-title {
-  color: var(--flo-text-white);
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 1rem; /* mb-4 */
-}
-
-.playlist-drawer-cards-container {
-  display: flex;
-  overflow-x: auto; /* overflow-x-auto */
-  gap: 1rem; /* space-x-4 */
-  padding-top: 0.5rem; /* py-2 */
-  padding-bottom: 0.5rem;
-}
-
-/* 개별 플레이리스트 테마 카드 */
-.playlist-theme-card {
-  flex-shrink: 0; /* flex-shrink-0 */
-  width: 10rem; /* w-40 */
-  border-radius: 0.5rem; /* rounded-lg */
-  overflow: hidden;
-  background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
-  cursor: pointer;
-  transition: transform 0.2s ease; /* transition-transform duration-200 */
-  position: relative;
-}
-
-.playlist-theme-card:hover {
-  transform: scale(1.05); /* hover:scale-105 */
-}
-
-.playlist-theme-card-link {
-  display: block;
-  text-decoration: none;
-  color: var(--flo-text-white);
-}
-
-.playlist-theme-card-image {
+/* src/styles/PlaylistDrawer.css */
+.playlist-drawer-loading,
+.playlist-drawer-error,
+.playlist-drawer-empty {
+  text-align: center;
+  color: var(--flo-text-secondary);
+  font-size: 1rem;
+  margin: 20px 0;
   width: 100%;
-  height: 10rem; /* h-40 */
-  object-fit: cover;
-  border-top-left-radius: 0.5rem; /* rounded-t-lg */
-  border-top-right-radius: 0.5rem;
 }
 
-.playlist-theme-card-info {
-  padding: 0.75rem; /* p-3 */
+.controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
 }
 
-.playlist-theme-card-title {
-  font-size: 1rem; /* text-base */
-  font-weight: 600; /* font-semibold */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* truncate */
-}
-
-/* 재생 버튼 */
-.playlist-theme-card-play-button {
-  position: absolute;
-  bottom: 1rem; /* bottom-4 */
-  right: 0.75rem; /* right-3 */
-  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+.play-all-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--flo-accent-color);
   color: var(--flo-text-white);
-  padding: 0.5rem; /* p-2 */
-  border-radius: 9999px; /* rounded-full */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
-  opacity: 0;
-  transform: translateY(0.5rem); /* translate-y-2 */
-  transition: all 0.3s ease; /* transition-all duration-300 */
   border: none;
+  border-radius: 20px;
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.playlist-theme-card:hover .playlist-theme-card-play-button {
-  opacity: 1; /* group-hover:opacity-100 */
-  transform: translateY(0); /* group-hover:translate-y-0 */
+.play-all-button:hover {
+  background-color: var(--flo-accent-color-hover);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
 }
 
-.playlist-theme-card-play-button:hover {
-  background-color: #1a73e8; /* hover:bg-blue-700 */
+.play-all-button svg {
+  width: 18px;
+  height: 18px;
 }
 
-.playlist-theme-card-play-icon {
-  width: 1.5rem; /* w-6 */
-  height: 1.5rem; /* h-6 */
+@media (max-width: 768px) {
+  .play-all-button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  .play-all-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .play-all-button {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+  .play-all-button svg {
+    width: 14px;
+    height: 14px;
+  }
 }

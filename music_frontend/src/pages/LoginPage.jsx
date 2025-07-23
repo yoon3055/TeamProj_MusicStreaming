@@ -17,7 +17,6 @@ const LoginPage = () => {
   return (
     <div className="login-page-container">
       <div className="login-box">
-        {/* 로고를 박스 내부 상단에 배치 */}
         <Link to="/" className="logo-link">
           <img src="/logo.png" alt="FLO 로고" className="logo-image" />
         </Link>
@@ -28,11 +27,17 @@ const LoginPage = () => {
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
             setSubmitting(true);
             try {
-              await axios.post('/api/login', values); // 실제 API 주소로 변경
+              const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
+              const res = await axios.post(`${apiUrl}/member/doLogin`, values);
+
+              // 백엔드 응답에 토큰 필드명이 'token'임에 주의
+              localStorage.setItem('jwt', res.data.token);
+
               alert('로그인 성공!');
               navigate('/');
             } catch (err) {
-               console.error('API 호출 실패:', err);
+              console.error('API 호출 실패:', err);
+              // 사용자에게 표시할 에러 메시지 (필드에 같이 띄우기)
               setFieldError('identifier', '로그인 정보가 올바르지 않습니다.');
               setFieldError('password', ' ');
             } finally {
@@ -64,7 +69,6 @@ const LoginPage = () => {
                 <ErrorMessage name="password" component="div" className="form-error" />
               </div>
 
-              {/* 비밀번호 찾기 링크를 입력칸 바로 아래 오른쪽에 배치 */}
               <div className="forgot-password-link">
                 <Link to="/forgot-password">비밀번호를 잊으셨나요?</Link>
               </div>

@@ -1,89 +1,182 @@
 // src/component/PlaylistDrawer.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { MusicPlayerContext } from '../context/MusicPlayerContext';
+import CategoryCard from '../component/CategoryCard';
+import Albumcard from '../component/Albumcard';
+import '../styles/PlaylistDrawer.css';
 
-import '../styles/PlaylistDrawer.css'; // ✨ CSS 파일 임포트
-import playlistPlaceholder from '../assets/K-054.jpg';
+const DUMMY_ALBUMS = [
+  { id: 'da1', title: '봄날의 멜로디', artist: '플로이', coverUrl: '/images/K-052.jpg', songCount: 10, updatedAt: '2024.07.10', genre: '발라드' },
+  { id: 'da2', title: '어느 맑은 날', artist: '클로버', coverUrl: '/images/K-053.jpg', songCount: 12, updatedAt: '2024.07.08', genre: '댄스' },
+];
+// ... 필요시 다른 더미 데이터 추가
 
-// --- PlaylistThemeCard 컴포넌트: 각 테마별 플레이리스트를 나타내는 카드 ---
-const PlaylistThemeCard = ({ playlist, onPlayTheme }) => {
-  return (
-    <div className="playlist-theme-card">
-      {/* 1. 플레이리스트 상세 페이지로 이동하는 링크 영역 */}
-      <Link to={`/playlist/${playlist.id}`} className="playlist-theme-card-link">
-        <img
-          src={playlist.coverUrl || playlistPlaceholder}
-          alt={playlist.title}
-          className="playlist-theme-card-image"
-        />
-        <div className="playlist-theme-card-info">
-          <h4 className="playlist-theme-card-title">{playlist.title}</h4>
-          {/* 필요시 플레이리스트에 대한 추가 정보 (예: 생성자, 곡 수) */}
-          {/* <p className="playlist-theme-card-creator">{playlist.creator}</p> */}
-        </div>
-      </Link>
+const PlaylistDrawer = ({
+  title,
+  sectionType,
+  initialData,
+  filterButtons,
+  onPlayTheme,
+  cardType = 'album',
+  gridLayout = false,
+  cardsPerPage = 6,
+  className,
+}) => {
+  const { playSong } = useContext(MusicPlayerContext);
 
-      {/* 2. 재생 버튼 (호버 시 나타남) */}
-      <button
-        onClick={() => onPlayTheme(playlist.id)} // 🌐 재생 버튼 클릭 시 해당 플레이리스트 ID 전달
-        className="playlist-theme-card-play-button"
-        aria-label={`Play ${playlist.title}`}
-      >
-        <svg className="playlist-theme-card-play-icon" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
-        </svg>
-      </button>
-    </div>
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const totalPages = Math.ceil(items.length / cardsPerPage) || 1;
+  const startIndex = currentPage * cardsPerPage;
+  const visibleItems = items.slice(startIndex, startIndex + cardsPerPage);
+
+  const containerRef = useRef(null);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 300)); // 시뮬레이션 딜레이
+      let data = initialData || [];
+      if (!data.length) {
+        data = sectionType === 'todayAlbums' ? DUMMY_ALBUMS : [];
+      }
+      setItems(data);
+    } catch (err) {
+      console.error('데이터 가져오기 실패:', err);
+      setError('데이터를 불러오지 못했습니다.');
+      setItems(initialData || []);
+    } finally {
+      setLoading(false);
+    }
+  }, [sectionType, initialData]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handlePlay = useCallback(
+    (item) => {
+      if (playSong) {
+        if (item.songs && item.songs.length > 0) {
+          playSong(item.songs);
+        } else {
+          playSong(item);
+        }
+        alert(`${item.title} - ${item.artist || 'Various Artists'} 재생 시작!`);
+      }
+    },
+    [playSong]
   );
-};
 
-PlaylistThemeCard.propTypes = {
-  playlist: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    coverUrl: PropTypes.string,
-  }).isRequired,
-  onPlayTheme: PropTypes.func.isRequired,
-};
+  const handlePageChange = useCallback(
+    (pageIndex) => {
+      const newPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
+      setCurrentPage(newPage);
+    },
+    [totalPages]
+  );
 
-
-// --- PlaylistDrawer 컴포넌트: 테마별 플레이리스트 섹션 (메인 콘텐츠) ---
-const PlaylistDrawer = ({ title, playlists }) => {
-  // 🌐 백엔드에서 플레이리스트 데이터를 가져오는 로직은 이 컴포넌트의 역할이 아닙니다.
-  // 이 컴포넌트에서는 `playlists` prop으로 데이터를 받는다고 가정합니다.
-  // MusicPlayerContext를 사용하여 가져온 노래들을 재생 목록에 추가하고 재생을 시작하는 로직
-  // ⚠️ 이 함수는 실제 MusicPlayerContext의 함수와 연동되어야 합니다.
-  const handlePlayTheme = (playlistId) => {
-    // 🌐 이 부분에서 백엔드 API를 호출하여 playlistId에 해당하는 곡 목록을 가져온 후
-    // MusicPlayerContext의 addSongsToQueue, playSong 등을 호출해야 합니다.
-    console.log(`🌐 플레이리스트 ID: ${playlistId} 의 노래들을 재생합니다! (실제 로직 필요)`);
-    alert(`플레이리스트 ID: ${playlistId} 의 노래들을 재생합니다!`);
+  const handlePrevPage = () => {
+    if (currentPage > 0) handlePageChange(currentPage - 1);
   };
 
-  return (
-    <section className="playlist-drawer-section">
-      <h3 className="playlist-drawer-title">{title}</h3>
-      <div className="playlist-drawer-cards-container scrollbar-hide">
-        {playlists.map((playlist) => (
-          <PlaylistThemeCard
-            key={playlist.id}
-            playlist={playlist}
-            onPlayTheme={handlePlayTheme}
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) handlePageChange(currentPage + 1);
+  };
+
+  const renderCard = (item) => {
+    switch (cardType) {
+      case 'artist':
+      case 'genre':
+        return <CategoryCard key={item.id} item={item} type={cardType} />;
+      case 'album':
+      default:
+        return (
+          <Albumcard
+            key={item.id}
+            album={item}
+            size="md"
+            onPlay={() => (onPlayTheme || handlePlay)(item)}
+            className="album-card"
           />
-        ))}
+        );
+    }
+  };
+
+  if (loading) return <div className="playlist-drawer-loading">불러오는 중...</div>;
+  if (error) console.warn(error);
+
+  return (
+    <section className={`recommend-section ${className || ''}`}>
+      <div className="section-title">
+        <h3>{title || ''}</h3>
+        <div className="controls-container">
+          {filterButtons}
+          <button
+            className="carousel-nav-button"
+            onClick={handlePrevPage}
+            disabled={currentPage === 0}
+            aria-label="이전 페이지"
+          >
+            ◀
+          </button>
+          <button
+            className="carousel-nav-button"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages - 1}
+            aria-label="다음 페이지"
+          >
+            ▶
+          </button>
+        </div>
+      </div>
+
+      <div className="carousel-viewport-mask" ref={containerRef}>
+        {gridLayout ? (
+          <div className="card-grid" style={{ height: 'auto' }}>
+            {visibleItems.map(renderCard)}
+          </div>
+        ) : (
+          <div className="card-carousel">{visibleItems.map(renderCard)}</div>
+        )}
+
+        <div className="pagination-dots-container">
+          {Array.from({ length: totalPages }).map((_, idx) => (
+            <button
+              key={idx}
+              className={`pagination-dot ${currentPage === idx ? 'active' : ''}`}
+              onClick={() => handlePageChange(idx)}
+              aria-label={`페이지 ${idx + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
 PlaylistDrawer.propTypes = {
-  title: PropTypes.string.isRequired,
-  playlists: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    coverUrl: PropTypes.string,
-  })).isRequired,
+  title: PropTypes.string,
+  sectionType: PropTypes.oneOf(['todayAlbums', 'hotNewSongs', 'genres', 'popularArtists', 'featuredPlaylists']).isRequired,
+  initialData: PropTypes.arrayOf(PropTypes.object),
+  filterButtons: PropTypes.node,
+  onPlayTheme: PropTypes.func,
+  cardType: PropTypes.oneOf(['album', 'artist', 'genre']),
+  gridLayout: PropTypes.bool,
+  cardsPerPage: PropTypes.number,
+  className: PropTypes.string,
+};
+
+PlaylistDrawer.defaultProps = {
+  cardType: 'album',
+  gridLayout: false,
+  cardsPerPage: 6,
+  className: '',
 };
 
 export default PlaylistDrawer;

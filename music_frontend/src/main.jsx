@@ -7,11 +7,12 @@ import {
   Navigate,
 } from 'react-router-dom';
 
-import { AuthProvider } from './context/AuthContext';
-import { MusicPlayerProvider } from './context/MusicPlayerContext';
+import { AuthProvider } from './context/AuthProvider';
+import { MusicPlayerProvider } from './context/MusicPlayerProvider';
 
 import MainLayout from './component/MainLayout';
 import PrivateRoute from './component/PrivateRoute';
+import SubscriptionRouter from './component/SubscriptionRouter';
 
 // 페이지 임포트
 import MainPage from './pages/MainPage';
@@ -33,6 +34,18 @@ import { UserSubscriptionHistory } from './pages/UserSubscriptionHistoryPage';
 import LibraryPage from './pages/LibraryPage';
 import AdvancedSearchPage from './pages/AdvancedSearchPage';
 import RankingPage from './pages/RankingPage';
+import PlaylistDrawer from './component/PlaylistDrawer';
+import PlaylistPage from './pages/PlaylistPage';
+
+// CSS 파일 임포트
+import './styles/MainLayout.css';
+import './styles/AlbumCardPage.css';
+import './styles/PlaylistDrawer.css';
+import './styles/PlaylistPage.css';
+import './styles/RecommendPage.css';
+import './styles/SidebarContent.css';
+import './styles/SubscriptionPage.css';
+import './styles/UserSubscriptionHistory.css';
 
 const router = createBrowserRouter(
   [
@@ -44,15 +57,17 @@ const router = createBrowserRouter(
         { path: 'explore', element: <RankingPage /> },
         { path: 'library', element: <PrivateRoute element={<LibraryPage />} /> },
         { path: 'advanced-search', element: <AdvancedSearchPage /> },
+        { path: 'playlists/featured', element: <PlaylistDrawer title="추천 테마 플레이리스트" /> },
+        { path: 'my-playlists',  element: <PlaylistPage />, },
         { path: 'subscription-plans', element: <PrivateRoute element={<SubscriptionPage />} /> },
-        { path: 'my-subscription', element: <PrivateRoute element={<UserSubscriptionHistory />} /> },
+        { path: 'subscription', element: <PrivateRoute element={<SubscriptionRouter />} /> },
+        { path: 'my-subscription', element: <PrivateRoute element={<SubscriptionRouter />} /> },
         { path: 'recommend', element: <RecommendPage /> },
         { path: 'profile', element: <PrivateRoute element={<UserProfilePage />} /> },
         { path: 'album/:id', element: <AlbumDetailPage /> },
         { path: 'artist/:id', element: <ArtistPage /> },
         { path: 'history', element: <PrivateRoute element={<HistoryPage />} /> },
         { path: 'purchase', element: <PrivateRoute element={<PurchasePage />} /> },
-        { path: 'subscription', element: <PrivateRoute element={<SubscriptionPage />} /> },
         { path: 'art', element: <AlbumArtPage /> },
         { path: 'likes', element: <LikesFollowsPage /> },
         { path: 'comments', element: <CommentsPage /> },
@@ -81,3 +96,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </React.StrictMode>
 );
+

@@ -1,439 +1,280 @@
+// src/pages/RecommendPage.jsx
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-// eslint-disable-next-line no-unused-vars
-import axios from 'axios';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import SongFilterBar from '../component/SongFilterBar';
-import Pagination from '../component/Pagination';
 import FilterButtons from '../component/FilterButtons';
-import AlbumCard from '../component/Albumcard';
-import InteractiveSongCard from '../component/InteractiveSongCard';
+import PlaylistDrawer from '../component/PlaylistDrawer';
+
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 
 import '../styles/RecommendPage.css';
 
-// --- 내부 컴포넌트 정의 ---
-// 장르 카드 컴포넌트
-const GenreCard = ({ genre }) => {
-  return (
-    <Link
-      to={`/genres/${genre.id}`}
-      className="genre-card"
-    >
-      <img
-        src={genre.imageUrl || '/images/K-52.jpg'} // ✨ 로컬 이미지 폴백
-        alt={genre.name}
-        className="genre-card-image"
-      />
-      <div className="genre-card-overlay">
-        <h3 className="genre-card-title">{genre.name}</h3>
-      </div>
-    </Link>
-  );
-};
-GenreCard.propTypes = {
-  genre: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    imageUrl: PropTypes.string,
-  }).isRequired,
-};
-
-// 아티스트 카드 컴포넌트
-const ArtistCard = ({ artist }) => {
-  return (
-    <Link
-      to={`/artist/${artist.id}`}
-      className="artist-card"
-    >
-      <img
-        src={artist.profileImageUrl || '/images/K-52.jpg'} // ✨ 로컬 이미지 폴백
-        alt={artist.name}
-        className="artist-card-image"
-      />
-      <h3 className="artist-card-name">{artist.name}</h3>
-      {artist.genre && <p className="artist-card-genre">{artist.genre}</p>}
-    </Link>
-  );
-};
-ArtistCard.propTypes = {
-  artist: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    profileImageUrl: PropTypes.string,
-    genre: PropTypes.string,
-  }).isRequired,
-};
-// --- 내부 컴포넌트 정의 끝 ---
-
-
-// ✨ 로컬 이미지 경로 배열 및 이미지 인덱스 관리 (중복 사용)
-const LOCAL_IMAGE_PATHS = [
-  '/images/K-52.jpg',
-  '/images/K-53.jpg',
-  '/images/K-54.jpg',
-  '/images/K-55.jpg',
-];
-let imageIndex = 0; // 컴포넌트 외부에서 관리하여 계속 순환하도록 함
-
-const getNextLocalImage = () => {
-  const path = LOCAL_IMAGE_PATHS[imageIndex % LOCAL_IMAGE_PATHS.length];
-  imageIndex++;
-  return path;
-};
-
-// --- 더미 데이터 (디자인 확인용, 실제 API 대체) ---
-const DUMMY_ALBUMS = [
-  { id: 'da1', title: '봄날의 멜로디', artist: '플로이', coverUrl: getNextLocalImage() },
-  { id: 'da2', title: '어느 맑은 날', artist: '클로버', coverUrl: getNextLocalImage() },
-  { id: 'da3', title: '향기로운 기억', artist: '레몬트리', coverUrl: getNextLocalImage() },
-  { id: 'da4', title: '새벽 감성 재즈', artist: '재즈캣', coverUrl: getNextLocalImage() },
-  { id: 'da5', title: '도시의 불빛', artist: '나이트시티', coverUrl: getNextLocalImage() },
-  { id: 'da6', title: '별이 빛나는 밤', artist: '우주소녀', coverUrl: getNextLocalImage() },
-  { id: 'da7', title: '나른한 오후', artist: '티타임즈', coverUrl: getNextLocalImage() },
-  { id: 'da8', title: '기억 속 여름', artist: '써머블루', coverUrl: getNextLocalImage() },
-];
-
-const DUMMY_SONGS = [
-  { id: 'ds1', title: '환상속의 그대', artist: '플로아', coverUrl: getNextLocalImage(), isHighQuality: true },
-  { id: 'ds2', title: '고요한 숲', artist: '멜로디온', coverUrl: getNextLocalImage(), isHighQuality: false },
-  { id: 'ds3', title: '비밀 정원', artist: '에코', coverUrl: getNextLocalImage(), isHighQuality: true },
-  { id: 'ds4', title: '어둠을 걷고', artist: '스타라이트', coverUrl: getNextLocalImage(), isHighQuality: false },
-  { id: 'ds5', title: '새로운 시작', artist: '브리즈', coverUrl: getNextLocalImage(), isHighQuality: true },
-  { id: 'ds6', title: '푸른 하늘', artist: '윈드보이', coverUrl: getNextLocalImage(), isHighQuality: false },
-];
-
 const DUMMY_GENRES = [
-  { id: 'dg1', name: '발라드', imageUrl: getNextLocalImage() },
-  { id: 'dg2', name: '댄스', imageUrl: getNextLocalImage() },
-  { id: 'dg3', name: '힙합', imageUrl: getNextLocalImage() },
-  { id: 'dg4', name: 'R&B', imageUrl: getNextLocalImage() },
-  { id: 'dg5', name: '재즈', imageUrl: getNextLocalImage() },
-  { id: 'dg6', name: '인디', imageUrl: getNextLocalImage() },
+  { id: 'dg1', name: '발라드', imageUrl: '/images/K-057.jpg' },
+  { id: 'dg2', name: '댄스', imageUrl: '/images/K-058.jpg' },
+  { id: 'dg3', name: '힙합', imageUrl: '/images/K-059.jpg' },
+  { id: 'dg4', name: '재즈', imageUrl: '/images/K-060.jpg' },
+  { id: 'dg5', name: '락', imageUrl: '/images/K-061.jpg' },
+  { id: 'dg6', name: '트로트', imageUrl: '/images/K-062.jpg' },
+  { id: 'dg7', name: '팝', imageUrl: '/images/K-063.jpg' },
+  { id: 'dg8', name: 'R&B', imageUrl: '/images/K-064.jpg' },
+  { id: 'dg9', name: '클래식', imageUrl: '/images/K-065.jpg' },
+  { id: 'dg10', name: 'EDM', imageUrl: '/images/K-066.jpg' },
+  { id: 'dg11', name: '컨트리', imageUrl: '/images/K-067.jpg' },
+  { id: 'dg12', name: '레게', imageUrl: '/images/K-068.jpg' },
 ];
 
 const DUMMY_ARTISTS = [
-  { id: 'da_a1', name: '별빛가수', profileImageUrl: getNextLocalImage(), genre: '발라드' },
-  { id: 'da_a2', name: '댄스신', profileImageUrl: getNextLocalImage(), genre: '댄스' },
-  { id: 'da_a3', name: '힙통령', profileImageUrl: getNextLocalImage(), genre: '힙합' },
-  { id: 'da_a4', name: '소울보컬', profileImageUrl: getNextLocalImage(), genre: 'R&B' },
-  { id: 'da_a5', name: '재즈퀸', profileImageUrl: getNextLocalImage(), genre: '재즈' },
-  { id: 'da_a6', name: '포크맨', profileImageUrl: getNextLocalImage(), genre: '인디' },
+  { id: 'da_a1', name: '별빛가수', profileImageUrl: '/images/K-059.jpg', genre: '발라드', origin: '국내' },
+  { id: 'da_a2', name: '댄스신', profileImageUrl: '/images/K-060.jpg', genre: '댄스', origin: '해외' },
+  { id: 'da_a3', name: '하늘가수', profileImageUrl: '/images/K-061.jpg', genre: '발라드', origin: '국내' },
+  { id: 'da_a4', name: '리듬킹', profileImageUrl: '/images/K-062.jpg', genre: '댄스', origin: '해외' },
+  { id: 'da_a5', name: '달빛가수', profileImageUrl: '/images/K-063.jpg', genre: '힙합', origin: '국내' },
+  { id: 'da_a6', name: '비트마스터', profileImageUrl: '/images/K-064.jpg', genre: '댄스', origin: '해외' },
+  { id: 'da_a7', name: '별하늘', profileImageUrl: '/images/K-065.jpg', genre: '발라드', origin: '국내' },
+  { id: 'da_a8', name: '댄스퀸', profileImageUrl: '/images/K-066.jpg', genre: '댄스', origin: '해외' },
+  { id: 'da_a9', name: '바다노래', profileImageUrl: '/images/K-067.jpg', genre: '힙합', origin: '국내' },
+  { id: 'da_a10', name: '재즈킹', profileImageUrl: '/images/K-068.jpg', genre: '재즈', origin: '국내' },
+  { id: 'da_a11', name: '락스타', profileImageUrl: '/images/K-069.jpg', genre: '락', origin: '해외' },
+  { id: 'da_a12', name: '트로트왕', profileImageUrl: '/images/K-070.jpg', genre: '트로트', origin: '국내' },
+  { id: 'da_a13', name: '팝프린스', profileImageUrl: '/images/K-071.jpg', genre: '팝', origin: '해외' },
+  { id: 'da_a14', name: 'R&B소울', profileImageUrl: '/images/K-072.jpg', genre: 'R&B', origin: '국내' },
 ];
-// --- 더미 데이터 끝 ---
 
+const DUMMY_ALBUMS = [
+  { id: 'da1', title: '봄날의 멜로디', artist: '플로이', coverUrl: '/images/K-052.jpg', songCount: 10, updatedAt: '2024.07.10', genre: '발라드', origin: '국내', isHighQuality: true },
+  { id: 'da2', title: '어느 맑은 날', artist: '클로버', coverUrl: '/images/K-053.jpg', songCount: 12, updatedAt: '2024.07.08', genre: '댄스', origin: '해외', isHighQuality: false },
+  { id: 'da3', title: '향기로운 기억', artist: '레몬트리', coverUrl: '/images/K-054.jpg', songCount: 8, updatedAt: '2024.07.05', genre: '힙합', origin: '국내', isHighQuality: true },
+  { id: 'da4', title: '밤거리 가로등', artist: '레몬트리', coverUrl: '/images/K-055.jpg', songCount: 9, updatedAt: '2024.07.05', genre: '재즈', origin: '국내', isHighQuality: false },
+  { id: 'da5', title: '밥먹는 시간', artist: '레몬트리', coverUrl: '/images/K-056.jpg', songCount: 11, updatedAt: '2024.07.05', genre: '락', origin: '해외', isHighQuality: true },
+  { id: 'da6', title: '퇴근 길', artist: '레몬트리', coverUrl: '/images/K-057.jpg', songCount: 13, updatedAt: '2024.07.05', genre: '트로트', origin: '국내', isHighQuality: false },
+  { id: 'da7', title: '새벽의 노래', artist: '플로이', coverUrl: '/images/K-058.jpg', songCount: 10, updatedAt: '2024.07.04', genre: '발라드', origin: '국내', isHighQuality: true },
+  { id: 'da8', title: '여름 바람', artist: '클로버', coverUrl: '/images/K-059.jpg', songCount: 12, updatedAt: '2024.07.03', genre: '댄스', origin: '해외', isHighQuality: false },
+  { id: 'da9', title: '추억의 길', artist: '레몬트리', coverUrl: '/images/K-060.jpg', songCount: 8, updatedAt: '2024.07.02', genre: '힙합', origin: '국내', isHighQuality: true },
+  { id: 'da10', title: '달빛 소나타', artist: '레몬트리', coverUrl: '/images/K-061.jpg', songCount: 9, updatedAt: '2024.07.01', genre: '재즈', origin: '국내', isHighQuality: false },
+  { id: 'da11', title: '아침 햇살', artist: '레몬트리', coverUrl: '/images/K-062.jpg', songCount: 11, updatedAt: '2024.06.30', genre: '락', origin: '해외', isHighQuality: true },
+  { id: 'da12', title: '저녁 풍경', artist: '레몬트리', coverUrl: '/images/K-063.jpg', songCount: 13, updatedAt: '2024.06.29', genre: '트로트', origin: '국내', isHighQuality: false },
+  { id: 'da13', title: '별빛 아래', artist: '플로이', coverUrl: '/images/K-064.jpg', songCount: 10, updatedAt: '2024.06.28', genre: '발라드', origin: '국내', isHighQuality: true },
+];
 
-const ITEMS_PER_PAGE = 12;
+const DUMMY_SONGS = [
+  { id: 'ds1', title: '환상속의 그대', artist: '플로아', coverUrl: '/images/K-055.jpg', isHighQuality: true, songCount: 1, updatedAt: '2024.07.10', genre: '발라드', origin: '국내' },
+  { id: 'ds2', title: '고요한 숲', artist: '멜로디온', coverUrl: '/images/K-056.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.08', genre: '댄스', origin: '해외' },
+  { id: 'ds3', title: '길가는 중', artist: '멜로디온', coverUrl: '/images/K-057.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.08', genre: '댄스', origin: '해외' },
+  { id: 'ds4', title: '밤거리 가로등', artist: '멜로디온', coverUrl: '/images/K-054.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.08', genre: '댄스', origin: '해외' },
+  { id: 'ds5', title: '밥먹는 시간', artist: '멜로디온', coverUrl: '/images/K-058.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.08', genre: '댄스', origin: '해외' },
+  { id: 'ds6', title: '퇴근길', artist: '멜로디온', coverUrl: '/images/K-059.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.08', genre: '댄스', origin: '국내' },
+  { id: 'ds7', title: '아침 안개', artist: '플로아', coverUrl: '/images/K-060.jpg', isHighQuality: true, songCount: 1, updatedAt: '2024.07.07', genre: '발라드', origin: '국내' },
+  { id: 'ds8', title: '달빛 댄스', artist: '멜로디온', coverUrl: '/images/K-061.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.06', genre: '댄스', origin: '해외' },
+  { id: 'ds9', title: '바다의 노래', artist: '플로아', coverUrl: '/images/K-062.jpg', isHighQuality: true, songCount: 1, updatedAt: '2024.07.05', genre: '발라드', origin: '국내' },
+  { id: 'ds10', title: '도시의 밤', artist: '멜로디온', coverUrl: '/images/K-063.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.04', genre: '댄스', origin: '해외' },
+  { id: 'ds11', title: '숨결', artist: '플로아', coverUrl: '/images/K-064.jpg', isHighQuality: true, songCount: 1, updatedAt: '2024.07.03', genre: '발라드', origin: '국내' },
+  { id: 'ds12', title: '리듬의 시작', artist: '멜로디온', coverUrl: '/images/K-065.jpg', isHighQuality: false, songCount: 1, updatedAt: '2024.07.02', genre: '댄스', origin: '해외' },
+  { id: 'ds13', title: '고요한 밤', artist: '플로아', coverUrl: '/images/K-066.jpg', isHighQuality: true, songCount: 1, updatedAt: '2024.07.01', genre: '발라드', origin: '국내' },
+];
+
+const DUMMY_FEATURED_PLAYLISTS = [
+  { id: 'fp1', title: 'FLO 추천! 힐링 음악', artist: 'Various Artists', coverUrl: '/images/K-051.jpg', songCount: 20, updatedAt: '2024.07.10', genre: '발라드', origin: '국내', isHighQuality: true },
+  { id: 'fp2', title: '드라이브 히트', artist: 'Drive Sound', coverUrl: '/images/K-052.jpg', songCount: 18, updatedAt: '2024.07.10', genre: '댄스', origin: '해외', isHighQuality: false },
+  { id: 'fp3', title: '환상속의 그대', artist: 'Drive Sound', coverUrl: '/images/K-053.jpg', songCount: 21, updatedAt: '2024.07.10', genre: '트로트', origin: '해외', isHighQuality: true },
+  { id: 'fp4', title: '밤거리 소나타', artist: 'Drive Sound', coverUrl: '/images/K-054.jpg', songCount: 22, updatedAt: '2024.07.10', genre: '발라드', origin: '해외', isHighQuality: false },
+  { id: 'fp5', title: '트로피컬 팝비트', artist: 'Drive Sound', coverUrl: '/images/K-055.jpg', songCount: 23, updatedAt: '2024.07.10', genre: '락', origin: '해외', isHighQuality: true },
+  { id: 'fp6', title: '사우전드 나이트', artist: 'Drive Sound', coverUrl: '/images/K-056.jpg', songCount: 24, updatedAt: '2024.07.10', genre: '재즈', origin: '해외', isHighQuality: false },
+  { id: 'fp7', title: '봄의 선율', artist: 'Various Artists', coverUrl: '/images/K-057.jpg', songCount: 20, updatedAt: '2024.07.09', genre: '발라드', origin: '국내', isHighQuality: true },
+  { id: 'fp8', title: '여름 파티', artist: 'Drive Sound', coverUrl: '/images/K-058.jpg', songCount: 18, updatedAt: '2024.07.09', genre: '댄스', origin: '해외', isHighQuality: false },
+  { id: 'fp9', title: '가을 낭만', artist: 'Various Artists', coverUrl: '/images/K-059.jpg', songCount: 21, updatedAt: '2024.07.08', genre: '트로트', origin: '국내', isHighQuality: true },
+  { id: 'fp10', title: '겨울의 꿈', artist: 'Drive Sound', coverUrl: '/images/K-060.jpg', songCount: 22, updatedAt: '2024.07.08', genre: '발라드', origin: '해외', isHighQuality: false },
+  { id: 'fp11', title: '록 페스티벌', artist: 'Drive Sound', coverUrl: '/images/K-061.jpg', songCount: 23, updatedAt: '2024.07.07', genre: '락', origin: '해외', isHighQuality: true },
+  { id: 'fp12', title: '재즈 나이트', artist: 'Various Artists', coverUrl: '/images/K-062.jpg', songCount: 24, updatedAt: '2024.07.07', genre: '재즈', origin: '국내', isHighQuality: false },
+  { id: 'fp13', title: '힙합 비트', artist: 'Drive Sound', coverUrl: '/images/K-063.jpg', songCount: 20, updatedAt: '2024.07.06', genre: '힙합', origin: '해외', isHighQuality: true },
+];
+
 const HOT_NEW_FILTERS = [
   { label: '종합', value: 'all' },
-  { label: '국내', value: 'domestic' },
-  { label: '해외', value: 'international' },
+  { label: '국내', value: '국내' },
+  { label: '해외', value: '해외' },
 ];
 const POPULAR_ARTIST_FILTERS = HOT_NEW_FILTERS;
-
 
 const RecommendPage = () => {
   const { playSong } = useContext(MusicPlayerContext);
 
   const [filterHighQuality, setFilterHighQuality] = useState(false);
-
-  const [todayAlbums, setTodayAlbums] = useState([]);
-  const [todayAlbumsLoading, setTodayAlbumsLoading] = useState(false);
-  const [todayAlbumsError, setTodayAlbumsError] = useState(null);
-  const [todayAlbumsCurrentPage, setTodayAlbumsCurrentPage] = useState(1);
-  const [todayAlbumsTotal, setTodayAlbumsTotal] = useState(DUMMY_ALBUMS.length);
-
-  const [hotNewSongs, setHotNewSongs] = useState([]);
-  const [hotNewLoading, setHotNewLoading] = useState(false);
-  const [hotNewError, setHotNewError] = useState(null);
-  const [hotNewCurrentPage, setHotNewCurrentPage] = useState(1);
-  const [hotNewTotal, setHotNewTotal] = useState(DUMMY_SONGS.length);
+  const [genreFilter, setGenreFilter] = useState('');
+  const [isFilterOptionsVisible, setIsFilterOptionsVisible] = useState(false);
   const [hotNewFilter, setHotNewFilter] = useState('all');
-
-  const [genres, setGenres] = useState([]);
-  const [genresLoading, setGenresLoading] = useState(false);
-  const [genresError, setGenresError] = useState(null);
-
-  const [popularArtists, setPopularArtists] = useState([]);
-  const [popularArtistsLoading, setPopularArtistsLoading] = useState(false);
-  const [popularArtistsError, setPopularArtistsError] = useState(null);
-  const [popularArtistsCurrentPage, setPopularArtistsCurrentPage] = useState(1);
-  const [popularArtistsTotal, setPopularArtistsTotal] = useState(DUMMY_ARTISTS.length);
   const [popularArtistsFilter, setPopularArtistsFilter] = useState('all');
 
+  const [todayAlbums, setTodayAlbums] = useState([]);
+  const [hotNewSongs, setHotNewSongs] = useState([]);
+  const [popularArtists, setPopularArtists] = useState([]);
+  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
 
-  // --- 데이터 페칭 로직 (useCallback으로 함수 안정화) ---
+  const applyHighQualityFilter = useCallback(
+    (data) => (filterHighQuality ? data.filter((item) => item.isHighQuality) : data),
+    [filterHighQuality]
+  );
 
-  // 🌐 오늘 발매 음악 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
-  const fetchTodayAlbums = useCallback(async () => {
-    setTodayAlbumsLoading(true);
-    setTodayAlbumsError(null);
-    try {
-      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
-      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/albums/latest`, {
-      //   params: { page: todayAlbumsCurrentPage, limit: ITEMS_PER_PAGE },
-      // });
-      // setTodayAlbums(res.data.albums); // 🌐 백엔드 응답 구조: { albums: [...], total: N }
-      // setTodayAlbumsTotal(res.data.total);
+  useEffect(() => {
+    setTodayAlbums(
+      applyHighQualityFilter(DUMMY_ALBUMS).filter((a) => !genreFilter || a.genre === genreFilter)
+    );
+    setHotNewSongs(
+      applyHighQualityFilter(DUMMY_SONGS).filter((s) => !genreFilter || s.genre === genreFilter)
+    );
+    setPopularArtists(DUMMY_ARTISTS.filter((a) => !genreFilter || a.genre === genreFilter));
+    setFeaturedPlaylists(
+      applyHighQualityFilter(DUMMY_FEATURED_PLAYLISTS).filter(
+        (p) => !genreFilter || p.genre === genreFilter
+      )
+    );
+  }, [genreFilter, filterHighQuality, applyHighQualityFilter]);
 
-      // ✨ 더미 데이터 사용 (디자인 확인용)
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const startIdx = (todayAlbumsCurrentPage - 1) * ITEMS_PER_PAGE;
-      const endIdx = startIdx + ITEMS_PER_PAGE;
-      setTodayAlbums(DUMMY_ALBUMS.slice(startIdx, endIdx));
-      setTodayAlbumsTotal(DUMMY_ALBUMS.length);
-
-    } catch (err) {
-      console.error('🌐 오늘 발매 앨범 가져오기 실패:', err);
-      setTodayAlbumsError('오늘 발매 앨범을 불러오는 데 실패했습니다.');
-      setTodayAlbums([]);
-    } finally {
-      setTodayAlbumsLoading(false);
+  const filterSectionData = (data, filterValue, sectionType) => {
+    if (!data || filterValue === 'all') return data;
+    if (
+      sectionType === 'hotNewSongs' ||
+      sectionType === 'popularArtists' ||
+      sectionType === 'featuredPlaylists' ||
+      sectionType === 'todayAlbums'
+    ) {
+      return data.filter((item) => item.origin === filterValue);
     }
-  }, [todayAlbumsCurrentPage]);
-
-  // 🌐 HOT & NEW 곡 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
-  const fetchHotNewSongs = useCallback(async () => {
-    setHotNewLoading(true);
-    setHotNewError(null);
-    try {
-      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
-      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/songs/hot-new`, {
-      //   params: {
-      //     page: hotNewCurrentPage,
-      //     limit: ITEMS_PER_PAGE,
-      //     filter: hotNewFilter,
-      //     highQuality: filterHighQuality,
-      //   },
-      // });
-      // setHotNewSongs(res.data.songs); // 🌐 백엔드 응답 구조: { songs: [...], total: N }
-      // setHotNewTotal(res.data.total);
-
-      // ✨ 더미 데이터 사용 (디자인 확인용)
-      await new Promise(resolve => setTimeout(resolve, 300));
-      let filteredSongs = DUMMY_SONGS;
-      if (hotNewFilter !== 'all') {
-        filteredSongs = DUMMY_SONGS.filter(song =>
-          (hotNewFilter === 'domestic' && song.artist.includes('플로')) ||
-          (hotNewFilter === 'international' && !song.artist.includes('플로'))
-        );
-      }
-      if (filterHighQuality) {
-        filteredSongs = filteredSongs.filter(song => song.isHighQuality);
-      }
-
-      const startIdx = (hotNewCurrentPage - 1) * ITEMS_PER_PAGE;
-      const endIdx = startIdx + ITEMS_PER_PAGE;
-      setHotNewSongs(filteredSongs.slice(startIdx, endIdx));
-      setHotNewTotal(filteredSongs.length);
-
-    } catch (err) {
-      console.error('🌐 HOT & NEW 곡 가져오기 실패:', err);
-      setHotNewError('HOT & NEW 곡을 불러오는 데 실패했습니다.');
-      setHotNewSongs([]);
-    } finally {
-      setHotNewLoading(false);
-    }
-  }, [hotNewCurrentPage, hotNewFilter, filterHighQuality]);
-
-  // 🌐 장르 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
-  const fetchGenres = useCallback(async () => {
-    setGenresLoading(true);
-    setGenresError(null);
-    try {
-      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
-      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/genres`);
-      // setGenres(res.data);
-
-      // ✨ 더미 데이터 사용 (디자인 확인용)
-      await new Promise(resolve => setTimeout(resolve, 300));
-      setGenres(DUMMY_GENRES);
-
-    } catch (err) {
-      console.error('🌐 장르 가져오기 실패:', err);
-      setGenresError('장르를 불러오는 데 실패했습니다.');
-      setGenres([]);
-    } finally {
-      setGenresLoading(false);
-    }
-  }, []);
-
-  // 🌐 인기 아티스트 페칭 (더미 데이터 사용, 실제 API 호출은 주석 처리)
-  const fetchPopularArtists = useCallback(async () => {
-    setPopularArtistsLoading(true);
-    setPopularArtistsError(null);
-    try {
-      // 🌐 API 호출 (주석 처리됨, 디자인 확인용)
-      // const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/artists/popular`, {
-      //   params: {
-      //     page: popularArtistsCurrentPage,
-      //     limit: ITEMS_PER_PAGE,
-      //     filter: popularArtistsFilter,
-      //   },
-      // });
-      // setPopularArtists(res.data.artists); // 🌐 백엔드 응답 구조: { artists: [...], total: N }
-      // setPopularArtistsTotal(res.data.total);
-
-      // ✨ 더미 데이터 사용 (디자인 확인용)
-      await new Promise(resolve => setTimeout(resolve, 300));
-      let filteredArtists = DUMMY_ARTISTS;
-      if (popularArtistsFilter !== 'all') {
-        filteredArtists = DUMMY_ARTISTS.filter(artist =>
-          (popularArtistsFilter === 'domestic' && artist.name.includes('가수')) ||
-          (popularArtistsFilter === 'international' && !artist.name.includes('가수'))
-        );
-      }
-      const startIdx = (popularArtistsCurrentPage - 1) * ITEMS_PER_PAGE;
-      const endIdx = startIdx + ITEMS_PER_PAGE;
-      setPopularArtists(filteredArtists.slice(startIdx, endIdx));
-      setPopularArtistsTotal(filteredArtists.length);
-
-    } catch (err) {
-      console.error('🌐 인기 아티스트 가져오기 실패:', err);
-      setPopularArtistsError('인기 아티스트를 불러오는 데 실패했습니다.');
-      setPopularArtists([]);
-    } finally {
-      setPopularArtistsLoading(false);
-    }
-  }, [popularArtistsCurrentPage, popularArtistsFilter]);
-
-
-  // --- useEffect 호출 (각 페칭 함수가 변경될 때 실행) ---
-  useEffect(() => { fetchTodayAlbums(); }, [fetchTodayAlbums]);
-  useEffect(() => { fetchHotNewSongs(); }, [fetchHotNewSongs]);
-  useEffect(() => { fetchGenres(); }, [fetchGenres]);
-  useEffect(() => { fetchPopularArtists(); }, [fetchPopularArtists]);
-
-
-  // --- 페이지네이션 및 필터 핸들러 ---
-  const handleHotNewFilterChange = (filterValue) => {
-    setHotNewFilter(filterValue);
-    setHotNewCurrentPage(1);
-  };
-  const handlePopularArtistsFilterChange = (filterValue) => {
-    setPopularArtistsFilter(filterValue);
-    setPopularArtistsCurrentPage(1);
+    return data;
   };
 
+  const handleGenreFilterApply = (genre) => {
+    setGenreFilter(genre);
+    setIsFilterOptionsVisible(false);
+  };
 
-  // --- 총 페이지 수 계산 ---
-  const todayAlbumsTotalPages = Math.ceil(todayAlbumsTotal / ITEMS_PER_PAGE);
-  const hotNewTotalPages = Math.ceil(hotNewTotal / ITEMS_PER_PAGE);
-  const popularArtistsTotalPages = Math.ceil(popularArtistsTotal / ITEMS_PER_PAGE);
+  const handleFilterButtonClick = () => {
+    setIsFilterOptionsVisible((prev) => !prev);
+  };
 
+  const handlePlayTheme = (item) => {
+    playSong({
+      id: item.id,
+      title: item.title,
+      artist: item.artist || 'Various Artists',
+      coverUrl: item.coverUrl,
+    });
+    alert(`${item.title} - ${item.artist || 'Various Artists'} 재생 시작!`);
+  };
 
   return (
     <div className="recommend-page-container">
-      <SongFilterBar
-        filterHighQuality={filterHighQuality}
-        setFilterHighQuality={setFilterHighQuality}
+      <div className="song-filter-bar-container">
+        <button className="filter-button" onClick={handleFilterButtonClick}>
+          장르 필터 {isFilterOptionsVisible ? '▲' : '▼'}
+        </button>
+
+        {isFilterOptionsVisible && (
+          <div className="genre-filter-options-popup">
+            <div className="filter-options-content">
+              <label className="filter-option-item">
+                <input
+                  type="radio"
+                  name="genre"
+                  value=""
+                  checked={genreFilter === ''}
+                  onChange={() => handleGenreFilterApply('')}
+                />
+                모든 장르
+              </label>
+              {DUMMY_GENRES.map((g) => (
+                <label key={g.id} className="filter-option-item">
+                  <input
+                    type="radio"
+                    name="genre"
+                    value={g.name}
+                    checked={genreFilter === g.name}
+                    onChange={() => handleGenreFilterApply(g.name)}
+                  />
+                  {g.name}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <SongFilterBar
+          filterHighQuality={filterHighQuality}
+          setFilterHighQuality={setFilterHighQuality}
+        />
+      </div>
+
+      <PlaylistDrawer
+        title="추천 테마 플레이리스트"
+        sectionType="featuredPlaylists"
+        initialData={filterSectionData(featuredPlaylists, hotNewFilter, 'featuredPlaylists')}
+        filterButtons={
+          <FilterButtons
+            currentFilter={hotNewFilter}
+            onFilterChange={setHotNewFilter}
+            filters={HOT_NEW_FILTERS}
+            className="hidden"
+          />
+        }
+        onPlayTheme={handlePlayTheme}
+        cardType="album"
       />
 
-      {/* 1. 오늘 발매 음악 섹션 */}
-      <section className="recommend-section">
-        <h2 className="recommend-section-title">오늘 발매 음악</h2>
-        {todayAlbumsLoading ? (
-          <div className="recommend-loading-message">불러오는 중...</div>
-        ) : todayAlbumsError ? (
-          <div className="recommend-error-message">{todayAlbumsError}</div>
-        ) : (
-          <div className="recommend-grid">
-            {todayAlbums.length === 0 ? (
-              <p className="recommend-empty-message">발매된 앨범이 없습니다.</p>
-            ) : (
-              todayAlbums.map((album) => (
-                <AlbumCard key={album.id} album={album} size="md" />
-              ))
-            )}
-          </div>
-        )}
-        {todayAlbumsTotalPages > 1 && (
-          <Pagination
-            currentPage={todayAlbumsCurrentPage}
-            totalPages={todayAlbumsTotalPages}
-            onPageChange={setTodayAlbumsCurrentPage}
-          />
-        )}
-      </section>
+      <PlaylistDrawer
+        title="오늘 발매 음악"
+        sectionType="todayAlbums"
+        initialData={filterSectionData(todayAlbums, hotNewFilter, 'todayAlbums')}
+        filterButtons={null}
+        onPlayTheme={handlePlayTheme}
+        cardType="album"
+      />
 
-      {/* 2. HOT & NEW 섹션 */}
-      <section className="recommend-section">
-        <h2 className="recommend-section-title">HOT & NEW</h2>
-        <FilterButtons currentFilter={hotNewFilter} onFilterChange={handleHotNewFilterChange} filters={HOT_NEW_FILTERS} />
-        {hotNewLoading ? (
-          <div className="recommend-loading-message">불러오는 중...</div>
-        ) : hotNewError ? (
-          <div className="recommend-error-message">{hotNewError}</div>
-        ) : (
-          <div className="recommend-grid">
-            {hotNewSongs.length === 0 ? (
-              <p className="recommend-empty-message">HOT & NEW 곡이 없습니다.</p>
-            ) : (
-              hotNewSongs.map((song) => (
-                <InteractiveSongCard key={song.id} song={song} onPlay={playSong} />
-              ))
-            )}
-          </div>
-        )}
-        {hotNewTotalPages > 1 && (
-          <Pagination
-            currentPage={hotNewCurrentPage}
-            totalPages={hotNewTotalPages}
-            onPageChange={setHotNewCurrentPage}
+      <PlaylistDrawer
+        title="HOT & NEW"
+        sectionType="hotNewSongs"
+        initialData={filterSectionData(hotNewSongs, hotNewFilter, 'hotNewSongs')}
+        filterButtons={
+          <FilterButtons
+            currentFilter={hotNewFilter}
+            onFilterChange={setHotNewFilter}
+            filters={HOT_NEW_FILTERS}
           />
-        )}
-      </section>
+        }
+        onPlayTheme={handlePlayTheme}
+        cardType="album"
+      />
 
-      {/* 3. 장르 섹션 */}
-      <section className="recommend-section">
-        <h2 className="recommend-section-title">장르</h2>
-        {genresLoading ? (
-          <div className="recommend-loading-message">불러오는 중...</div>
-        ) : genresError ? (
-          <div className="recommend-error-message">{genresError}</div>
-        ) : (
-          <div className="recommend-grid">
-            {genres.length === 0 ? (
-              <p className="recommend-empty-message">장르가 없습니다.</p>
-            ) : (
-              genres.map((genre) => (
-                <GenreCard key={genre.id} genre={genre} />
-              ))
-            )}
-          </div>
-        )}
-      </section>
+      <PlaylistDrawer
+        title="장르"
+        sectionType="genres"
+        initialData={DUMMY_GENRES}
+        filterButtons={null}
+        onPlayTheme={null}
+        cardType="genre"
+      />
 
-      {/* 4. 인기 아티스트 섹션 */}
-      <section className="recommend-section">
-        <h2 className="recommend-section-title">인기 아티스트</h2>
-        <FilterButtons currentFilter={popularArtistsFilter} onFilterChange={handlePopularArtistsFilterChange} filters={POPULAR_ARTIST_FILTERS} />
-        {popularArtistsLoading ? (
-          <div className="recommend-loading-message">불러오는 중...</div>
-        ) : popularArtistsError ? (
-          <div className="recommend-error-message">{popularArtistsError}</div>
-        ) : (
-          <div className="recommend-grid">
-            {popularArtists.length === 0 ? (
-              <p className="recommend-empty-message">인기 아티스트가 없습니다.</p>
-            ) : (
-              popularArtists.map((artist) => (
-                <ArtistCard key={artist.id} artist={artist} />
-              ))
-            )}
-          </div>
-        )}
-        {popularArtistsTotalPages > 1 && (
-          <Pagination
-            currentPage={popularArtistsCurrentPage}
-            totalPages={popularArtistsTotalPages}
-            onPageChange={setPopularArtistsCurrentPage}
+      <PlaylistDrawer
+        title="인기 아티스트"
+        sectionType="popularArtists"
+        initialData={filterSectionData(popularArtists, popularArtistsFilter, 'popularArtists')}
+        filterButtons={
+          <FilterButtons
+            currentFilter={popularArtistsFilter}
+            onFilterChange={setPopularArtistsFilter}
+            filters={POPULAR_ARTIST_FILTERS}
           />
-        )}
-      </section>
+        }
+        onPlayTheme={null}
+        cardType="artist"
+        gridLayout={true}
+        cardsPerPage={6}
+        className="popular-artists"
+      />
     </div>
   );
 };
+
+RecommendPage.propTypes = {};
 
 export default RecommendPage;
