@@ -8,16 +8,15 @@ import PrivateRoute from './component/PrivateRoute';
 import MainPage from './pages/MainPage';
 import LibraryPage from './pages/LibraryPage';
 import LoginPage from './pages/LoginPage';
+import PlaylistPage from './pages/UserPlaylistsSidebarPage';  // 플레이리스트 페이지 import
 
-// 라우터 설정 정의
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <MainLayout />,   // 기본 레이아웃 컴포넌트
+    element: <MainLayout />,
     children: [
-      { index: true, element: <MainPage /> },  // '/' 경로, 기본 페이지
+      { index: true, element: <MainPage /> },
 
-      // PrivateRoute를 래핑하여 로그인한 사용자만 접근 가능하도록
       {
         path: 'library',
         element: (
@@ -26,6 +25,16 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+
+      {
+        path: 'playlists',
+        element: (
+          <PrivateRoute>
+            <PlaylistPage />  
+          </PrivateRoute>
+        ),
+      },
+
     ],
   },
   {

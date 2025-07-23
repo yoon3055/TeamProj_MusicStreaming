@@ -1,14 +1,11 @@
 // src/component/MainLayout.jsx
 import React, { useContext, useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom'; // Outlet 임포트
+import { Outlet } from 'react-router-dom';
 
 import Header from './Header';
 import MusicPlayer from './MusicPlayer';
 import Footer from './Footer';
 import LoadingToast from './LoadingToast';
-
-import PlaylistPage from '../pages/PlaylistPage'; // 로그인 사용자용 사이드바
-
 
 import { AuthContext } from '../context/AuthContext';
 
@@ -16,7 +13,10 @@ import '../styles/MainLayout.css';
 import SidebarContent from './SidebarContent';
 
 export default function MainLayout() {
-  const { user, loading: authLoading } = useContext(AuthContext);
+  // ✨✨ 이 줄을 아래와 같이 수정해 주세요! ✨✨
+  // const { user, loading: authLoading } = useContext(AuthContext); // <-- 이전 코드
+  const { loading: authLoading } = useContext(AuthContext); // <-- 수정된 코드
+
   const [showToastManually, setShowToastManually] = useState(true);
 
   useEffect(() => {
@@ -37,12 +37,11 @@ export default function MainLayout() {
 
       <div className="main-layout-content-wrapper">
         <main className="main-content-area">
-          {/* Outlet이 현재 매칭된 하위 라우트 컴포넌트 렌더링 담당 */}
           <Outlet />
         </main>
 
         <aside className="main-sidebar-area">
-          {user ? <PlaylistPage /> : <SidebarContent />}
+          <SidebarContent /> 
         </aside>
       </div>
 

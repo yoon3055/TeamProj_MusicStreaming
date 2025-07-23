@@ -18,7 +18,6 @@ const SignupPage = () => {
   return (
     <div className="signup-page-container">
       <div className="signup-box">
-        {/* 로고를 박스 내부 상단에 배치 */}
         <Link to="/" className="logo-link">
           <img src="/logo.png" alt="FLO 로고" className="logo-image" />
         </Link>
@@ -29,10 +28,12 @@ const SignupPage = () => {
           validationSchema={SignupSchema}
           onSubmit={async (values, { setSubmitting }) => {
             try {
-              await axios.post('/api/signup', values); // 실제 API 주소로 변경
+              const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
+              await axios.post(`${apiUrl}/member/create`, values);
               alert('회원가입이 완료되었습니다. 로그인해주세요.');
               navigate('/login');
             } catch (err) {
+              // 백엔드에서 error 메시지를 { message: '...' } 형태로 보내준다고 가정
               alert('회원가입 실패: ' + (err.response?.data?.message || err.message));
             } finally {
               setSubmitting(false);

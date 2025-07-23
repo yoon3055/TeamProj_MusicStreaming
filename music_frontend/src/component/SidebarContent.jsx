@@ -1,15 +1,20 @@
-// src/components/SidebarContent.jsx
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import Albumcard from './Albumcard';
 import PropTypes from 'prop-types';
-// import PlaylistDrawer from './PlaylistDrawer'; // ✨ PlaylistDrawer 임포트 제거
-import PlaylistPage from '../pages/PlaylistPage'; // PlaylistPage (나의 플레이리스트 - 텍스트 목록)
 
+// 컨텍스트 임포트
+import { AuthContext } from '../context/AuthContext';
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 
-// 더미 이미지 및 데이터 (RecommendPage.jsx와 중복되므로 필요시 유틸리티 파일로 분리)
+// 다른 컴포넌트 임포트
+import Albumcard from './Albumcard';
+import PlaylistPage from '../pages/UserPlaylistsSidebarPage'; //  (나의 플레이리스트 - 텍스트 목록)
+
+// 사이드바 전용 CSS 임포트 (이 CSS 파일에 레이아웃 정의)
+import '../styles/SidebarContent.css';
+
+// --- 더미 이미지 및 데이터 ---
+// RecommendPage.jsx와 중복되므로 필요시 유틸리티 파일로 분리하는 것이 좋습니다.
 const K52 = '/images/K-052.jpg';
 const K53 = '/images/K-053.jpg';
 const K54 = '/images/K-054.jpg';
@@ -51,10 +56,6 @@ const DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT = Array.from({ length: 4 }, (_, i) => (
   ]
 }));
 
-
-// SidebarContent 전용 CSS 임포트
-import '../styles/SidebarContent.css';
-
 // ✨ PlaylistSongItem 컴포넌트 (PlaylistPage와 동일한 역할)
 const PlaylistSongItem = ({ song, onPlaySong }) => {
   return (
@@ -85,8 +86,8 @@ PlaylistSongItem.propTypes = {
 
 
 export default function SidebarContent() {
-  const { user } = useContext(AuthContext);
-  const { playSong } = useContext(MusicPlayerContext);
+  const { user } = useContext(AuthContext); // 로그인 정보 가져오기
+  const { playSong } = useContext(MusicPlayerContext); // 음악 재생 함수 가져오기
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -97,11 +98,11 @@ export default function SidebarContent() {
     setExpandedFloPlaylistId(prevId => (prevId === id ? null : id));
   };
 
-
   useEffect(() => {
+    // 사이드바 데이터 로딩 시뮬레이션
     const fetchSidebarData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 500)); // 0.5초 로딩 지연
         setLoading(false);
       } catch (err) {
         setError("사이드바 데이터를 불러오는 데 실패했습니다.");
@@ -112,9 +113,9 @@ export default function SidebarContent() {
     fetchSidebarData();
   }, []);
 
-
+  // 개별 곡 재생 핸들러
   const handlePlaySongInContext = useCallback((songItem) => {
-    if (!user) { // 비로그인 시
+    if (!user) { // 비로그인 시 알림
       alert('로그인 후 사용 가능합니다.');
       return;
     }
@@ -127,23 +128,21 @@ export default function SidebarContent() {
       });
       alert(`곡 재생: '${songItem.title || songItem.name}'`);
     }
-  }, [user, playSong]);
+  }, [user, playSong]); // user와 playSong이 변경될 때만 함수 재생성
 
-
+  // 플레이리스트 전체 재생 핸들러
   const handlePlayAllPlaylistInContext = useCallback((playlistAlbumItem) => {
-    if (!user) { // 비로그인 시
+    if (!user) { // 비로그인 시 알림
       alert('로그인 후 사용 가능합니다.');
       return;
     }
     if (playSong) {
-      // 플레이리스트가 DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT 형태라면, 해당 songs 배열 참조
       let songsToPlay = [];
       const foundPlaylist = DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT.find(pl => pl.id === playlistAlbumItem.id);
       if (foundPlaylist && foundPlaylist.songs) {
         songsToPlay = foundPlaylist.songs;
       } else {
-        // PlaylistPage (나의 플레이리스트)에서 오는 경우를 대비
-        // 실제로는 playlistAlbumItem.id를 통해 수록곡 목록을 API에서 불러와야 함
+        // 실제 앱에서는 playlistAlbumItem.id를 통해 API에서 수록곡 목록을 불러와야 함
         songsToPlay = [{
             id: `dummy_${playlistAlbumItem.id}_1`,
             title: `(대표곡) ${playlistAlbumItem.name || playlistAlbumItem.title}`,
@@ -153,12 +152,12 @@ export default function SidebarContent() {
       }
 
       if (songsToPlay.length > 0) {
-          playSong(songsToPlay[0]);
+          playSong(songsToPlay[0]); // 첫 곡 재생
       }
 
       alert(`플레이리스트 '${playlistAlbumItem.title || playlistAlbumItem.name}' 전체 재생! (첫 곡부터)`);
     }
-  }, [user, playSong]);
+  }, [user, playSong]); // user와 playSong이 변경될 때만 함수 재생성
 
 
   if (loading) {
@@ -180,6 +179,7 @@ export default function SidebarContent() {
   return (
     <div className="sidebar-container">
       {/* 1. 로그인 유도 섹션 (비회원에게만 표시) */}
+      {/* 로그인 시 이 섹션은 아예 렌더링되지 않습니다. */}
       {!user && (
         <div className="sidebar-section auth-prompt" style={{ order: 1 }}>
           <h3 className="sidebar-title">FLO, 맘껏 즐기려면</h3>
@@ -189,18 +189,18 @@ export default function SidebarContent() {
         </div>
       )}
 
-      {/* 2. FLO 추천 플레이리스트 섹션 (텍스트 목록) */}
+      {/* 2. FLO 추천 플레이리스트 섹션 (로그인 여부와 관계없이 항상 표시) */}
       <div className="sidebar-section featured-playlists-section" style={{ order: 2 }}>
         <h3 className="sidebar-title">FLO 추천 플레이리스트</h3>
-        <ul className="playlist-text-list"> {/* ✨ 텍스트 기반 리스트 컨테이너 (PlaylistPage와 동일) */}
+        <ul className="playlist-text-list">
           {DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT.map((pl) => (
             <li key={pl.id} className="playlist-list-item">
               <div className="playlist-list-item-header">
                 <span className="playlist-name" onClick={() => handleFloPlaylistToggle(pl.id)}>{pl.name}</span>
                 <span className="toggle-icon" onClick={() => handleFloPlaylistToggle(pl.id)}>{expandedFloPlaylistId === pl.id ? '▼' : '▶'}</span>
                 <button
-                  onClick={() => handlePlayAllPlaylistInContext(pl)} // ✨ 플레이리스트 전체 재생 버튼 연결
-                  className="play-album-button" // PlaylistPage와 동일한 클래스
+                  onClick={() => handlePlayAllPlaylistInContext(pl)} // 플레이리스트 전체 재생 버튼 연결
+                  className="play-album-button"
                   aria-label={`${pl.name} 전체 재생`}
                 >
                   <svg viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path></svg>
@@ -221,12 +221,14 @@ export default function SidebarContent() {
           ))}
         </ul>
         {/* 모든 추천 플레이리스트를 볼 수 있는 더보기 링크 */}
-        <Link to="/playlists/featured" className="playlist-create-button"> {/* ✨ PlaylistPage의 클래스 재활용 */}
+        <Link to="/my-playlists" className="playlist-create-button">
           더 많은 추천 플레이리스트
         </Link>
+        <br></br>
       </div>
 
-      {/* 3. 나의 플레이리스트 섹션 (로그인 시에만 표시, 텍스트 기반 드롭다운) */}
+      {/* 3. 나의 플레이리스트 섹션 (로그인 시에만 표시) */}
+      {/* 이 섹션은 로그인해야만 렌더링됩니다. */}
       {user && (
         <div className="sidebar-section user-specific-section" style={{ order: 3 }}>
           <div className="sidebar-section-header">
@@ -240,7 +242,7 @@ export default function SidebarContent() {
               <span>전체 재생</span>
             </button>
           </div>
-          {/* PlaylistPage 컴포넌트를 렌더링. 이제 PlaylistPage는 텍스트 기반 목록 */}
+          {/* 컴포넌트를 렌더링. 이제 는 텍스트 기반 목록 */}
           <PlaylistPage
             onPlaySong={handlePlaySongInContext}
             onPlayAllPlaylist={handlePlayAllPlaylistInContext}
@@ -248,7 +250,8 @@ export default function SidebarContent() {
         </div>
       )}
 
-      {/* 4. 추천 앨범 섹션 (이미지 기반 유지, 로그인 시 순서 4, 비로그인 시 순서 3) */}
+      {/* 4. 추천 앨범 섹션 (항상 표시, 로그인 여부에 따라 order 조정) */}
+      {/* 로그인 시에는 auth-prompt가 사라지고, user-specific-section이 추가되므로 order 조정 */}
       <div className="sidebar-section album-recommendation-section" style={{ order: user ? 4 : 3 }}>
         <h3 className="sidebar-title">놓치지 마세요</h3>
         <div className="sidebar-album-list">
@@ -258,8 +261,9 @@ export default function SidebarContent() {
         </div>
       </div>
 
-      {/* 5. 광고 섹션 (항상 표시, 로그인 시 순서 5, 비로그인 시 순서 4) */}
-      <div className="sidebar-section ad-section" style={{ order: 5 }}>
+      {/* 5. 광고 섹션 (항상 표시, 로그인 여부에 따라 order 조정) */}
+      {/* 로그인 시에는 order가 5, 비로그인 시에는 order가 4 */}
+      <div className="sidebar-section ad-section" style={{ order: user ? 5 : 4 }}>
         <h3 className="sidebar-title">FLO 이벤트</h3>
         <div className="sidebar-ad-list">
           {DUMMY_MOCK_ADS.map(ad => (
@@ -268,20 +272,22 @@ export default function SidebarContent() {
             </Link>
           ))}
         </div>
+        <br></br>
       </div>
-
+      
       {/* 6. 하단 통합 서비스/바로가기 섹션 (항상 마지막 순서 6) */}
       <div className="sidebar-section bottom-links-section" style={{ order: 6 }}>
         <h3 className="sidebar-title">FLO 주요 안내</h3>
         <div className="sidebar-shortcut-list">
-          <Link to="/explore" className="sidebar-shortcut-item">둘러보기</Link>
+          
           <Link to="/ranking" className="sidebar-shortcut-item">차트</Link>
-          <Link to="/advanced-search" className="sidebar-shortcut-item">고급 검색</Link>
+         
           <Link to="/my-subscription" className="sidebar-shortcut-item">나의 이용권</Link>
           <Link to="/profile" className="sidebar-shortcut-item">내 프로필</Link>
           <Link to="/notice" className="sidebar-shortcut-item">공지사항</Link>
-          <Link to="/help" className="sidebar-shortcut-item">고객센터</Link>
+     
         </div>
+        <br></br>
       </div>
     </div>
   );

@@ -1,30 +1,28 @@
-// src/components/PlaylistDrawer.jsx
+// src/component/PlaylistDrawer.jsx
 import React, { useState, useEffect, useCallback, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
-import CategoryCard from '../component/CategoryCard'; // 통합된 카드 컴포넌트
+import CategoryCard from '../component/CategoryCard';
 import Albumcard from '../component/Albumcard';
 import '../styles/PlaylistDrawer.css';
 
-// ✅ 백엔드 실패 시 기본 더미 데이터
 const DUMMY_ALBUMS = [
   { id: 'da1', title: '봄날의 멜로디', artist: '플로이', coverUrl: '/images/K-052.jpg', songCount: 10, updatedAt: '2024.07.10', genre: '발라드' },
   { id: 'da2', title: '어느 맑은 날', artist: '클로버', coverUrl: '/images/K-053.jpg', songCount: 12, updatedAt: '2024.07.08', genre: '댄스' },
 ];
-const DUMMY_SONGS = [
-  { id: 'ds1', title: '환상속의 그대', artist: '플로아', coverUrl: '/images/K-054.jpg', isHighQuality: true, songCount: 1, updatedAt: '2024.07.10', genre: '발라드' },
-];
-const DUMMY_GENRES = [
-  { id: 'dg1', name: '발라드', imageUrl: '/images/K-055.jpg' },
-];
-const DUMMY_ARTISTS = [
-  { id: 'da_a1', name: '별빛가수', profileImageUrl: '/images/K-056.jpg', genre: '발라드' },
-];
-const DUMMY_FEATURED_PLAYLISTS = [
-  { id: 'fp1', title: 'FLO 추천! 힐링 음악', artist: 'Various Artists', coverUrl: '/images/K-057.jpg', songCount: 20, updatedAt: '2024.07.10', genre: '발라드' },
-];
+// ... 필요시 다른 더미 데이터 추가
 
-const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlayTheme, cardType = 'album', gridLayout = false, cardsPerPage = 6, className }) => {
+const PlaylistDrawer = ({
+  title,
+  sectionType,
+  initialData,
+  filterButtons,
+  onPlayTheme,
+  cardType = 'album',
+  gridLayout = false,
+  cardsPerPage = 6,
+  className,
+}) => {
   const { playSong } = useContext(MusicPlayerContext);
 
   const [items, setItems] = useState([]);
@@ -38,23 +36,20 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
 
   const containerRef = useRef(null);
 
-  // 🎯 섹션별 데이터 페칭 (더미 데이터 사용)
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      await new Promise(resolve => setTimeout(resolve, 300)); // 시뮬레이션
+      await new Promise((resolve) => setTimeout(resolve, 300)); // 시뮬레이션 딜레이
       let data = initialData || [];
       if (!data.length) {
-        data = sectionType === 'genres' ? DUMMY_GENRES :
-               sectionType === 'popularArtists' ? DUMMY_ARTISTS :
-               sectionType === 'featuredPlaylists' ? DUMMY_FEATURED_PLAYLISTS : [];
+        data = sectionType === 'todayAlbums' ? DUMMY_ALBUMS : [];
       }
       setItems(data);
     } catch (err) {
-      console.error('⚠️ 데이터 가져오기 실패:', err);
-      setError('데이터를 불러오지 못했습니다. 기본 목록을 표시합니다.');
-      setItems(initialData || (sectionType === 'featuredPlaylists' ? DUMMY_FEATURED_PLAYLISTS : []));
+      console.error('데이터 가져오기 실패:', err);
+      setError('데이터를 불러오지 못했습니다.');
+      setItems(initialData || []);
     } finally {
       setLoading(false);
     }
@@ -64,22 +59,27 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
     fetchData();
   }, [fetchData]);
 
-  const handlePlay = useCallback((item) => {
-    if (playSong && cardType === 'album') {
-      playSong({
-        id: item.id,
-        title: item.title,
-        artist: item.artist || 'Various Artists',
-        coverUrl: item.coverUrl,
-      });
-      alert(`${item.title} - ${item.artist || 'Various Artists'} 재생 시작!`);
-    }
-  }, [playSong, cardType]);
+  const handlePlay = useCallback(
+    (item) => {
+      if (playSong) {
+        if (item.songs && item.songs.length > 0) {
+          playSong(item.songs);
+        } else {
+          playSong(item);
+        }
+        alert(`${item.title} - ${item.artist || 'Various Artists'} 재생 시작!`);
+      }
+    },
+    [playSong]
+  );
 
-  const handlePageChange = useCallback((pageIndex) => {
-    const newPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
-    setCurrentPage(newPage);
-  }, [totalPages]);
+  const handlePageChange = useCallback(
+    (pageIndex) => {
+      const newPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
+      setCurrentPage(newPage);
+    },
+    [totalPages]
+  );
 
   const handlePrevPage = () => {
     if (currentPage > 0) handlePageChange(currentPage - 1);
@@ -89,7 +89,6 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
     if (currentPage < totalPages - 1) handlePageChange(currentPage + 1);
   };
 
-  // cardType에 따른 카드 렌더링 함수
   const renderCard = (item) => {
     switch (cardType) {
       case 'artist':
@@ -115,7 +114,7 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
   return (
     <section className={`recommend-section ${className || ''}`}>
       <div className="section-title">
-        <h3>{title || ""}</h3>
+        <h3>{title || ''}</h3>
         <div className="controls-container">
           {filterButtons}
           <button
@@ -143,9 +142,7 @@ const PlaylistDrawer = ({ title, sectionType, initialData, filterButtons, onPlay
             {visibleItems.map(renderCard)}
           </div>
         ) : (
-          <div className="card-carousel">
-            {visibleItems.map(renderCard)}
-          </div>
+          <div className="card-carousel">{visibleItems.map(renderCard)}</div>
         )}
 
         <div className="pagination-dots-container">
@@ -178,7 +175,7 @@ PlaylistDrawer.propTypes = {
 PlaylistDrawer.defaultProps = {
   cardType: 'album',
   gridLayout: false,
-  cardsPerPage: 6, // 3x2 그리드에 맞게 6으로 설정
+  cardsPerPage: 6,
   className: '',
 };
 
