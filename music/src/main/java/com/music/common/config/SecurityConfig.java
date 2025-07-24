@@ -33,36 +33,50 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean
-    public SecurityFilterChain myfilter(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .cors(cors -> cors.configurationSource(configurationSource()))
-                .csrf(AbstractHttpConfigurer::disable) //csrf비활성화
-//                Basic인증 비활성화
-//                Basic인증은 사용자이름과 비밀번호를 Base64로 인코딩하여 인증값으로 활용
-                .httpBasic(AbstractHttpConfigurer::disable)
-//                세션방식을 비활성화
-                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-
-
-
-
-
-//                특정 url패턴에 대해서는 인증처리(Authentication객체생성) 제외
-                .authorizeHttpRequests(a->a.requestMatchers("/user/create", "/user/doLogin", "/user/google/doLogin", "/user/kakao/doLogin", "/oauth2/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll().anyRequest().authenticated())
+//    @Bean
+//    public SecurityFilterChain myfilter(HttpSecurity httpSecurity) throws Exception {
+//        return httpSecurity
+//                .cors(cors -> cors.configurationSource(configurationSource()))
+//                .csrf(AbstractHttpConfigurer::disable) //csrf비활성화
+////                Basic인증 비활성화
+////                Basic인증은 사용자이름과 비밀번호를 Base64로 인코딩하여 인증값으로 활용
+//                .httpBasic(AbstractHttpConfigurer::disable)
+////                세션방식을 비활성화
+//                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //
 
+////                특정 url패턴에 대해서는 인증처리(Authentication객체생성) 제외
+//                .authorizeHttpRequests(a->a.requestMatchers("/user/create", "/user/doLogin", "/user/google/doLogin", "/user/kakao/doLogin", "/oauth2/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll().anyRequest().authenticated())
+////
+////                UsernamePasswordAuthenticationFilter 이 클래스에서 폼로그인 인증을 처리
+//                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+//
+////                oauth로그인이 성공했을경우 실행할 클래스 정의
+////                .oauth2Login(o -> o.successHandler(googleOauth2LoginSuccess))
+//                .build();
+//    }
 
+    // 테스트용 필터체인
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // cors 보안 설정을 비활성화하는것
+                .cors(cors -> cors.disable())
 
+                // crsf 보호를 비활성화하는것
+                .csrf(csrf -> csrf.disable())
 
-//                UsernamePasswordAuthenticationFilter 이 클래스에서 폼로그인 인증을 처리
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                // 시큐리티 로그인폼을 비활성화하는것
+                .formLogin(form -> form.disable())
 
-//                oauth로그인이 성공했을경우 실행할 클래스 정의
-//                .oauth2Login(o -> o.successHandler(googleOauth2LoginSuccess))
-                .build();
+                // 프레임 옵션 보안 설정을 비활성화하는것
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.disable())
+                );
+
+        return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource configurationSource(){
