@@ -28,7 +28,7 @@ const LoginPage = () => {
             setSubmitting(true);
             try {
               const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
-              const res = await axios.post(`${apiUrl}/member/doLogin`, values);
+              const res = await axios.post(`${apiUrl}/user/doLogin`, values);
 
               // 백엔드 응답에 토큰 필드명이 'token'임에 주의
               localStorage.setItem('jwt', res.data.token);
