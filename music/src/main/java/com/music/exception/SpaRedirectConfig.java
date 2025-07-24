@@ -1,4 +1,4 @@
-package com.music.config;
+package com.music.exception;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

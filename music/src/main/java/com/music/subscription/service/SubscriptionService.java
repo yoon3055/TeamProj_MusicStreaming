@@ -1,5 +1,6 @@
 package com.music.subscription.service;
 
+import com.music.common.auth.JwtTokenProvider;
 import com.music.subscription.dto.UserSubscriptionDto;
 import com.music.subscription.entity.SubscriptionPlan;
 import com.music.subscription.entity.UserSubscription;
@@ -7,7 +8,6 @@ import com.music.subscription.repository.SubscriptionPlanRepository;
 import com.music.subscription.repository.UserSubscriptionRepository;
 import com.music.user.entity.User;
 import com.music.user.repository.UserRepository;
-import com.music.jwt.JwtTokenProvider;          // 정확한 패키지 경로로
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,16 +56,16 @@ public class SubscriptionService {
         return UserSubscriptionDto.Response.from(sub);
     }
 
-    /**
-     * 토큰에서 userId 추출 후, 활성 구독 조회
-     */
-    @Transactional(readOnly = true)
-    public UserSubscriptionDto.Response getCurrentSubscription(String token) {
-        Long userId = Long.valueOf(jwtTokenProvider.getUsername(token));
-        UserSubscription sub = subRepo.findByUserIdAndIsActiveTrue(userId)
-            .orElseThrow(() -> new EntityNotFoundException("Active subscription not found"));
-        return UserSubscriptionDto.Response.from(sub);
-    }
+//    /**
+//     * 토큰에서 userId 추출 후, 활성 구독 조회
+//     */
+//    @Transactional(readOnly = true)
+//    public UserSubscriptionDto.Response getCurrentSubscription(String token) {
+//        Long userId = Long.valueOf(jwtTokenProvider.getUsername(token));
+//        UserSubscription sub = subRepo.findByUserIdAndIsActiveTrue(userId)
+//            .orElseThrow(() -> new EntityNotFoundException("Active subscription not found"));
+//        return UserSubscriptionDto.Response.from(sub);
+//    }
 
     /**
      * 구독 취소 (isActive=false, endDate=now), SimpleResponse 반환
