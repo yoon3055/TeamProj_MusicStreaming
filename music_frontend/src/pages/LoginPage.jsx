@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-
 import '../styles/LoginPage.css';
 
 const LoginSchema = Yup.object().shape({
@@ -13,6 +12,30 @@ const LoginSchema = Yup.object().shape({
 
 const LoginPage = () => {
   const navigate = useNavigate();
+
+  // OAuth2 리다이렉트 후 토큰 처리 (Google, Kakao 공통)
+  const handleOAuth2Redirect = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const provider = urlParams.get('state'); // OAuth2 제공자 식별 (google 또는 kakao)
+    if (code && provider) {
+      try {
+        const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
+        const endpoint = provider === 'kakao' ? '/user/kakao/doLogin' : '/login/oauth2/code/google';
+        const res = await axios.get(`${apiUrl}${endpoint}?code=${code}`);
+        localStorage.setItem('jwt', res.data.token);
+        alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인 성공!`);
+        navigate('/');
+      } catch (err) {
+        console.error(`${provider} 로그인 실패:`, err);
+        alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인에 실패했습니다.`);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    handleOAuth2Redirect();
+  }, []);
 
   return (
     <div className="login-page-container">
@@ -29,15 +52,11 @@ const LoginPage = () => {
             try {
               const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
               const res = await axios.post(`${apiUrl}/user/doLogin`, values);
-
-              // 백엔드 응답에 토큰 필드명이 'token'임에 주의
               localStorage.setItem('jwt', res.data.token);
-
               alert('로그인 성공!');
               navigate('/');
             } catch (err) {
               console.error('API 호출 실패:', err);
-              // 사용자에게 표시할 에러 메시지 (필드에 같이 띄우기)
               setFieldError('identifier', '로그인 정보가 올바르지 않습니다.');
               setFieldError('password', ' ');
             } finally {
@@ -79,9 +98,17 @@ const LoginPage = () => {
 
               <div className="form-links">
                 <p>
-                  계정이 없으신가요?{' '}
-                  <Link to="/signup" className="form-link">회원가입</Link>
+                  계정이 없으신가요? <Link to="/signup" className="form-link">회원가입</Link>
                 </p>
+              </div>
+
+              <div className="oauth-login">
+                <a href="http://localhost:8080/oauth2/authorization/google" className="oauth-button google-login-button">
+                  Google로 로그인
+                </a>
+                <a href="http://localhost:8080/oauth2/authorization/kakao" className="oauth-button kakao-login-button">
+                  카카오로 로그인
+                </a>
               </div>
             </Form>
           )}
