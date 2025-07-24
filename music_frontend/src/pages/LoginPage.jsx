@@ -6,7 +6,7 @@ import axios from 'axios';
 import '../styles/LoginPage.css';
 
 const LoginSchema = Yup.object().shape({
-  identifier: Yup.string().required('이메일 또는 닉네임은 필수입니다.'),
+  email: Yup.string().email('유효한 이메일 주소를 입력해주세요.').required('이메일은 필수입니다.'),
   password: Yup.string().required('비밀번호는 필수입니다.'),
 });
 
@@ -45,7 +45,7 @@ const LoginPage = () => {
         </Link>
 
         <Formik
-          initialValues={{ identifier: '', password: '' }}
+          initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
             setSubmitting(true);
@@ -57,7 +57,7 @@ const LoginPage = () => {
               navigate('/');
             } catch (err) {
               console.error('API 호출 실패:', err);
-              setFieldError('identifier', '로그인 정보가 올바르지 않습니다.');
+              setFieldError('email', '로그인 정보가 올바르지 않습니다.');
               setFieldError('password', ' ');
             } finally {
               setSubmitting(false);
@@ -70,12 +70,12 @@ const LoginPage = () => {
 
               <div className="form-group">
                 <Field
-                  type="text"
-                  name="identifier"
-                  placeholder="이메일 또는 닉네임"
+                  type="email" // Changed type to "email"
+                  name="email" // Changed name to "email"
+                  placeholder="이메일" // Changed placeholder
                   className="form-input"
                 />
-                <ErrorMessage name="identifier" component="div" className="form-error" />
+                <ErrorMessage name="email" component="div" className="form-error" />
               </div>
 
               <div className="form-group">
