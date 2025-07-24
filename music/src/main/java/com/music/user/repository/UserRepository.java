@@ -12,6 +12,8 @@ import java.util.Optional; // Optional은 결과가 없을 수도 있는 경우�
 public interface UserRepository extends JpaRepository<User, Long> {
     // email로 사용자 찾기
     Optional<User> findByEmail(String email);
+    Optional<User> findBySocialId(String socialId);
+
 
     // 이메일 존재 여부 확인
     boolean existsByEmail(String email);
@@ -19,7 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 닉네임 존재 여부 확인
     boolean existsByNickname(String nickname);
 
-    // getByUid 메소드 제거 (User 엔티티에 uid 필드가 없음)
-    // User getByUid(String uid) 제거
+
 }
 

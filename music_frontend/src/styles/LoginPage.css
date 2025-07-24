@@ -1,12 +1,9 @@
-/* loginpage.css, signuppage.css 공통 스타일 */
-
 body {
-  background-color: #f9f9f6; /* FLO 라이트 모드 밝은 배경 */
+  background-color: #F9F9F6; /* FLO 라이트 모드 밝은 배경 */
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  color: #4b4b4b;
+  color: #4B4B4B;
 }
-
 .login-page-container,
 .signup-page-container {
   display: flex;
@@ -16,30 +13,26 @@ body {
   padding: 1rem;
   box-sizing: border-box;
 }
-
 .login-box,
 .signup-box {
-  background-color: #ffffff; /* 깨끗한 흰색 배경 */
+  background-color: #ffffff00; /* 깨끗한 흰색 배경 */
   padding: 2.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   width: 360px;
-  color: #4b4b4b;
+  color: #4B4B4B;
   box-sizing: border-box;
 }
-
 .logo-link {
   display: block;
   margin: 0 auto 2rem auto;
   width: 120px;
   cursor: pointer;
 }
-
 .logo-image {
   width: 100%;
   height: auto;
 }
-
 .form-title {
   text-align: center;
   font-size: 2rem;
@@ -47,86 +40,78 @@ body {
   margin-bottom: 2rem;
   color: #222222;
 }
-
 .form-group {
   margin-bottom: 1.5rem;
 }
-
+.form-group.text {
+  color: #000000;
+}
 .form-input {
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 1px solid #cccccc;
-  background-color: #fafafa;
-  color: #4b4b4b;
+  border: 1px solid #44308A;
+  background-color: #FFFFFF; /* 배경 흰색 */
+  color: #4B4B4B !important; /* <--- 이 부분에 !important 추가 */
   font-size: 1rem;
   outline: none;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   box-sizing: border-box;
 }
-
 .form-input::placeholder {
-  color: #a9a9a9;
+  color: #999999; /* 플레이스홀더 색상도 연한 회색으로 변경 */
 }
-
 .form-input:focus {
-  box-shadow: 0 0 8px 2px #a9a9a9;
-  border-color: #a9a9a9;
+  box-shadow: 0 0 8px 2px #44308A;
+  border-color: #44308A;
+  color: #222222 !important; /* <--- 이 부분도 !important 추가 */
+  background-color: #FFFFFF;
 }
-
 .form-error {
-  color: #d32f2f;
+  color: #D32F2F;
   font-size: 0.875rem;
   margin-top: 0.25rem;
   text-align: center;
 }
-
 .forgot-password-link {
   text-align: right;
   margin-bottom: 1rem;
 }
-
 .forgot-password-link a {
-  color: #6a85b6;
+  color: #7184A8;
   text-decoration: none;
   font-size: 0.9rem;
 }
-
 .forgot-password-link a:hover {
   text-decoration: underline;
 }
-
 .form-button {
   width: 100%;
   padding: 0.75rem;
   border-radius: 8px;
   border: none;
-  background-color: #6a85b6; /* FLO 파란색 계열 */
+  background-color: #6A85B6; /* FLO 파란색 계열 */
   color: white;
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 .form-button:hover {
-  background-color: #576a9e;
+  background-color: #576A9E;
 }
-
 .form-links {
   margin-top: 1.5rem;
   text-align: center;
   font-size: 0.9rem;
-  color: #6a85b6;
+  color: #6A85B6;
 }
-
 .form-link {
-  color: #6a85b6;
+  color: #6A85B6;
   text-decoration: none;
   font-weight: 600;
   cursor: pointer;
 }
-
 .form-link:hover {
   text-decoration: underline;
 }
