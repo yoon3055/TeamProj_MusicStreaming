@@ -8,15 +8,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Setter
 @Getter
+@NoArgsConstructor // 추가
+@AllArgsConstructor // 추가
 @Entity // 이 클래스가 JPA 엔티티임을 나타냅니다.
 public class Playlist {
 
