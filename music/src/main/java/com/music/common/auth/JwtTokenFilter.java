@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// extends GenericFilter
+// extends OncePerRequestFilter // 나중에 이걸로 바꿔보기
 @Component
 public class JwtTokenFilter extends GenericFilter {
 
@@ -60,4 +64,10 @@ public class JwtTokenFilter extends GenericFilter {
             httpServletResponse.getWriter().write("invalid token");
         }
     }
+    
+ 
+    
+    
+
+    
 }
