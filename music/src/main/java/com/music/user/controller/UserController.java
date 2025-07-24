@@ -1,40 +1,72 @@
 package com.music.user.controller;
 
-import com.music.user.dto.UserDto;
+import com.music.common.auth.JwtTokenProvider;
+import com.music.user.dto.*;
+import com.music.user.entity.SocialType;
+import com.music.user.entity.User;
+import com.music.user.service.GoogleService;
 import com.music.user.service.UserService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
-@RequiredArgsConstructor
+@RequestMapping("/user")
 public class UserController {
-
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final GoogleService googleService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<UserDto.Response> signup(@Valid @RequestBody UserDto.SignUpRequest request) {
-        System.out.println("넘어오는 값 : " +request.toString());
-        return ResponseEntity.ok(userService.registerUser(request));
+    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider, GoogleService googleService) {
+        this.userService = userService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.googleService = googleService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<UserDto.Response> login(@Valid @RequestBody UserDto.LoginRequest request) {
-        return ResponseEntity.ok(userService.login(request));
+    @PostMapping("/create")
+    public ResponseEntity<?> userCreate(@RequestBody UserCreateDto userCreateDto){
+        User user = userService.create(userCreateDto);
+        return new ResponseEntity<>(user.getId(), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserDto.Response> updateUser(
-            @PathVariable Long userId,
-            @Valid @RequestBody UserDto.UpdateRequest request) {
-        return ResponseEntity.ok(userService.updateUser(userId, request));
+    @PostMapping("/doLogin")
+    public ResponseEntity<?> doLogin(@RequestBody UserLoginDto userLoginDto){
+//        email, password 일치한지 검증
+        User user = userService.login(userLoginDto);
+
+//        일치할 경우 jwt accesstoken 생성
+        String jwtToken = jwtTokenProvider.createToken(user.getEmail(), user.getRole().toString());
+
+        Map<String, Object> loginInfo = new HashMap<>();
+        loginInfo.put("id", user.getId());
+        loginInfo.put("token", jwtToken);
+        return new ResponseEntity<>(loginInfo, HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDto.Response> getUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getUserById(userId));
+    @PostMapping("/google/doLogin")
+    public ResponseEntity<?> googleLogin(@RequestBody RedirectDto redirectDto){
+//        accesstoken 발급
+        AccessTokenDto accessTokenDto = googleService.getAccessToken(redirectDto.getCode());
+//        사용자정보 얻기
+        GoogleProfileDto googleProfileDto = googleService.getGoogleProfile(accessTokenDto.getAccess_token());
+//        회원가입이 되어 있지 않다면 회원가입
+        User originalUser = userService.getMemberBySocialId(googleProfileDto.getSub());
+        if(originalUser == null){
+            originalUser = userService.createOauth(googleProfileDto.getSub(), googleProfileDto.getEmail(), SocialType.GOOGLE);
+        }
+//        회원가입돼 있는 회원이라면 토큰발급
+        String jwtToken = jwtTokenProvider.createToken(originalUser.getEmail(), originalUser.getRole().toString());
+
+        Map<String, Object> loginInfo = new HashMap<>();
+        loginInfo.put("id", originalUser.getId());
+        loginInfo.put("token", jwtToken);
+        return new ResponseEntity<>(loginInfo, HttpStatus.OK);
     }
 }
 

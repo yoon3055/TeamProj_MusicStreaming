@@ -1,112 +1,62 @@
 package com.music.user.service;
 
-import com.music.user.dto.UserDto;
+
+import com.music.user.dto.UserCreateDto;
+import com.music.user.dto.UserLoginDto;
+import com.music.user.entity.SocialType;
 import com.music.user.entity.User;
 import com.music.user.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
-
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@Transactional
 public class UserService {
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 회원가입 로직
-     */
-    @Transactional
-    public UserDto.Response registerUser(UserDto.SignUpRequest requestDto) {
-        // 이메일 중복 검사
-        if (userRepository.existsByEmail(requestDto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
-        }
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-        // 닉네임 중복 검사
-        if (userRepository.existsByNickname(requestDto.getNickname())) {
-            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
-        }
-
-        // 비밀번호 암호화 및 User 엔티티 생성
+    public User create(UserCreateDto userCreateDto){
         User user = User.builder()
-                .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .nickname(requestDto.getNickname())
-                .profileImage(requestDto.getProfileImage())
-                .isVerified(true)
-                .createdAt(LocalDateTime.now())
+                .email(userCreateDto.getEmail())
+                .password(passwordEncoder.encode(userCreateDto.getPassword()))
                 .build();
-        // DB에 저장
         userRepository.save(user);
-
-        // 저장 후 Response DTO로 변환하여 반환
-        return UserDto.Response.from(userRepository.save(user));
+        return user;
     }
 
-
-    /**
-     * 로그인 로직
-     */
-    @Transactional(readOnly = true)
-    public UserDto.Response login(UserDto.LoginRequest requestDto) {
-        User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
-
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    public User login(UserLoginDto userLoginDto){
+        Optional<User> optMember = userRepository.findByEmail(userLoginDto.getEmail());
+        if(!optMember.isPresent()){
+            throw new IllegalArgumentException("email이 존재하지 않습니다.");
         }
 
-        if (!user.isVerified()) {
-            throw new IllegalArgumentException("이메일 인증이 필요합니다.");
+        User user = optMember.get();
+        if(!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())){
+            throw new IllegalArgumentException("password가 일치하지 않습니다.");
         }
-
-        return UserDto.Response.from(user);
+        return user;
     }
 
-    // 추가적인 메서드들
-    @Transactional
-    public UserDto.Response updateUser(Long userId, UserDto.UpdateRequest requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 닉네임 변경 시 중복 체크
-        if (requestDto.getNickname() != null &&
-                !user.getNickname().equals(requestDto.getNickname()) &&
-                userRepository.existsByNickname(requestDto.getNickname())) {
-            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
-        }
-
-        // 필드 업데이트
-        if (requestDto.getNickname() != null) {
-            user.setNickname(requestDto.getNickname());
-        }
-        if (requestDto.getProfileImage() != null) {
-            user.setProfileImage(requestDto.getProfileImage());
-        }
-
-        return UserDto.Response.from(user);
+    public User getMemberBySocialId(String socialId){
+        User user = userRepository.findBySocialId(socialId).orElse(null);
+        return user;
     }
 
-    @Transactional(readOnly = true)
-    public UserDto.Response getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        return UserDto.Response.from(user);
+    public User createOauth(String socialId, String email, SocialType socialType){
+        User user = User.builder()
+                .email(email)
+                .socialType(socialType)
+                .socialId(socialId)
+                .build();
+        userRepository.save(user);
+        return user;
     }
-
-
-
-    // =============================================================================================
-
-
-
-
 }

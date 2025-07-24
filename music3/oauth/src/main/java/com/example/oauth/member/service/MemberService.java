@@ -25,6 +25,7 @@ public class MemberService {
 
     public Member create(MemberCreateDto memberCreateDto){
         Member member = Member.builder()
+                .nickname(memberCreateDto.getNickname())
                 .email(memberCreateDto.getEmail())
                 .password(passwordEncoder.encode(memberCreateDto.getPassword()))
                 .build();
@@ -34,6 +35,7 @@ public class MemberService {
 
     public Member login(MemberLoginDto memberLoginDto){
         Optional<Member> optMember = memberRepository.findByEmail(memberLoginDto.getEmail());
+        System.out.println(optMember.toString());
         if(!optMember.isPresent()){
             throw new IllegalArgumentException("email이 존재하지 않습니다.");
         }
