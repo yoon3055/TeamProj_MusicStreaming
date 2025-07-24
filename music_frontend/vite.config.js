@@ -9,7 +9,7 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
-      '/user': {
+      '/member': {
         target: 'http://localhost:8080',
         changeOrigin: true,
       },

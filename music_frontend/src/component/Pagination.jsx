@@ -1,4 +1,3 @@
-
 // src/component/Pagination.jsx
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -18,38 +17,26 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
   return (
     <div className="pagination-container">
-      <div className="pagination-nav-container">
-        <button
-          className="carousel-nav-button prev-button"
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          aria-label="이전 페이지"
-        >
-          <svg fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-        <button
-          className="carousel-nav-button next-button"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          aria-label="다음 페이지"
-        >
-          <svg fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
-      <div className="pagination-dots-container">
-        {Array.from({ length: totalPages }).map((_, idx) => (
-          <button
-            key={idx}
-            className={`pagination-dot ${currentPage === idx + 1 ? 'active' : ''}`}
-            onClick={() => onPageChange(idx + 1)}
-            aria-label={`페이지 ${idx + 1}`}
-          />
-        ))}
-      </div>
+      <button
+        className="carousel-nav-button prev-button"
+        onClick={handlePrevPage}
+        disabled={currentPage === 1}
+        aria-label="이전 페이지"
+      >
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+        </svg>
+      </button>
+      <button
+        className="carousel-nav-button next-button"
+        onClick={handleNextPage}
+        disabled={currentPage === totalPages}
+        aria-label="다음 페이지"
+      >
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+        </svg>
+      </button>
     </div>
   );
 };

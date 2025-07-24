@@ -65,3 +65,8 @@
     height: 14px;
   }
 }
+
+/* src/styles/PlaylistDrawer.css (추가) */
+.recommend-section {
+  margin-bottom: 80px; /* "추천 플레이리스트"와 아래 박스 사이의 여백 */
+}
