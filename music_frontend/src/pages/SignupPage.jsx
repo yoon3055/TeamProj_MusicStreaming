@@ -29,7 +29,7 @@ const SignupPage = () => {
           onSubmit={async (values, { setSubmitting }) => {
             try {
               const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
-              await axios.post(`${apiUrl}/member/create`, values);
+              await axios.post(`${apiUrl}/user/create`, values);
               alert('회원가입이 완료되었습니다. 로그인해주세요.');
               navigate('/login');
             } catch (err) {
