@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import API from '../api/api';
 import { AuthContext } from './AuthContext';
 
-
-
-
-// DEV 모드용 더미 유저 (필요 시)
 const DEV_MODE = false;
 const mockUser = {
   id: 1,
@@ -21,63 +17,74 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (DEV_MODE) {
-      console.warn('[DEV_MODE] 인증 우회 활성화됨 - mock 유저로 로그인 처리됨');
       setUser(mockUser);
       setIsSubscribed(mockUser.isSubscribed);
       setLoading(false);
       return;
     }
 
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios
-        .get(`${import.meta.env.VITE_REACT_APP_API_URL}/api/auth/verify`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setUser(response.data.user);
-          setIsSubscribed(response.data.user.isSubscribed || false);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('사용자 인증 실패:', error);
-          localStorage.removeItem('token');
-          setUser(null);
-          setIsSubscribed(false);
-          setLoading(false);
-        });
-    } else {
+    const verifyAuth = async () => {
+      setLoading(true);
+      const token = localStorage.getItem('jwt');
+      if (!token) {
+        setUser(null);
+        setIsSubscribed(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await API.get('/api/auth/verify');
+        setUser(response.data.user);
+        setIsSubscribed(response.data.user.isSubscribed || false);
+      } catch (error) {
+        console.error('인증 검증 오류:', error);
+        localStorage.removeItem('jwt');
+        setUser(null);
+        setIsSubscribed(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyAuth();
+  }, []);
+
+  const login = useCallback(async ({ email, password }) => {
+    setLoading(true);
+    try {
+      const response = await API.post('/api/auth/login', { email, password });
+      const { token, user: userData } = response.data;
+      localStorage.setItem('jwt', token);
+      setUser(userData);
+      setIsSubscribed(userData.isSubscribed || false);
+      return true;
+    } catch (error) {
+      console.error('로그인 오류:', error);
+      return false;
+    } finally {
       setLoading(false);
     }
   }, []);
 
-  const login = async ({ identifier, password }) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}/api/auth/login`,
-        { identifier, password }
-      );
-      const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      setUser(user);
-      setIsSubscribed(user.isSubscribed || false);
-      return true;
-    } catch (error) {
-      console.error('로그인 실패:', error);
-      return false;
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = useCallback(() => {
+    localStorage.removeItem('jwt');
     setUser(null);
     setIsSubscribed(false);
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    user,
+    setUser,         // ★ 이 부분 꼭 포함해야 함 ★
+    isSubscribed,
+    setIsSubscribed,
+    login,
+    logout,
+    loading,
+  }), [user, setUser, isSubscribed, setIsSubscribed, login, logout, loading]);
 
   return (
-    <AuthContext.Provider
-      value={{ user, isSubscribed, setIsSubscribed, login, logout, loading }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
