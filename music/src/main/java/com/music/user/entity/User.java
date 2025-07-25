@@ -1,5 +1,6 @@
 package com.music.user.entity;
 
+import com.music.user.dto.PasswordUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,13 @@ public class User {
     private SocialType socialType;
 
     private String socialId;
+
+    // Entity -> DTO 변환
+    public PasswordUpdateDto toDto() {
+        return PasswordUpdateDto.builder()
+                .id(this.id)
+                .email(this.email).build();
+    }
 
 
 }
