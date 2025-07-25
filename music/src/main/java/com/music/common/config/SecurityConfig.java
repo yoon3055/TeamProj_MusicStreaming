@@ -1,7 +1,7 @@
 package com.music.common.config;
 
 
-import com.music.common.auth.JwtTokenFilter;
+import com.music.common.auth.JwtTokenFilter2;
 import com.music.user.service.GoogleOauth2LoginSuccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +20,10 @@ import java.util.Arrays;
 
 @Configuration
 public class SecurityConfig {
-    private final JwtTokenFilter jwtTokenFilter;
+    private final JwtTokenFilter2 jwtTokenFilter;
     private final GoogleOauth2LoginSuccess googleOauth2LoginSuccess;
 
-    public SecurityConfig(JwtTokenFilter jwtTokenFilter, GoogleOauth2LoginSuccess googleOauth2LoginSuccess) {
+    public SecurityConfig(JwtTokenFilter2 jwtTokenFilter, GoogleOauth2LoginSuccess googleOauth2LoginSuccess) {
         this.jwtTokenFilter = jwtTokenFilter;
         this.googleOauth2LoginSuccess = googleOauth2LoginSuccess;
     }
