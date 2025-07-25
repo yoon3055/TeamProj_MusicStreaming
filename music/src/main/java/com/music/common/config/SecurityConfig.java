@@ -46,7 +46,7 @@ public class SecurityConfig {
 
 
 //                특정 url패턴에 대해서는 인증처리(Authentication객체생성) 제외
-                .authorizeHttpRequests(a->a.requestMatchers("/user/create", "/user/doLogin", "/user/google/doLogin", "/user/kakao/doLogin", "/oauth2/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(a->a.requestMatchers("/user/create", "/user/doLogin", "/user/google/doLogin", "/user/kakao/doLogin", "/oauth2/**", "/swagger-ui/**", "/v3/api-docs/**", "/user/sendPw").permitAll().anyRequest().authenticated())
 //
 //                UsernamePasswordAuthenticationFilter 이 클래스에서 폼로그인 인증을 처리
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
