@@ -4,12 +4,14 @@ import PropTypes from 'prop-types';
 
 import SongFilterBar from '../component/SongFilterBar';
 import FilterButtons from '../component/FilterButtons';
-import PlaylistDrawer from '../component/PlaylistDrawer';
+import PlaylistDrawer from '../component/PlaylistDrawer'; // PlaylistDrawer 임포트 확인
 
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 
-import '../styles/RecommendPage.css';
+import '../styles/RecommendPage.css'; // 최종 수정된 CSS 임포트
 
+// --- 더미 데이터 (K52-K72, DUMMY_GENRES, DUMMY_ARTISTS, DUMMY_ALBUMS, DUMMY_SONGS, DUMMY_FEATURED_PLAYLISTS) ---
+// Note: K55 is assumed to be K-055.jpg based on previous context.
 const DUMMY_GENRES = [
   { id: 'dg1', name: '발라드', imageUrl: '/images/K-057.jpg' },
   { id: 'dg2', name: '댄스', imageUrl: '/images/K-058.jpg' },
@@ -97,6 +99,16 @@ const HOT_NEW_FILTERS = [
 ];
 const POPULAR_ARTIST_FILTERS = HOT_NEW_FILTERS;
 
+// ✨ 배경 스키마 리스트 정의 ✨
+const BACKGROUND_SCHEMES = [
+  'gradient-scheme-1', // 파란-핑크 계열
+  'gradient-scheme-2', // 주황-보라 계열
+  'gradient-scheme-3', // 초록-파랑 계열
+  'gradient-scheme-4', // 빨강-노랑 계열
+  'gradient-scheme-5', // 시원한 파랑-하늘색 계열
+];
+
+
 const RecommendPage = () => {
   const { playSong } = useContext(MusicPlayerContext);
 
@@ -110,6 +122,9 @@ const RecommendPage = () => {
   const [hotNewSongs, setHotNewSongs] = useState([]);
   const [popularArtists, setPopularArtists] = useState([]);
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
+
+  // ✨ 현재 활성 배경 스키마 상태 (단일 상태로 모든 섹션에 적용) ✨
+  const [currentBgSchemeIndex, setCurrentBgSchemeIndex] = useState(0);
 
   const applyHighQualityFilter = useCallback(
     (data) => (filterHighQuality ? data.filter((item) => item.isHighQuality) : data),
@@ -163,8 +178,16 @@ const RecommendPage = () => {
     alert(`${item.title} - ${item.artist || 'Various Artists'} 재생 시작!`);
   };
 
+  // ✨ 배경 스키마를 다음으로 변경하는 함수 (캐러셀 페이지 이동 시 호출될 예정) ✨
+  const handleNextBackgroundScheme = useCallback(() => {
+    setCurrentBgSchemeIndex(prevIndex => (prevIndex + 1) % BACKGROUND_SCHEMES.length);
+  }, []);
+
+
   return (
     <div className="recommend-page-container">
+      {/* 📌 추가했던 '배경 변경' 버튼은 제거되어야 합니다. 페이지 이동 시 자동으로 바뀌도록 할 예정. */}
+
       <div className="song-filter-bar-container">
         <button className="filter-button" onClick={handleFilterButtonClick}>
           장르 필터 {isFilterOptionsVisible ? '▲' : '▼'}
@@ -205,6 +228,9 @@ const RecommendPage = () => {
         />
       </div>
 
+      {/* ✨ 각 PlaylistDrawer에 동적 containerClassName (현재 배경 스키마) 전달 ✨ */}
+      {/* PlaylistDrawer 내부에서는 이 containerClassName을 recommend-section에 합쳐야 합니다. */}
+      {/* PlaylistDrawer 내부의 캐러셀 이동 버튼 클릭 시 handleNextBackgroundScheme 함수 호출 필요. */}
       <PlaylistDrawer
         title="추천 테마 플레이리스트"
         sectionType="featuredPlaylists"
@@ -219,6 +245,8 @@ const RecommendPage = () => {
         }
         onPlayTheme={handlePlayTheme}
         cardType="album"
+        containerClassName={BACKGROUND_SCHEMES[currentBgSchemeIndex]} /* ✨ 동적 클래스명 */
+        onPageChange={handleNextBackgroundScheme} /* ✨ 페이지 이동 시 배경 스키마 변경 함수 전달 */
       />
 
       <PlaylistDrawer
@@ -228,6 +256,8 @@ const RecommendPage = () => {
         filterButtons={null}
         onPlayTheme={handlePlayTheme}
         cardType="album"
+        containerClassName={BACKGROUND_SCHEMES[currentBgSchemeIndex]} /* ✨ 동적 클래스명 */
+        onPageChange={handleNextBackgroundScheme} /* ✨ 페이지 이동 시 배경 스키마 변경 함수 전달 */
       />
 
       <PlaylistDrawer
@@ -243,6 +273,8 @@ const RecommendPage = () => {
         }
         onPlayTheme={handlePlayTheme}
         cardType="album"
+        containerClassName={BACKGROUND_SCHEMES[currentBgSchemeIndex]} /* ✨ 동적 클래스명 */
+        onPageChange={handleNextBackgroundScheme} /* ✨ 페이지 이동 시 배경 스키마 변경 함수 전달 */
       />
 
       <PlaylistDrawer
@@ -252,6 +284,8 @@ const RecommendPage = () => {
         filterButtons={null}
         onPlayTheme={null}
         cardType="genre"
+        containerClassName={BACKGROUND_SCHEMES[currentBgSchemeIndex]} /* ✨ 동적 클래스명 */
+        onPageChange={handleNextBackgroundScheme} /* ✨ 페이지 이동 시 배경 스키마 변경 함수 전달 */
       />
 
       <PlaylistDrawer
@@ -269,7 +303,9 @@ const RecommendPage = () => {
         cardType="artist"
         gridLayout={true}
         cardsPerPage={6}
-        className="popular-artists"
+        className="popular-artists" /* 기존 className 유지 */
+        containerClassName={BACKGROUND_SCHEMES[currentBgSchemeIndex]} /* ✨ 동적 클래스명 */
+        onPageChange={handleNextBackgroundScheme} /* ✨ 페이지 이동 시 배경 스키마 변경 함수 전달 */
       />
     </div>
   );

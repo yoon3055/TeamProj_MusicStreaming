@@ -12,6 +12,7 @@ const DUMMY_ALBUMS = [
 ];
 // ... 필요시 다른 더미 데이터 추가
 
+// ✨ containerClassName과 onPageChange props를 받도록 정의 ✨
 const PlaylistDrawer = ({
   title,
   sectionType,
@@ -22,6 +23,8 @@ const PlaylistDrawer = ({
   gridLayout = false,
   cardsPerPage = 6,
   className,
+  containerClassName, // ✨ 추가된 prop
+  onPageChange,       // ✨ 추가된 prop
 }) => {
   const { playSong } = useContext(MusicPlayerContext);
 
@@ -73,20 +76,28 @@ const PlaylistDrawer = ({
     [playSong]
   );
 
+  // ✨ 페이지 변경 처리 함수: onPageChange 호출 추가 ✨
   const handlePageChange = useCallback(
     (pageIndex) => {
       const newPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
-      setCurrentPage(newPage);
+      if (newPage !== currentPage) { // 실제로 페이지가 변경될 때만
+        setCurrentPage(newPage);
+        if (onPageChange) { // ✨ prop으로 전달된 onPageChange 함수 호출 ✨
+          onPageChange();
+        }
+      }
     },
-    [totalPages]
+    [currentPage, totalPages, onPageChange] // 의존성 배열에 onPageChange 추가
   );
 
-  const handlePrevPage = () => {
-    if (currentPage > 0) handlePageChange(currentPage - 1);
-  };
-
+  // ✨ 다음 페이지 버튼 핸들러: handlePageChange 호출 ✨
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) handlePageChange(currentPage + 1);
+  };
+
+  // ✨ 이전 페이지 버튼 핸들러: handlePageChange 호출 ✨
+  const handlePrevPage = () => {
+    if (currentPage > 0) handlePageChange(currentPage - 1);
   };
 
   const renderCard = (item) => {
@@ -100,7 +111,7 @@ const PlaylistDrawer = ({
           <Albumcard
             key={item.id}
             album={item}
-            size="md"
+            size="md" // RecommendPage.jsx에서 album CardType은 "album" 이고 PlaylistDrawer는 size="md"로 Albumcard를 렌더링하고 있습니다.
             onPlay={() => (onPlayTheme || handlePlay)(item)}
             className="album-card"
           />
@@ -112,14 +123,15 @@ const PlaylistDrawer = ({
   if (error) console.warn(error);
 
   return (
-    <section className={`recommend-section ${className || ''}`}>
+    // ✨ PlaylistDrawer의 가장 바깥 컨테이너에 recommend-section과 동적 클래스 (containerClassName) 적용 ✨
+    <section className={`recommend-section ${className || ''} ${containerClassName || ''}`}>
       <div className="section-title">
         <h3>{title || ''}</h3>
         <div className="controls-container">
           {filterButtons}
           <button
             className="carousel-nav-button"
-            onClick={handlePrevPage}
+            onClick={handlePrevPage} // 수정된 핸들러 호출
             disabled={currentPage === 0}
             aria-label="이전 페이지"
           >
@@ -127,7 +139,7 @@ const PlaylistDrawer = ({
           </button>
           <button
             className="carousel-nav-button"
-            onClick={handleNextPage}
+            onClick={handleNextPage} // 수정된 핸들러 호출
             disabled={currentPage === totalPages - 1}
             aria-label="다음 페이지"
           >
@@ -150,7 +162,7 @@ const PlaylistDrawer = ({
             <button
               key={idx}
               className={`pagination-dot ${currentPage === idx ? 'active' : ''}`}
-              onClick={() => handlePageChange(idx)}
+              onClick={() => handlePageChange(idx)} // 수정된 핸들러 호출
               aria-label={`페이지 ${idx + 1}`}
             />
           ))}
@@ -170,6 +182,8 @@ PlaylistDrawer.propTypes = {
   gridLayout: PropTypes.bool,
   cardsPerPage: PropTypes.number,
   className: PropTypes.string,
+  containerClassName: PropTypes.string, // ✨ 새로운 propTypes 추가 ✨
+  onPageChange: PropTypes.func,        // ✨ 새로운 propTypes 추가 ✨
 };
 
 PlaylistDrawer.defaultProps = {

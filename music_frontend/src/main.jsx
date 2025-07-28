@@ -33,14 +33,14 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import { PurchasePage } from './pages/PurchasePage';
 import { SubscriptionPage } from './pages/SubscriptionPage'; // 구독 플랜 페이지
 import { UserSubscriptionHistory } from './pages/UserSubscriptionHistoryPage'; // 현재 사용되지 않는 것 같으나 임포트 유지
-import LibraryPage from './pages/LibraryPage';
+import MyPage from './pages/MyPage';
 import AdvancedSearchPage from './pages/AdvancedSearchPage';
 import RankingPage from './pages/RankingPage';
 import PlaylistDrawer from './component/PlaylistDrawer';
 import PlaylistPage from './pages/PlaylistPage'; // PlaylistPage 임포트 추가 (필요시)
 import FindPasswordPage from './pages/FindPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-
+import PaymentPage from './pages/PaymentPage';
 
 
 // CSS Files
@@ -52,6 +52,7 @@ import './styles/RecommendPage.css';
 import './styles/SidebarContent.css';
 import './styles/SubscriptionPage.css';
 import './styles/UserSubscriptionHistory.css';
+
 
 const router = createBrowserRouter(
   [
@@ -70,14 +71,14 @@ const router = createBrowserRouter(
         { path: 'art', element: <AlbumArtPage /> }, // 앨범 아트 페이지
         { path: 'likes', element: <LikesFollowsPage /> }, // 좋아요/팔로우 페이지 (공개 가능)
         { path: 'comments', element: <CommentsPage /> }, // 댓글 페이지 (공개 가능)
-        { path: 'payment-success', element: <PaymentSuccessPage /> }, // 결제 성공 페이지
-        { path: 'payment-fail', element: <PaymentFailPage /> }, // 결제 실패 페이지
+        { path: 'payment/success', element: <PaymentSuccessPage /> }, // 결제 성공 페이지
+        { path: 'payment/fail', element: <PaymentFailPage /> }, // 결제 실패 페이지
 
         // 인증이 필요한 라우트들을 PrivateRoute 아래의 children으로 이동
         {
           element: <PrivateRoute />, // 여기에 PrivateRoute를 부모 엘리먼트로 설정
           children: [
-            { path: 'library', element: <LibraryPage /> }, // 라이브러리 페이지
+            { path: 'myPage', element: <MyPage /> }, // 라이브러리 페이지
             { path: 'my-playlists', element: <PlaylistPage /> }, // 내 플레이리스트 페이지
             { path: 'subscription-plans', element: <SubscriptionPage /> }, // 구독 플랜 페이지
             { path: 'subscription', element: <SubscriptionRouter /> }, // 구독 진행 페이지 (구독 라우터 사용)
@@ -85,6 +86,9 @@ const router = createBrowserRouter(
             { path: 'profile', element: <UserProfilePage /> }, // 사용자 프로필 페이지
             { path: 'history', element: <HistoryPage /> }, // 시청 기록 페이지
             { path: 'purchase', element: <PurchasePage /> }, // 구매 페이지
+            { path: '/payment/:planId', element:<PaymentPage  /> }, //구독 구매 페이지 
+            
+            
           ],
         },
         { path: '*', element: <Navigate to="/" replace /> }, // 존재하지 않는 경로 처리 (메인으로 리다이렉트)

@@ -280,10 +280,10 @@ export default function SidebarContent() {
         <h3 className="sidebar-title">FLO 주요 안내</h3>
         <div className="sidebar-shortcut-list">
           
-          <Link to="/ranking" className="sidebar-shortcut-item">차트</Link>
+          <Link to="/explore" className="sidebar-shortcut-item">차트</Link>
          
           <Link to="/my-subscription" className="sidebar-shortcut-item">나의 이용권</Link>
-          <Link to="/profile" className="sidebar-shortcut-item">내 프로필</Link>
+          <Link to="/myPage" className="sidebar-shortcut-item">내 프로필</Link>
           <Link to="/notice" className="sidebar-shortcut-item">공지사항</Link>
      
         </div>
