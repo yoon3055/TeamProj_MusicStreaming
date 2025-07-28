@@ -17,9 +17,8 @@ const Header = () => {
     <header className="app-header">
     <div className="header-left">
   <Link to="/" className="header-logo-link">
-    <svg className="header-logo-icon" fill="currentColor" viewBox="0 0 24 24">
-      <path d="..." />
-    </svg>
+  
+    
     <img src="/images/logo.png" alt="Logo" className="header-logo-image" />
     <h2 className="header-app-title">Music App</h2>
   </Link>

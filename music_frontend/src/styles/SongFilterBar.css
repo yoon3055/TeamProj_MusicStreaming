@@ -70,7 +70,7 @@
 
 .song-filter-toggle-off {
   background-color: #e6e2df;
-  border-color: #e6e2df;
+  border-color: #e1dfe6;
 }
 
 .song-filter-toggle-disabled {
@@ -81,7 +81,7 @@
 .song-filter-toggle-handle {
   position: absolute;
   top: 0.125rem;
-  right: 0.125rem; /* 우측으로 이동 */
+  left: 0.125rem; /* ✅ 기본 위치를 왼쪽으로 변경 */
   height: 1.25rem;
   width: 1.25rem;
   border-radius: 9999px;
@@ -90,12 +90,15 @@
   transition: transform 0.2s ease-in-out;
 }
 
+
 .song-filter-toggle-handle-on {
-  transform: translateX(-1.25rem); /* 켜졌을 때 왼쪽으로 이동 */
+  transform: translateX(1.25rem); /* ✅ 오른쪽으로 이동하면 ON 상태 */
 }
 
+
+
 .song-filter-toggle-handle-off {
-  transform: translateX(0); /* 꺼졌을 때 우측에 고정 */
+  transform: translateX(0); /* 왼쪽에 머물면 OFF 상태 */
 }
 
 .song-filter-bar-message {
@@ -111,6 +114,14 @@
 
 .song-filter-bar-link:hover {
   text-decoration: underline;
+}
+
+.song-filter-equalizer-wrapper {
+  width: 100%;
+  max-width: 160px;
+  margin-top: 0.5rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* 반응형 */
