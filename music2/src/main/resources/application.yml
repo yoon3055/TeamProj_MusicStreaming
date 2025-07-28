@@ -1,2 +1,0 @@
-jwt:
-  secret: your_jwt_secret_key_here_make_it_long_and_secure_at_least_256_bits
