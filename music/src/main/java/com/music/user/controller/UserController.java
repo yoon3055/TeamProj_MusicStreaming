@@ -113,7 +113,8 @@ public class UserController {
     // 비밀번호 찾기 (임시 비밀번호 발급 후 이메일 전송)
     @Operation(summary = "비밀번호 찾기", description = "임시 비밀번호 발급 후 이메일 전송 (JWT 인증x)")
     @PostMapping("/sendPw")
-    public ResponseEntity<String> sendPwEmail(@RequestParam String email) {
+    public ResponseEntity<String> sendPwEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
         String tmpPw = userService.getTmpPw();
         String result = userService.updatePw(tmpPw, email);
 
