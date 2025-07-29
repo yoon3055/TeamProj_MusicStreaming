@@ -1,68 +1,98 @@
-// src/component/Equalizer.jsx
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import '../styles/Equalizer.css'; // ✨ CSS 파일 임포트
+import '../styles/Equalizer.css';
 
-const Equalizer = ({ isPlaying = true }) => {
+const Equalizer = ({ mode = 'linked', isPlaying = true }) => {
   const barsRef = useRef([]);
-  const svgHeight = 60; // SVG의 고정 높이 (픽셀)
+  // 모드별 기본 크기 설정 (CSS에서 반응형으로 조정)
+  const sizes = {
+    dynamic: { width: 150, height: 80, barWidth: 15 },
+    linked: { width: 100, height: 60, barWidth: 10 },
+    static: { width: 80, height: 40, barWidth: 8 },
+  };
+  const { width, height, barWidth } = sizes[mode] || sizes.linked;
 
   useEffect(() => {
-    // 이퀄라이저 로직은 SVG rect 요소를 직접 조작하므로, 캔버스 컨텍스트는 사용되지 않습니다.
     let animationFrameId;
+    let startTime = null;
 
-    const drawEqualizer = () => {
-      barsRef.current.forEach((bar) => {
+    const drawDynamicWave = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = (timestamp - startTime) / 1000; // 초 단위
+      const period = 5; // 5초 주기
+      const phase = (elapsed % period) / period; // 0~1
+
+      barsRef.current.forEach((bar, i) => {
         if (bar) {
-          // isPlaying이 true일 때 높이를 10에서 50 사이로 랜덤하게 설정, 아니면 10으로 고정
-          const height = isPlaying ? Math.random() * 40 + 10 : 10;
-          const y = svgHeight - height; // SVG 좌표계에서 Y축은 위에서 아래로 증가
-
-          bar.setAttribute('height', height.toString()); // 높이 적용
-          bar.setAttribute('y', y.toString()); // y 좌표 적용
+          const maxHeight = height * 0.9; // 진폭 증가 (80% → 90%)
+          const minHeight = height * 0.1; // 최소 높이 낮춤
+          // 사인파 웨이브: 속도 증가 및 역동성 강화
+          const wave = Math.sin(2 * Math.PI * (phase * 2 - i / 5)); // phase * 2로 속도 2배
+          const normalized = (wave + 1) / 2; // -1~1 → 0~1
+          const dynamicHeight = isPlaying ? minHeight + normalized * (maxHeight - minHeight) : minHeight;
+          const y = height - dynamicHeight;
+          bar.setAttribute('height', dynamicHeight.toString());
+          bar.setAttribute('y', y.toString());
         }
       });
-      animationFrameId = requestAnimationFrame(drawEqualizer);
+      animationFrameId = requestAnimationFrame(drawDynamicWave);
     };
 
     const initializeBars = () => {
       barsRef.current.forEach((bar) => {
         if (bar) {
-          bar.setAttribute('height', '10'); // 초기 높이
-          bar.setAttribute('y', (svgHeight - 10).toString()); // 초기 y 좌표 (바닥에 붙도록)
+          const minHeight = height * 0.2;
+          bar.setAttribute('height', minHeight.toString());
+          bar.setAttribute('y', (height - minHeight).toString());
         }
       });
     };
 
-    if (isPlaying) {
-      drawEqualizer();
+    const drawLinkedEqualizer = () => {
+      barsRef.current.forEach((bar) => {
+        if (bar) {
+          const maxHeight = height * 0.8;
+          const minHeight = height * 0.2;
+          const dynamicHeight = isPlaying ? Math.random() * (maxHeight - minHeight) + minHeight : minHeight;
+          const y = height - dynamicHeight;
+          bar.setAttribute('height', dynamicHeight.toString());
+          bar.setAttribute('y', y.toString());
+        }
+      });
+      animationFrameId = requestAnimationFrame(drawLinkedEqualizer);
+    };
+
+    if (mode === 'dynamic' && isPlaying) {
+      drawDynamicWave(performance.now());
+    } else if (mode === 'linked' && isPlaying) {
+      drawLinkedEqualizer();
     } else {
       initializeBars();
     }
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isPlaying]);
+  }, [mode, isPlaying, height]);
 
   return (
-    <div className="equalizer-container"> {/* ✨ 클래스 적용 */}
+    <div className={`equalizer-container equalizer-${mode}`}>
       <svg
-        width="100"       /* SVG의 고정 너비를 100px로 설정합니다. */
-        height="60"       /* SVG의 고정 높이를 60px로 설정합니다. */
-        className="equalizer-svg-icon" /* ✨ 클래스 적용 */
-        viewBox="0 0 100 60" /* SVG의 뷰포트를 정의하여 내부 요소의 좌표계를 설정합니다. */
-        preserveAspectRatio="xMidYMid meet" /* SVG가 컨테이너 내에서 어떻게 비율을 유지할지 설정합니다. */
+        width="100%" // CSS에서 너비 조정
+        height={height}
+        className="equalizer-svg-icon"
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="xMidYMid meet"
       >
         {[...Array(5)].map((_, i) => (
           <rect
             key={i}
             ref={(el) => (barsRef.current[i] = el)}
-            x={i * 20 + 5} /* 각 바의 x 좌표를 설정합니다. */
-            y={(svgHeight - 10).toString()} /* 초기 y 좌표 (바닥에 붙도록) */
-            width="10"    /* 바의 너비를 10px로 설정합니다. */
-            height="10"   /* 바의 초기 높이를 10px로 설정합니다. */
-            fill="currentColor" /* 부모 요소(SVG)의 text-emerald-500 색상을 상속받아 채웁니다. */
-            rx="2"        /* 바의 모서리를 둥글게 만듭니다. */
+            x={i * (barWidth * 2) + 5}
+            y={(height - height * 0.2).toString()}
+            width={barWidth}
+            height={(height * 0.2).toString()}
+            fill="currentColor"
+            rx="2"
           />
         ))}
       </svg>
@@ -71,6 +101,7 @@ const Equalizer = ({ isPlaying = true }) => {
 };
 
 Equalizer.propTypes = {
+  mode: PropTypes.oneOf(['dynamic', 'linked', 'static']),
   isPlaying: PropTypes.bool,
 };
 
