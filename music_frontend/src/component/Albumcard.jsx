@@ -24,7 +24,7 @@ const Albumcard = ({ album, size = 'md', className }) => {
                 <span className="album-card-song-count">{album.songCount}곡</span>
               )}
               {album.updatedAt && (
-                <span className="album-card-updated-at">{album.updatedAt} </span>
+                <span className="album-card-updated-at">{album.updatedAt} 업데이트</span>
               )}
             </div>
           )}

@@ -1,3 +1,5 @@
+/* src/styles/UserSubscriptionHistory.css */
+
 /* 컨테이너: 페이지 전체를 감싸는 컨테이너 */
 .subscription-history-container {
   min-height: 100vh;
@@ -22,7 +24,7 @@
 }
 
 /* 에러 상태 */
-.subscription-error {
+.subscription-history-loading.subscription-history-error {
   color: #dc2626; /* 빨간색 에러 텍스트 (text-red-600) */
 }
 
@@ -34,29 +36,15 @@
   text-align: center;
 }
 
-/* 서브타이틀 */
-.subtitle {
-  font-size: 1.5rem; /* text-2xl */
-  margin: 1.25rem 0 0.625rem; /* my-5 */
-}
-
-/* 구독 액션 버튼 컨테이너 */
-.subscription-actions {
-  display: flex;
-  gap: 0.625rem; /* gap-2.5 */
-  justify-content: center;
-  margin-bottom: 1.25rem; /* mb-5 */
-}
-
 /* 구독 이력 리스트 */
-.subscription-list {
+.subscription-history-list {
   display: flex;
   flex-direction: column;
   gap: 1rem; /* space-y-4 */
 }
 
 /* 빈 이력 메시지 */
-.subscription-empty {
+.subscription-history-empty-message {
   padding: 2.5rem; /* py-10 */
   text-align: center;
   color: #6b7280; /* 회색 텍스트 (text-gray-500) */
@@ -67,7 +55,7 @@
 }
 
 /* 개별 구독 이력 아이템 */
-.subscription-item {
+.subscription-history-item {
   border: 1px solid #e5e7eb; /* 밝은 회색 테두리 (border-gray-200) */
   padding: 1.5rem; /* p-6 */
   border-radius: 0.5rem; /* rounded-lg */
@@ -77,12 +65,12 @@
 }
 
 /* 호버 효과 */
-.subscription-item:hover {
+.subscription-history-item:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* hover:shadow-md */
 }
 
 /* 요금제 이름 */
-.subscription-item-plan-name {
+.subscription-history-item-plan-name {
   font-weight: 600; /* font-semibold */
   font-size: 1.25rem; /* text-xl */
   color: #059669; /* 초록색 강조 (text-emerald-600) */
@@ -90,35 +78,17 @@
 }
 
 /* 구독 기간 */
-.subscription-item-duration {
+.subscription-history-item-duration {
   font-size: 0.875rem; /* text-sm */
   color: #6b7280; /* 회색 텍스트 (text-gray-500) */
   margin-bottom: 0.25rem; /* mb-1 */
 }
 
 /* 가격 */
-.subscription-item-price {
+.subscription-history-item-price {
   font-size: 1.125rem; /* text-lg */
   font-weight: bold;
   color: #374151; /* 짙은 회색 텍스트 (text-gray-700) */
-}
-
-/* 구독 연장 버튼 */
-.subscription-extend-button {
-  padding: 0.75rem 1.5rem; /* px-6 py-3 */
-  background-color: #2563eb; /* 파란색 (bg-blue-600) */
-  color: #ffffff; /* 흰색 텍스트 */
-  border: none;
-  border-radius: 0.375rem; /* rounded-md */
-  cursor: pointer;
-  font-size: 1rem; /* text-base */
-  font-weight: 500; /* font-medium */
-  transition: background-color 0.2s ease;
-}
-
-/* 구독 연장 버튼 호버 */
-.subscription-extend-button:hover {
-  background-color: #1d4ed8; /* 더 어두운 파란색 (hover:bg-blue-700) */
 }
 
 /* 구독 해지 버튼 */
@@ -131,6 +101,7 @@
   cursor: pointer;
   font-size: 1rem; /* text-base */
   font-weight: 500; /* font-medium */
+  margin-bottom: 1.5rem; /* mb-6 */
   transition: background-color 0.2s ease;
 }
 

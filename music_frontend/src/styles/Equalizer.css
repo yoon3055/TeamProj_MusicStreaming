@@ -1,36 +1,14 @@
+/* src/styles/equalizer.css */
 .equalizer-container {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  margin-top: 0.75rem;
+  align-items: flex-end; /* items-end */
+  margin-top: 0.75rem; /* my-3 */
   margin-bottom: 0.75rem;
   width: 100%;
-  height: 4rem;
-}
-
-.equalizer-container.dynamic {
-  width: 90%; /* MyPage-profile-edit의 90% */
-  margin-left: auto;
-  margin-right: auto;
-  height: 5rem; /* 동적 이퀄라이저 크기 */
+  height: 4rem; /* h-16 */
 }
 
 .equalizer-svg-icon {
-  color: #059669; /* text-emerald-500 */
-}
-
-.equalizer-container.dynamic .equalizer-svg-icon {
-  color: #059669;
-}
-
-.equalizer-container.linked .equalizer-svg-icon {
-  color: #059669;
-}
-
-.equalizer-container.linked:not(.playing) .equalizer-svg-icon {
-  color: #6b7280; /* 비활성 시 회색 */
-}
-
-.equalizer-container.static .equalizer-svg-icon {
-  color: #6b7280; /* 정적 모드 회색 */
+  color: var(--flo-accent-emerald); /* text-emerald-500 */
 }

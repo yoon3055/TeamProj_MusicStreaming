@@ -1,3 +1,4 @@
+// src/component/InteractiveCard.jsx
 import React from 'react';
 import { useSpring, animated } from '@react-spring/web';
 import { useDrag } from '@use-gesture/react';
@@ -21,6 +22,9 @@ const InteractiveCard = ({ children }) => {
       y: down ? my : 0, // 드래그 중이면 마우스 이동 값, 아니면 0
       scale: down ? 1.05 : 1, // 드래그 중이면 1.05배 확대, 아니면 원래 크기
     });
+  }, {
+    // 옵션: 축 제한 (필요시)
+    // axis: 'x', // 가로로만 드래그 가능
   });
 
   return (

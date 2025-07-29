@@ -1,7 +1,7 @@
 
 import { useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import  {SubscriptionPage}  from '../pages/SubscriptionPage';
+import { SubscriptionPage } from '../pages/SubscriptionPage';
 import { UserSubscriptionHistory } from '../pages/UserSubscriptionHistoryPage';
 
 function SubscriptionRouter() {
