@@ -41,15 +41,15 @@ const DUMMY_MOCK_ALBUMS = Array.from({ length: 6 }, (_, i) => ({
 
 // 🌐 2. 광고 섹션 더미 데이터
 const DUMMY_MOCK_ADS = [
-  { id: 1, text: 'FLO 프리미엄 구독, 지금 바로!', url: '/subscription-plans' },
+  { id: 1, text: ' 프리미엄 구독, 지금 바로!', url: '/subscription-plans' },
   { id: 2, text: '최신 앨범 30% 할인!', url: '/promotion/new-album' },
-  { id: 3, text: 'FLO 앱 다운로드!', url: '/download-app' },
+  { id: 3, text: ' 앱 다운로드!', url: '/download-app' },
 ];
 
 // ✨ 3. FLO 추천 플레이리스트 더미 데이터 (텍스트 목록용)
 const DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT = Array.from({ length: 4 }, (_, i) => ({
   id: `flo_text_rec_pl${i + 1}`,
-  name: `FLO 추천 ${i + 1}`,
+  name: `추천 앨범 ${i + 1}`,
   songs: [ // 내부 곡 더미
     { id: `rec_song_${i+1}_1`, title: `추천곡 ${i+1}-1`, artist: `추천가수 A` },
     { id: `rec_song_${i+1}_2`, title: `추천곡 ${i+1}-2`, artist: `추천가수 B` },
@@ -182,8 +182,8 @@ export default function SidebarContent() {
       {/* 로그인 시 이 섹션은 아예 렌더링되지 않습니다. */}
       {!user && (
         <div className="sidebar-section auth-prompt" style={{ order: 1 }}>
-          <h3 className="sidebar-title">FLO, 맘껏 즐기려면</h3>
-          <p className="sidebar-text">로그인하고 FLO의 모든 기능을 경험해보세요.</p>
+          <h3 className="sidebar-title"> 무제한으로 맘껏 즐기려면</h3>
+          <p className="sidebar-text">로그인하고 모든 기능을 경험해보세요.</p>
           <Link to="/login" className="sidebar-button primary">로그인</Link>
           <Link to="/signup" className="sidebar-button secondary">회원가입</Link>
         </div>
@@ -191,13 +191,13 @@ export default function SidebarContent() {
 
       {/* 2. FLO 추천 플레이리스트 섹션 (로그인 여부와 관계없이 항상 표시) */}
       <div className="sidebar-section featured-playlists-section" style={{ order: 2 }}>
-        <h3 className="sidebar-title">FLO 추천 플레이리스트</h3>
+        <h3 className="sidebar-title">추천 플레이리스트</h3>
         <ul className="playlist-text-list">
           {DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT.map((pl) => (
             <li key={pl.id} className="playlist-list-item">
               <div className="playlist-list-item-header">
                 <span className="playlist-name" onClick={() => handleFloPlaylistToggle(pl.id)}>{pl.name}</span>
-                <span className="toggle-icon" onClick={() => handleFloPlaylistToggle(pl.id)}>{expandedFloPlaylistId === pl.id ? '▼' : '▶'}</span>
+                <span className="toggle-icon" onClick={() => handleFloPlaylistToggle(pl.id)}>{expandedFloPlaylistId === pl.id ? '▲' : '▼'}</span>
                 <button
                   onClick={() => handlePlayAllPlaylistInContext(pl)} // 플레이리스트 전체 재생 버튼 연결
                   className="play-album-button"
@@ -264,7 +264,7 @@ export default function SidebarContent() {
       {/* 5. 광고 섹션 (항상 표시, 로그인 여부에 따라 order 조정) */}
       {/* 로그인 시에는 order가 5, 비로그인 시에는 order가 4 */}
       <div className="sidebar-section ad-section" style={{ order: user ? 5 : 4 }}>
-        <h3 className="sidebar-title">FLO 이벤트</h3>
+        <h3 className="sidebar-title"> 이벤트</h3>
         <div className="sidebar-ad-list">
           {DUMMY_MOCK_ADS.map(ad => (
             <Link key={ad.id} to={ad.url} className="sidebar-ad-item">
@@ -277,13 +277,13 @@ export default function SidebarContent() {
       
       {/* 6. 하단 통합 서비스/바로가기 섹션 (항상 마지막 순서 6) */}
       <div className="sidebar-section bottom-links-section" style={{ order: 6 }}>
-        <h3 className="sidebar-title">FLO 주요 안내</h3>
+        <h3 className="sidebar-title"> 주요 안내</h3>
         <div className="sidebar-shortcut-list">
           
-          <Link to="/ranking" className="sidebar-shortcut-item">차트</Link>
+          <Link to="/explore" className="sidebar-shortcut-item">차트</Link>
          
           <Link to="/my-subscription" className="sidebar-shortcut-item">나의 이용권</Link>
-          <Link to="/profile" className="sidebar-shortcut-item">내 프로필</Link>
+          <Link to="/myPage" className="sidebar-shortcut-item">내 프로필</Link>
           <Link to="/notice" className="sidebar-shortcut-item">공지사항</Link>
      
         </div>
