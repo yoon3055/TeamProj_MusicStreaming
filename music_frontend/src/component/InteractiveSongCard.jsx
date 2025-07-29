@@ -1,6 +1,5 @@
-// src/component/InteractiveSongCard.jsx
 import React from 'react';
-import { motion } from 'framer-motion'; // framer-motion 임포트
+import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import defaultCover from '../assets/default-cover.jpg';
 
@@ -22,14 +21,14 @@ const InteractiveSongCard = ({ song, onPlay }) => {
           src={song.coverUrl || defaultCover}
           alt={song.title}
           className="interactive-song-card-cover"
-          whileHover={{ rotate: 1 }}
+          whileHover={{ rotate: '10deg' }} // 회전 각도를 숫자나 각도로 수정
         />
         <div className="interactive-song-card-text-content">
           <span className="interactive-song-card-title">{song.title}</span>
           <span className="interactive-song-card-artist">{song.artist}</span>
           {song.isHighQuality && (
             <motion.span
-              className="interactive-song-card-quality-badge"
+              className="interactive-song-card-quality-badge" 
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 300 }}
@@ -43,14 +42,23 @@ const InteractiveSongCard = ({ song, onPlay }) => {
   );
 };
 
+// 기본 값 설정 (coverUrl이 없다면 defaultCover 사용)
+InteractiveSongCard.defaultProps = {
+  song: {
+    coverUrl: defaultCover,
+    isHighQuality: false,
+  },
+  onPlay: () => {},
+};
+
 InteractiveSongCard.propTypes = {
   song: PropTypes.shape({
     title: PropTypes.string.isRequired,
     artist: PropTypes.string.isRequired,
     coverUrl: PropTypes.string,
-    isHighQuality: PropTypes.bool
+    isHighQuality: PropTypes.bool,
   }).isRequired,
-  onPlay: PropTypes.func
+  onPlay: PropTypes.func,
 };
 
 export default InteractiveSongCard;
