@@ -129,7 +129,6 @@
 
 .sidebar-album-list {
   display: flex; flex-wrap: wrap; gap: 15px 10px; justify-content: flex-start;
-  color:#212121;
 }
 
 .sidebar-ad-list {
@@ -176,4 +175,3 @@
 .play-all-library-button svg {
   width: 16px; height: 16px;
 }
-

@@ -74,7 +74,7 @@ const UserPlaylistsSidebarPage = ({ onPlay }) => { // onPlay는 SidebarContent�
             <SidebarMiniCard key={item.id} item={item} type={item.type} onPlay={onPlay} />
           ))}
         </div>
-        <Link to="/my-playlists" className="user-playlists-more-link">더보기</Link>
+        <Link to="/library" className="user-playlists-more-link">더보기</Link>
       </div>
     </div>
   );

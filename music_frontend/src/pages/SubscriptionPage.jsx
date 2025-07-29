@@ -1,64 +1,33 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../styles/SubscriptionPage.css';
 
-// 더미 데이터
-const dummyPlans = [
-  {
-    id: 'plan_basic',
-    name: 'Basic',
-    description: '기본 구독 요금제로, 표준 음질 스트리밍 제공',
-    price: 9900,
-    durationDays: 30,
-    supportsHighQuality: false,
-  },
-  {
-    id: 'plan_premium',
-    name: 'Premium',
-    description: '고음질 스트리밍과 오프라인 재생 지원',
-    price: 14900,
-    durationDays: 30,
-    supportsHighQuality: true,
-  },
-  {
-    id: 'plan_pro',
-    name: 'Pro',
-    description: '최고 음질과 모든 프리미엄 기능 포함',
-    price: 19900,
-    durationDays: 30,
-    supportsHighQuality: true,
-  },
-];
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+import '../styles/SubscriptionPage.css';
 
 export const SubscriptionPage = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { setIsSubscribed } = useAuth();
   const navigate = useNavigate();
-  const jwt = localStorage.getItem('jwt'); // token -> jwt로 변경
+  const token = localStorage.getItem('token');
 
-  // 구독 요금제 데이터를 fetch하는 함수
   const fetchData = useCallback(async () => {
-    if (!jwt) {
+    if (!token) {
       setError('로그인이 필요합니다.');
       setLoading(false);
-      navigate('/login'); // 로그인 페이지로 리다이렉트
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      // 실제 API 호출 (주석 처리)
-      /*
       const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/subscriptions`, {
-        headers: { Authorization: `Bearer ${jwt}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPlans(res.data);
       console.log('🌐 구독 요금제 로드 성공:', res.data);
-      */
-      // 더미 데이터로 대체
-      setPlans(dummyPlans);
-      console.log('🌐 더미 구독 요금제 로드 성공:', dummyPlans);
     } catch (err) {
       console.error('🌐 요금제 불러오기 실패:', err);
       setError('요금제를 불러오는 데 실패했습니다.');
@@ -66,20 +35,33 @@ export const SubscriptionPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [jwt, navigate]);
+  }, [token]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // 구독 요금제를 선택했을 때 결제 페이지로 이동
-  const handleSelectPlan = (planId) => {
-    if (!jwt) {
-      setError('로그인 후 이용해 주세요.');
-      navigate('/login');
+  const handleSubscribe = async (planId) => {
+    if (!token) {
+      setError('로그인이 필요합니다.');
       return;
     }
-    navigate(`/payment/${planId}`);
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/subscriptions/subscribe`,
+        { planId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setIsSubscribed(true);
+      alert('구독이 완료되었습니다.');
+      console.log(`🌐 요금제 ID ${planId} 구독 성공`);
+      navigate('/my-subscription');
+    } catch (err) {
+      alert('구독 실패: ' + (err.response?.data?.message || err.message));
+      console.error('🌐 구독 실패:', err);
+    }
   };
 
   if (loading) {
@@ -116,12 +98,8 @@ export const SubscriptionPage = () => {
                   <span className="plan-high-quality-badge">고음질 지원</span>
                 )}
               </div>
-              <button
-                className="plan-select-button"
-                onClick={() => handleSelectPlan(plan.id)}
-                disabled={!jwt} // 로그인하지 않으면 버튼 비활성화
-              >
-                결제하기
+              <button className="plan-select-button" onClick={() => handleSubscribe(plan.id)}>
+                이 요금제 선택
               </button>
             </div>
           ))
