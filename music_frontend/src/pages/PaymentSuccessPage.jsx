@@ -1,85 +1,94 @@
-// src/pages/PaymentSuccessPage.jsx
-import React, { useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-// import axios from 'axios'; // 🌐 백엔드 통신 기능이 주석 처리되므로 임포트도 주석 처리
+import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import '../styles/SubscriptionPage.css';
 
-import '../styles/PaymentSuccessPage.css'; // ✨ CSS 파일 임포트
+const dummyPlans = [
+  { id: 'plan_basic', name: 'Basic', price: 9900, durationDays: 30 },
+  { id: 'plan_premium', name: 'Premium', price: 14900, durationDays: 30 },
+  { id: 'plan_pro', name: 'Pro', price: 19900, durationDays: 30 },
+];
+const dummyAlbums = {
+  'album_001': { id: 'album_001', title: '별 헤는 밤', artist: '플로아', price: 15000 },
+  'album_002': { id: 'album_002', title: '도시의 그림자', artist: '멜로디온', price: 18000 },
+  'album_003': { id: 'album_003', title: '새벽의 발자취', artist: '레몬트리', price: 12000 },
+};
 
 const PaymentSuccessPage = () => {
-  const [params] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const hasLogged = useRef(false);
+  const [error, setError] = useState(null);
+  
+  const paymentKey = searchParams.get('paymentKey');
+  const orderId = searchParams.get('orderId');
+  const amount = searchParams.get('amount');
+  const type = searchParams.get('type');
+  const planId = searchParams.get('planId');
+  const albumId = searchParams.get('albumId');
 
-  // 🌐 결제 검증 로직 (전체 주석 처리)
   useEffect(() => {
-    // const verifyPayment = async () => {
-    //   const paymentKey = params.get('paymentKey');
-    //   const orderId = params.get('orderId');
-    //   const amount = params.get('amount');
+    if (!hasLogged.current) {
+      if (!paymentKey || !orderId || !amount || !type) {
+        setError('필수 결제 정보가 누락되었습니다.');
+      } else {
+        console.log(`🌐 PaymentSuccessPage: type=${type}, planId=${planId}, albumId=${albumId}, amount=${amount}, paymentKey=${paymentKey}, orderId=${orderId}`);
+      }
+      hasLogged.current = true;
+    }
+  }, [type, planId, albumId, amount, paymentKey, orderId]);
 
-    //   if (!paymentKey || !orderId || !amount) {
-    //     console.error('🌐 필수 결제 파라미터 누락');
-    //     navigate('/payment/fail', { replace: true });
-    //     return;
-    //   }
+  const item = type === 'subscription'
+    ? dummyPlans.find((p) => p.id === planId)
+    : type === 'album'
+    ? dummyAlbums[albumId]
+    : null;
 
-    //   try {
-    //     // await axios.post(`${process.env.REACT_APP_API_URL}/api/payments/verify/toss`, {
-    //     //   paymentKey,
-    //     //   orderId,
-    //     //   amount: Number(amount),
-    //     //   userId: localStorage.getItem('userId'),
-    //     //   planId: localStorage.getItem('selectedPlanId'),
-    //     // });
-
-    //     console.log('🌐 결제 검증 성공');
-    //     setTimeout(() => {
-    //       navigate('/subscription', { replace: true });
-    //     }, 4000);
-    //   } catch (err) {
-    //     console.error('🌐 결제 검증 실패:', err);
-    //     navigate('/payment/fail', { replace: true });
-    //   }
-    // };
-
-    // verifyPayment();
-  }, [params, navigate]);
+  const navigateToPreviousPage = () => {
+    if (type === 'subscription') {
+      navigate('/subscription-plans', { replace: true });
+    } else if (type === 'album') {
+      navigate('/myPage', { replace: true });
+    }
+  };
 
   return (
-    <div className="payment-success-page-container">
-      <div className="payment-success-card animate-fadeInUp">
-        {/* 체크 아이콘 (SVG) */}
-        <svg
-          className="payment-success-icon animate-pulse"
-          width="96"
-          height="96"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path fillRule="evenodd" clipRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.893a.75.75 0 00-1.06-1.06l-4.47 4.47-2.065-2.065a.75.75 0 00-1.06 1.06l2.59 2.59a.75.75 0 001.06 0l5-5z" />
-        </svg>
-
-        <h1 className="payment-success-title">결제가 성공적으로 완료되었습니다!</h1>
-        <p className="payment-success-message">
-          🎉 이제 프리미엄 서비스의 모든 혜택을 누리실 수 있습니다.
-        </p>
-        <div className="payment-success-info-box">
-          <p className="payment-success-info-item">
-            결제 금액: <span className="payment-success-info-value">
-              ₩{params.get('amount')?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            </span>
-          </p>
-          <p className="payment-success-info-item">
-            주문 번호: <span className="payment-success-info-value">{params.get('orderId')}</span>
-          </p>
-          <p className="payment-success-info-item">
-            결제 키: <span className="payment-success-info-value">{params.get('paymentKey')}</span>
-          </p>
+    <div className="subscription-page-container">
+      <h2>결제 성공</h2>
+      {error ? (
+        <div>
+          <p>{error}</p>
+          <button onClick={navigateToPreviousPage} className="retry-button">다시 시도</button>
         </div>
-        <Link to="/" className="payment-success-button">
-          홈으로 돌아가기
-        </Link>
-      </div>
+      ) : (
+        <>
+          <p>결제가 성공적으로 완료되었습니다!</p>
+          {item && type === 'subscription' && (
+            <>
+              <p>구독 요금제: {item.name}</p>
+              <p>금액: ₩ {Number(amount).toLocaleString()}</p>
+              <p>기간: {item.durationDays}일</p>
+              <p>결제 키: {paymentKey}</p>
+              <p>주문 ID: {orderId}</p>
+              <button onClick={navigateToPreviousPage} className="retry-button">요금제 페이지로 돌아가기</button>
+            </>
+          )}
+          {item && type === 'album' && (
+            <>
+              <p>앨범: {item.title} - {item.artist}</p>
+              <p>금액: ₩ {Number(amount).toLocaleString()}</p>
+              <p>결제 키: {paymentKey}</p>
+              <p>주문 ID: {orderId}</p>
+              <button onClick={navigateToPreviousPage} className="retry-button">마이페이지로 돌아가기</button>
+            </>
+          )}
+          {!item && (
+            <>
+              <p>결제 항목 정보를 불러올 수 없습니다. (type: {type}, planId: {planId}, albumId: {albumId})</p>
+              <button onClick={navigateToPreviousPage} className="retry-button">마이페이지로 돌아가기</button>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 };
