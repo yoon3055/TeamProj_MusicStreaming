@@ -49,7 +49,7 @@ const DUMMY_MOCK_ADS = [
 // ✨ 3. FLO 추천 플레이리스트 더미 데이터 (텍스트 목록용)
 const DUMMY_FLO_RECOMMEND_PLAYLISTS_TEXT = Array.from({ length: 4 }, (_, i) => ({
   id: `flo_text_rec_pl${i + 1}`,
-  name: `추천 ${i + 1}`,
+  name: `추천 앨범 ${i + 1}`,
   songs: [ // 내부 곡 더미
     { id: `rec_song_${i+1}_1`, title: `추천곡 ${i+1}-1`, artist: `추천가수 A` },
     { id: `rec_song_${i+1}_2`, title: `추천곡 ${i+1}-2`, artist: `추천가수 B` },
@@ -197,7 +197,7 @@ export default function SidebarContent() {
             <li key={pl.id} className="playlist-list-item">
               <div className="playlist-list-item-header">
                 <span className="playlist-name" onClick={() => handleFloPlaylistToggle(pl.id)}>{pl.name}</span>
-                <span className="toggle-icon" onClick={() => handleFloPlaylistToggle(pl.id)}>{expandedFloPlaylistId === pl.id ? '▼' : '▶'}</span>
+                <span className="toggle-icon" onClick={() => handleFloPlaylistToggle(pl.id)}>{expandedFloPlaylistId === pl.id ? '▲' : '▼'}</span>
                 <button
                   onClick={() => handlePlayAllPlaylistInContext(pl)} // 플레이리스트 전체 재생 버튼 연결
                   className="play-album-button"

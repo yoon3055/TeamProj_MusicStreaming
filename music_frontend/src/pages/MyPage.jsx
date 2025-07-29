@@ -17,7 +17,7 @@ const cardData = [
     description: '구독 연장, 해지',
     image: '/images/K-027.jpg',
    // icon: '/icons/cancel-subscription.png',
-    link: '/subscription/cancel',
+    link: '/subscription',
   },
   {
     id: 3,
@@ -25,7 +25,7 @@ const cardData = [
     description: '보관한 노래 목록',
     image: '/images/K-037.jpg',
    // icon: '/icons/playlist.png',
-    link: '/playlist',
+    link: '/my-playlists',
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const cardData = [
     description: '좋아요 & 팔로잉',
     image: '/images/K-019.jpg',
   //  icon: '/icons/like.png',
-    link: '/favorites',
+    link: '/likes',
   },
   {
     id: 6,

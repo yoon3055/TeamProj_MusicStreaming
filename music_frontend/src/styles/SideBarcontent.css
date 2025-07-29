@@ -177,3 +177,73 @@
   width: 16px; height: 16px;
 }
 
+/* 재생 버튼 스타일 조정 */
+.play-album-button, .play-song-item-button {
+    width: 30px; /* 재생 아이콘 크기에 맞게 줄임 */
+    height: 30px;
+    background: none; /* 배경색 제거 */
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.3s ease; /* 호버 시 부드러운 확대 효과 */
+}
+
+.play-album-button svg, .play-song-item-button svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--flo-accent-color); /* FLO 테마 색상 적용 */
+}
+
+.play-album-button:hover, .play-song-item-button:hover {
+    transform: scale(1.1); /* 호버 시 아이콘 10% 키움 */
+}
+
+.play-album-button:hover svg, .play-song-item-button:hover svg {
+    fill: var(--flo-accent-color-hover); /* 호버 시 색상 강화 */
+}
+.playlist-list-item {
+    padding: 5px 0; /* 상하 패딩 줄임 */
+    margin: 2px 0; /* 상하 마진 조정 */
+}
+
+.playlist-list-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 요소 간 간격 유지 */
+}
+
+.playlist-name {
+    flex: 1; /* 제목이 남은 공간을 채우도록 */
+    font-size: 0.95rem;
+    color: var(--flo-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 제목이 길면 ...으로 표시 */
+}
+
+.toggle-icon {
+    font-size: 0.8rem;
+    color: var(--flo-text-secondary);
+    cursor: pointer;
+    margin-left: 5px; /* 제목과의 간격 조정 */
+    transition: transform 0.2s ease; /* 부드러운 전환 효과 */
+}
+
+.playlist-song-item {
+    padding: 5px 10px; /* 내부 패딩 조정 */
+    margin: 2px 0;
+}
+
+.song-info-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* 재생 버튼과 텍스트 간 간격 */
+}
+
+.song-title, .song-artist {
+    font-size: 0.9rem;
+    color: var(--flo-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
