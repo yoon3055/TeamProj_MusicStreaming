@@ -1,15 +1,15 @@
-/* src/styles/header.css */
 .app-header {
-  background-color: var(--flo-bg-dark);
-  color: var(--flo-text-white);
-  padding: 1rem 1.5rem; /* py-4 px-6 */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 40; /* z-40 */
+  height: 70px;
+  padding: 0 20px;
+  background-color: #fff;
+  position: relative;
+  z-index: 100;
 }
 
+/* 왼쪽 로고 그룹 */
 .header-left {
   display: flex;
   align-items: center;
@@ -18,73 +18,84 @@
 .header-logo-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* space-x-2 */
-  color: var(--flo-text-white);
   text-decoration: none;
-  transition: color 0.2s ease; /* transition-colors duration-200 */
-}
-
-.header-logo-link:hover {
-  color: #0d9488; /* hover:text-blue-400 */
+  color: inherit;
+ 
 }
 
 .header-logo-icon {
-  width: 2rem; /* w-8 */
-  height: 2rem; /* h-8 */
-  color: var(--flo-accent-blue); /* text-blue-500 */
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+}
+
+.header-logo-image {
+  width: 36px;
+  height: auto;
+  margin-right: 8px;
 }
 
 .header-app-title {
-  font-size: 1.5rem; /* text-2xl */
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #640b8d;
-  
-}
-.header-app-title:hover {
-   color: #0d9488;
+  margin: 0;
+  color:#640b8d;
 }
 
+.header-app-title:hover {
+  color:#0d9488;
+}
+
+/* 중앙 정렬: 절대 위치 + transform */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+/* 오른쪽 로그인/회원가입 */
 .header-right {
   display: flex;
   align-items: center;
-  gap: 1.5rem; /* space-x-6 */
-  font-size: 0.875rem; /* text-sm */
+  gap: 10px;
 }
 
-.header-link {
-  color: var(--flo-text-gray); /* text-gray-300 */
-  text-decoration: none;
-  transition: color 0.2s ease; /* transition-colors duration-200 */
-  font-weight: 600;
-}
-
-.header-link:hover {
-  color: var(--flo-text-white); /* hover:text-white */
-}
-
+/* 로그인, 로그아웃 버튼 공통 스타일 */
 .header-button {
-  padding: 0.25rem 1rem; /* px-4 py-1 */
-  border-radius: 9999px; /* rounded-full */
-  transition: background-color 0.2s ease; /* transition-colors duration-200 */
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
   font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  box-sizing: border-box;
+  white-space: nowrap;
   text-decoration: none;
-  display: inline-block; /* Link가 버튼처럼 보이도록 */
 }
 
 .header-button-login {
-  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+  background-color: var(--flo-accent-blue);
   color: white;
 }
 
 .header-button-login:hover {
-  background-color: #1a73e8; /* hover:bg-blue-700 */
+  background-color: var(--flo-accent-blue-hover);
 }
 
+
 .header-button-signup {
-  background-color: #640b8d; /* bg-emerald-600 */
+  background-color: #640b8d;
   color: white;
 }
 
+
+
 .header-button-signup:hover {
-  background-color: #0d9488; /* hover:bg-emerald-700 */
+  background-color: #0d9488;
 }

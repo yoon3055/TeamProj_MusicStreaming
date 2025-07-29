@@ -1,13 +1,41 @@
-/* src/styles/userprofilepage.css */
+
+
+
+
 .user-profile-page-container {
   min-height: 100vh;
   background-color: var(--flo-bg-dark);
   color: var(--flo-text-white);
-  padding: 2rem 1.5rem; /* py-8 px-6 */
+  padding: 2rem 1.5rem;
   max-width: 448px; /* max-w-xl */
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
+}
+
+.user-profile-edit-section {
+  background-color: var(--flo-bg-medium);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--flo-bg-medium);
+}
+
+.user-profile-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--flo-bg-light);
+}
+
+.user-profile-section:last-child {
+  border-bottom: none;
+}
+
+.user-profile-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #0d9488;
 }
 
 .user-profile-page-loading {
@@ -15,151 +43,207 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--flo-bg-dark);
-  color: var(--flo-text-gray);
-  font-size: 1.125rem; /* text-lg */
+  background-color: #a7f3d0;
+  color: #3d3d3d;
+  font-size: 1.125rem;
 }
 
 .user-profile-page-loading.user-profile-page-error {
-  color: var(--flo-accent-red);
-}
-
-.user-profile-card {
-  background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  padding: 2rem; /* p-8 */
-  border-radius: 0.5rem; /* rounded-lg */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
-  border: 1px solid var(--flo-bg-medium); /* border border-gray-700 */
-  box-sizing: border-box;
+  color: #b91c1c;
 }
 
 .user-profile-title {
-  font-size: 1.875rem; /* text-3xl */
+  font-size: 1.875rem;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 2rem; /* mb-8 */
+  margin-bottom: 2rem;
 }
 
 .user-profile-form,
 .user-profile-display-info {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* space-y-4 */
+  gap: 1rem;
 }
 
 .user-profile-label {
   display: block;
-  color: var(--flo-text-gray); /* text-gray-300 */
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 600; /* font-semibold */
-  margin-bottom: 0.5rem; /* mb-2 */
+  color: #3d3d3d;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .user-profile-input {
   width: 100%;
-  padding: 0.75rem; /* p-3 */
-  border-radius: 0.375rem; /* rounded-md */
-  background-color: var(--flo-bg-light); /* bg-gray-700 */
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  background-color: var(--flo-bg-light);
   color: var(--flo-text-white);
   border: none;
-  outline: none; /* focus:outline-none */
-  transition: all 0.2s ease; /* transition-all duration-200 */
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 .user-profile-input:focus {
-  box-shadow: 0 0 0 2px var(--flo-accent-blue); /* focus:ring-2 focus:ring-blue-500 */
-  border-color: var(--flo-bg-medium); /* border border-gray-600 */
+  box-shadow: 0 0 0 2px var(--flo-accent-blue);
+  border-color: var(--flo-bg-medium);
 }
 
 .user-profile-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem; /* space-x-4 */
-  padding-top: 1rem; /* pt-4 */
+  gap: 1rem;
+  padding-top: 1rem;
 }
 
 .user-profile-cancel-button {
-  background-color: var(--flo-bg-light); /* bg-gray-600 */
+  background-color: var(--flo-bg-light);
   color: var(--flo-text-white);
   font-weight: 600;
-  padding: 0.5rem 1.25rem; /* py-2 px-5 */
-  border-radius: 0.375rem; /* rounded-md */
-  transition: all 0.2s ease; /* transition-colors duration-200 */
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
   border: none;
   cursor: pointer;
-  outline: none; /* focus:outline-none */
+  outline: none;
 }
 
 .user-profile-cancel-button:hover {
-  background-color: #3d3d3d; /* hover:bg-gray-700 */
+  background-color: #3d3d3d;
 }
 
 .user-profile-cancel-button:focus {
-  box-shadow: 0 0 0 2px var(--flo-bg-light); /* focus:ring-2 focus:ring-gray-500 */
+  box-shadow: 0 0 0 2px var(--flo-bg-light);
 }
 
 .user-profile-save-button {
-  background-color: var(--flo-accent-emerald); /* bg-emerald-600 */
+  background-color: #1a73e8;
   color: var(--flo-text-white);
   font-weight: 600;
-  padding: 0.5rem 1.25rem; /* py-2 px-5 */
-  border-radius: 0.375rem; /* rounded-md */
-  transition: all 0.2s ease; /* transition-colors duration-200 */
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
   border: none;
   cursor: pointer;
-  outline: none; /* focus:outline-none */
+  outline: none;
 }
 
 .user-profile-save-button:hover {
-  background-color: #0d9488; /* hover:bg-emerald-700 */
+  background-color: #0d9488;
 }
 
 .user-profile-save-button:focus {
-  box-shadow: 0 0 0 2px var(--flo-accent-emerald); /* focus:ring-2 focus:ring-emerald-500 */
+  box-shadow: 0 0 0 2px var(--flo-accent-emerald);
 }
 
 .user-profile-text {
-  color: var(--flo-text-gray); /* text-gray-300 */
-  font-size: 1.125rem; /* text-lg */
+  color: var(--flo-text-gray);
+  font-size: 1.125rem;
 }
 
 .user-profile-label-strong {
-  color: var(--flo-text-white); /* text-white */
+  color: #1a73e8;
 }
 
 .user-profile-subscription-status {
-  font-weight: 600; /* font-semibold */
+  font-weight: 600;
 }
 
 .user-profile-subscription-status.status-active {
-  color: #a7f3d0; /* text-emerald-400 */
+  color: #7a0585;
 }
 
 .user-profile-subscription-status.status-inactive {
-  color: var(--flo-accent-red); /* text-red-400 */
+  color: var(--flo-accent-red);
 }
 
 .user-profile-edit-button-wrapper {
-  padding-top: 1rem; /* pt-4 */
+  padding-top: 1rem;
   text-align: center;
 }
 
 .user-profile-edit-button {
-  background-color: var(--flo-accent-blue); /* bg-blue-600 */
-  color: var(--flo-text-white);
+  background-color: var(--flo-accent-blue);
+  color: #ffffff;
   font-weight: 600;
-  padding: 0.5rem 1.25rem; /* py-2 px-5 */
-  border-radius: 0.375rem; /* rounded-md */
-  transition: all 0.2s ease; /* transition-colors duration-200 */
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
   border: none;
   cursor: pointer;
-  outline: none; /* focus:outline-none */
+  outline: none;
 }
 
 .user-profile-edit-button:hover {
-  background-color: #1a73e8; /* hover:bg-blue-700 */
+  background-color: #1a73e8;
 }
 
 .user-profile-edit-button:focus {
-  box-shadow: 0 0 0 2px var(--flo-accent-blue); /* focus:ring-2 focus:ring-blue-500 */
+  box-shadow: 0 0 0 2px var(--flo-accent-blue);
+}
+
+.unsubscribe-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.unsubscribe-button:hover {
+  background-color: #b91c1c;
+}
+
+.subscription-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.subscription-history-empty-message {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--flo-text-gray);
+  font-size: 1.125rem;
+  background-color: var(--flo-bg-light);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.subscription-history-item {
+  border: 1px solid var(--flo-bg-light);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--flo-bg-medium);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.subscription-history-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.subscription-history-item-plan-name {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--flo-accent-emerald);
+  margin-bottom: 0.5rem;
+}
+
+.subscription-history-item-duration {
+  font-size: 0.875rem;
+  color: var(--flo-text-gray);
+  margin-bottom: 0.25rem;
+}
+
+.subscription-history-item-price {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: var(--flo-text-white);
 }

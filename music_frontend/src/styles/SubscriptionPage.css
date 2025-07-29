@@ -1,12 +1,9 @@
-
-/* src/styles/SubscriptionPage.css */
-
 .subscription-page-container {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
-  background-color: #ffffff; /* 밝은 흰색 배경 */
-  color: #333333; /* 어두운 텍스트 */
+  background-color: #ffffff;
+  color: #333333;
   min-height: 100vh;
 }
 
@@ -24,29 +21,29 @@
 
 .subscription-plan-card {
   padding: 20px;
-  border: 1px solid #e5e7eb; /* 밝은 회색 테두리 */
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #f9fafb; /* 매우 밝은 회색 배경 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* shadow-sm */
+  background-color: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
 .subscription-plan-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* hover:shadow-md */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .plan-name {
   font-size: 1.5rem;
   margin-bottom: 10px;
-  color: #059669; /* 초록색 강조 */
+  color: #059669;
 }
 
 .plan-description {
   font-size: 1rem;
-  color: #6b7280; /* 회색 텍스트 */
+  color: #6b7280;
   margin-bottom: 10px;
 }
 
@@ -54,12 +51,12 @@
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 10px;
-  color: #374151; /* 짙은 회색 텍스트 */
+  color: #374151;
 }
 
 .plan-high-quality-badge {
-  background-color: #2563eb; /* 파란색 */
-  color: #ffffff; /* 흰색 텍스트 */
+  background-color: #2563eb;
+  color: #ffffff;
   padding: 5px 10px;
   border-radius: 12px;
   font-size: 0.9rem;
@@ -67,7 +64,7 @@
 
 .plan-select-button {
   padding: 10px;
-  background-color: #2563eb; /* 파란색 */
+  background-color: #2563eb;
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -77,15 +74,79 @@
 }
 
 .plan-select-button:hover {
-  background-color: #1d4ed8; /* 더 어두운 파란색 */
+  background-color: #1d4ed8;
+}
+
+.user-profile-cancel-button {
+  padding: 10px;
+  background-color: #6b7280;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.user-profile-cancel-button:hover {
+  background-color: #4b5563;
+}
+
+.payment-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.payment-input {
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #374151;
+  background-color: #ffffff;
+}
+
+.payment-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.payment-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
 }
 
 .subscription-message {
   font-size: 1.1rem;
   text-align: center;
-  color: #6b7280; /* 회색 텍스트 */
+  color: #6b7280;
   padding: 20px;
-  background-color: #f3f4f6; /* 밝은 회색 배경 */
+  background-color: #f3f4f6;
   border-radius: 8px;
 }
 
@@ -93,8 +154,8 @@
   font-size: 1.1rem;
   text-align: center;
   padding: 20px;
-  background-color: #ffffff; /* 밝은 흰색 배경 */
-  color: #6b7280; /* 회색 텍스트 */
+  background-color: #ffffff;
+  color: #6b7280;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -103,12 +164,12 @@
 }
 
 .subscription-page-error {
-  color: #dc2626; /* 빨간색 에러 텍스트 */
+  color: #dc2626;
 }
 
 .retry-button {
   padding: 10px 20px;
-  background-color: #2563eb; /* 파란색 */
+  background-color: #2563eb;
   color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -119,5 +180,5 @@
 }
 
 .retry-button:hover {
-  background-color: #1d4ed8; /* 더 어두운 파란색 */
-}
+  background-color: #1d4ed8;
+} 
