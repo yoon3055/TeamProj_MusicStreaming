@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriptionDetails, setSubscriptionDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [profileBgImage, setProfileBgImage] = useState('/images/K-045.jpg'); // 배경 이미지 상태
+  const [profileBgImage, setProfileBgImage] = useState('/images/K-045.jpg');
 
   useEffect(() => {
     if (DEV_MODE) {
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
           setUser(mockUser);
           setIsSubscribed(mockUser.isSubscribed);
           setSubscriptionDetails(mockSubscriptionDetails);
-          setProfileBgImage('/images/K-045.jpg'); // DEV_MODE에서 기본값
+          setProfileBgImage('/images/K-045.jpg');
         } catch {
           localStorage.removeItem('jwt');
           setUser(null);
@@ -116,6 +116,7 @@ export const AuthProvider = ({ children }) => {
 
   const contextValue = useMemo(() => ({
     user,
+    setUser, // setUser 추가
     isSubscribed,
     setIsSubscribed,
     subscriptionDetails,
