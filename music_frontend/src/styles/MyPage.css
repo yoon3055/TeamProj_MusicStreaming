@@ -65,7 +65,6 @@ body {
   gap: 80px;
   width: 100%;
   max-width: 1200px;
-  
 }
 
 /* 왼쪽 프로필 영역 */
@@ -100,10 +99,11 @@ body {
 /* 글자 감싸는 반투명 박스 */
 .profile-edit-card .content-wrapper {
   position: relative;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(255, 255, 255, 0.8); /* 반투명 흰색 */
   padding: 20px;
   border-radius: 16px;
   z-index: 2;
+  color: #000;
 }
 
 /* 프로필 카드 텍스트 */
@@ -111,19 +111,18 @@ body {
   margin: 0;
   font-size: 1.6rem;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 0 5px rgba(0,0,0,0.7);
+  color: #000;
 }
 
 .profile-edit-card p {
   font-size: 1rem;
   line-height: 1.4;
-  color: #eee;
-  text-shadow: 0 0 4px rgba(0,0,0,0.6);
+  color: #333;
 }
 
-/* 프로필 편집 버튼 */
-.profile-edit-link {
+/* 프로필 편집 및 업로드 버튼 */
+.profile-edit-link,
+.profile-upload-link {
   margin-top: 20px;
   align-self: center;
   padding: 12px 24px;
@@ -144,10 +143,43 @@ body {
 }
 
 .profile-edit-link:hover,
-.profile-edit-link:focus {
+.profile-upload-link:hover,
+.profile-edit-link:focus,
+.profile-upload-link:focus {
   background-color: #0055ff;
   color: #fff;
   box-shadow: 0 5px 15px rgba(0,85,255,0.6);
+}
+
+/* 버튼 한 줄 배치 */
+.profile-edit-card .content-wrapper div {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.profile-edit-card .content-wrapper div input {
+  margin: 5px 0;
+}
+
+.profile-edit-card .content-wrapper div button {
+  margin: 5px;
+  padding: 5px 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #222;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.profile-edit-card .content-wrapper div button:hover {
+  background-color: #0055ff;
+  color: #fff;
+}
+
+.profile-edit-card .content-wrapper div p {
+  color: red;
+  font-size: 0.9rem;
 }
 
 /* 카드 그리드 영역 */

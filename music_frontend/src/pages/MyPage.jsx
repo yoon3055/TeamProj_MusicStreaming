@@ -9,7 +9,7 @@ const cardData = [
     description: '남은 기간 및 등급 보기',
     image: '/images/K-017.jpg',
   //  icon: '/icons/subscription-status.png',
-    link: '/subscription/status',
+    link: '/subscription-plans',
   },
   {
     id: 2,
