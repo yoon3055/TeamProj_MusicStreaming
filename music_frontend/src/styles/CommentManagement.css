@@ -1,0 +1,127 @@
+/* src/styles/CommentManagement.css */
+
+.comment-management-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.comment-management-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.comment-management-empty {
+  text-align: center;
+  color: #64748b;
+  padding: 40px;
+  font-size: 1.125rem;
+}
+
+.comment-management-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment-management-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease-in-out;
+}
+
+.comment-management-item:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.comment-management-content {
+  flex-grow: 1;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #334155;
+}
+
+.comment-management-content strong {
+  color: #1e293b;
+}
+
+.comment-management-info {
+  font-size: 0.875rem;
+  color: #64748b;
+  text-align: right;
+  margin-left: 24px;
+  flex-shrink: 0;
+}
+
+.comment-management-timestamp {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.comment-management-actions {
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+.comment-management-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.comment-management-btn-delete {
+  background-color: #ef4444; /* Tailwind: bg-red-500 */
+  color: #fff;
+}
+
+.comment-management-btn-delete:hover {
+  background-color: #dc2626; /* Tailwind: bg-red-600 */
+}
+
+/* 페이지네이션 버튼 정렬 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  gap: 8px;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1; /* Tailwind: border-slate-300 */
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #334155;
+}
+
+.pagination-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.pagination-btn.active {
+  background-color: #4b0082; /* 보라색 계열 */
+  color: #fff;
+  border-color: #4b0082;
+}

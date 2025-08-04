@@ -1,0 +1,199 @@
+/* src/styles/ContentManagement.css */
+
+.content-management-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.content-management-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.content-ranking-section {
+  margin-bottom: 32px;
+}
+
+.content-ranking-section h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease-in-out;
+}
+
+.ranking-item:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.ranking-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #4b0082;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.item-cover, .item-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.item-info {
+  flex-grow: 1;
+}
+
+.item-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.item-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.item-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: #4b0082;
+  color: #fff;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.action-btn:hover {
+  background-color: #330055;
+}
+
+/* Lyrics Management Section */
+.lyrics-management-section {
+    margin-top: 32px;
+}
+
+.lyrics-management-section h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.lyrics-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #f1f5f9;
+    padding: 24px;
+    border-radius: 12px;
+}
+
+.lyrics-form label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #334155;
+}
+
+.lyrics-form input,
+.lyrics-form textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 1rem;
+    color: #1e293b;
+    background-color: #ffffff;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.lyrics-form button {
+    align-self: flex-start;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background-color: #4b0082;
+    color: #fff;
+    transition: background-color 0.2s;
+}
+
+.lyrics-form button:hover {
+    background-color: #330055;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination-button {
+    background-color: #4b0082;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination-button:hover:not(:disabled) {
+    background-color: #330055;
+}
+
+.pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
