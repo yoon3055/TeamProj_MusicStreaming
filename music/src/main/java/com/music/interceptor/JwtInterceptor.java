@@ -101,19 +101,60 @@ log.info("Authorization 헤더: [{}]", authorization);
         // 유효한 토큰이면 진행, 그렇지 않으면 예외를 발생
         if(authToken != null && !authToken.trim().isEmpty()) {
             try {
+                log.info("JWT 토큰 검증 시작: {}", authToken.substring(0, Math.min(20, authToken.length())) + "...");
                 Map<String, Object> info = jwtUtil.checkAndGetClaims(authToken);
+                log.info("JWT 토큰에서 추출한 정보: {}", info);
+                
                 Object info_email = info.get("user");
                 String email = (String)info_email;
+                log.info("추출된 이메일: {}", email);
+                
+                if (email == null || email.trim().isEmpty()) {
+                    log.error("JWT 토큰에서 이메일을 찾을 수 없음");
+                    throw new RuntimeException("토큰에 사용자 정보가 없습니다");
+                }
+                
+                // 역할 정보 추출
+                Object info_role = info.get("role");
+                String role = (String)info_role;
+                log.info("추출된 역할: {}", role);
+                
+                // 관리자 API 접근 권한 확인
+                if (isAdminApi(requestURI)) {
+                    if (!"ADMIN".equals(role)) {
+                        log.error("관리자 권한 없음 - 이메일: {}, 역할: {}, 요청 URI: {}", email, role, requestURI);
+                        throw new RuntimeException("관리자 권한이 필요합니다");
+                    }
+                    log.info("관리자 권한 확인 완료 - 이메일: {}", email);
+                }
+                
                 request.setAttribute("email", email);
+                request.setAttribute("role", role);
+                log.info("JWT 인증 성공 - 이메일: {}, 역할: {}", email, role);
 
                 // 요청 받는것이 되는것
                 return true;
             } catch (Exception e) {
                 log.error("JWT 토큰 파싱 오류: {}", e.getMessage());
+                e.printStackTrace();
                 throw new RuntimeException("유효하지 않은 토큰: " + e.getMessage());
             }
         } else {
+            log.error("인증 토큰이 비어있음");
             throw new RuntimeException("인증 토큰 없음");
         }
+    }
+
+    /**
+     * 관리자 API 경로인지 확인하는 메서드
+     * @param requestURI 요청 URI
+     * @return 관리자 API인 경우 true, 아니면 false
+     */
+    private boolean isAdminApi(String requestURI) {
+        // 관리자 음악 업로드/관리 API 경로들
+        return requestURI.startsWith("/api/admin/music/") || 
+               requestURI.equals("/api/admin/music/upload") ||
+               requestURI.equals("/api/admin/music/list") ||
+               requestURI.startsWith("/api/admin/music/delete/");
     }
 }

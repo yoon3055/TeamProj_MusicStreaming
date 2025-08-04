@@ -25,7 +25,11 @@ public class JwtUtil {
 
 
     public String createAuthToken(String email) {
-        return create(email, "authToken", expireMin);
+        return create(email, null, "authToken", expireMin);
+    }
+    
+    public String createAuthToken(String email, String role) {
+        return create(email, role, "authToken", expireMin);
     }
 
 
@@ -39,7 +43,11 @@ public class JwtUtil {
 
     public String createRefreshToken(String email) {
         // 사용자 이메일을 포함하여 고유한 리프레시 토큰 생성
-        return create(email, "refreshToken", expireMin * 15);
+        return create(email, null, "refreshToken", expireMin * 15);
+    }
+    
+    public String createRefreshToken(String email, String role) {
+        return create(email, role, "refreshToken", expireMin * 15);
     }
 
 
@@ -48,7 +56,7 @@ public class JwtUtil {
 
     // 서브젝트 // 토큰 설명
     // 로그인 성공 시 사용자 정보를 기반으로 jwt 토큰을 생성해서 반환
-    private String create(String email, String subject, long expireMin) {
+    private String create(String email, String role, String subject, long expireMin) {
         final JwtBuilder builder = Jwts.builder();
 
         // Header 설정
@@ -58,6 +66,10 @@ public class JwtUtil {
         // 담고 싶은 정보 설정
         if(email != null) {
             builder.claim("user", email);
+            // 역할 정보 추가
+            if(role != null) {
+                builder.claim("role", role);
+            }
             // 고유성을 보장하기 위해 추가 정보 포함
             builder.claim("iat", System.currentTimeMillis()); // 발급 시간
             builder.claim("jti", UUID.randomUUID().toString()); // 고유 토큰 ID

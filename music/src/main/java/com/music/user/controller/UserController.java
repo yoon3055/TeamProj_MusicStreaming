@@ -2,6 +2,7 @@ package com.music.user.controller;
 
 import com.music.jwt.JwtUtil;
 import com.music.user.dto.*;
+import com.music.user.dto.PasswordChangeDto;
 import com.music.user.entity.SocialType;
 import com.music.user.entity.User;
 import com.music.user.service.GoogleService;
@@ -9,6 +10,7 @@ import com.music.user.service.MailService;
 import com.music.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -121,7 +123,7 @@ public class UserController {
     // 로그아웃
     @Operation(summary = "로그아웃", description = "로그아웃하고 토큰 null로 변환")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestAttribute String email) {
+    public ResponseEntity<String> logout(@RequestAttribute("email") String email) {
         try {
             // log.debug("logout : {}", email);
             userService.logout(email);
@@ -154,20 +156,19 @@ public class UserController {
         
     }
 
-    // 비밀번호 수정
-    @Operation(summary = "비밀번호 수정", description = "비밀번호 수정")
-    @PostMapping("/pw_change")
-    public ResponseEntity<String> updatePw(@RequestPart String pw, @RequestAttribute String email) {
-        return new ResponseEntity<String>(userService.updatePw(pw, email), HttpStatus.OK);
-    }
-
     // 닉네임 수정
     @Operation(summary = "닉네임 수정", description = "닉네임 수정")
     @PostMapping("/nickname_change")
-    public ResponseEntity<String> updateNickname(@RequestBody Map<String, String> request, @RequestAttribute String email) {
+    public ResponseEntity<String> updateNickname(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
         try {
+            System.out.println("=== 닉네임 수정 컨트롤러 진입 ===");
+            System.out.println("받은 요청 데이터: " + request);
+            String email = (String) httpRequest.getAttribute("email");
+            System.out.println("JWT에서 추출한 이메일: " + email);
+            
             String newNickname = request.get("nickname");
             if (newNickname == null || newNickname.trim().isEmpty()) {
+                System.out.println("닉네임이 비어있음");
                 return new ResponseEntity<String>("닉네임이 비어있습니다.", HttpStatus.BAD_REQUEST);
             }
             
@@ -194,7 +195,7 @@ public class UserController {
     // 프로필 수정
     @Operation(summary = "프로필 수정", description = "회원 정보 수정")
     @PostMapping
-    public ResponseEntity<String> updateUser(@RequestBody UserDto userDto, @RequestAttribute String email) throws Exception {
+    public ResponseEntity<String> updateUser(@RequestBody UserDto userDto, @RequestAttribute("email") String email) throws Exception {
         
         
         try {
@@ -225,7 +226,7 @@ public class UserController {
     // email로 회원 조회
     @Operation(summary = "회원 조회", description = "email로 회원 단건 조회")
     @GetMapping()
-    public ResponseEntity<UserDto> getUser(@RequestAttribute String email) throws Exception {
+    public ResponseEntity<UserDto> getUser(@RequestAttribute("email") String email) throws Exception {
         try {
             System.out.println("=== 프로필 조회 디버깅 ===");
             System.out.println("요청된 이메일: " + email);
@@ -265,6 +266,35 @@ public class UserController {
             return new ResponseEntity<String>(NONE, HttpStatus.ACCEPTED);
         } else {
             return new ResponseEntity<String>(PRESENT, HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    // 비밀번호 변경
+    @Operation(summary = "비밀번호 변경", description = "사용자 비밀번호 변경")
+    @PostMapping("/change-password")
+    public ResponseEntity<Map<String, Object>> changePassword(
+            @RequestBody PasswordChangeDto passwordChangeDto, 
+            @RequestAttribute("email") String email) {
+        
+        try {
+            Map<String, Object> resultMap = userService.changePassword(passwordChangeDto, email);
+            
+            String result = (String) resultMap.get("result");
+            
+            if (result.equals(SUCCESS)) {
+                return new ResponseEntity<>(resultMap, HttpStatus.OK);
+            } else if (result.equals(NONE)) {
+                return new ResponseEntity<>(resultMap, HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(resultMap, HttpStatus.BAD_REQUEST);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> errorMap = new HashMap<>();
+            errorMap.put("result", FAIL);
+            errorMap.put("message", "비밀번호 변경 중 서버 오류가 발생했습니다.");
+            return new ResponseEntity<>(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

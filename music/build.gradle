@@ -19,6 +19,15 @@ java {
 	}
 }
 
+// Java 컴파일러가 메서드 파라미터 이름을 보존하도록 설정
+compileJava {
+	options.compilerArgs += ["-parameters"]
+}
+
+compileTestJava {
+	options.compilerArgs += ["-parameters"]
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
