@@ -36,18 +36,46 @@ public class PlaylistService {
 
     /* 1) 생성 */
     @Transactional
-    public PlaylistDto.Response createPlaylist(PlaylistDto.Request req) {
-        User user = userRepo.getReferenceById(req.getUserId());
+    public PlaylistDto.Response createPlaylist(String email, PlaylistDto.Request req) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + email));
         Playlist p = Playlist.builder()
                 .user(user)
                 .title(req.getTitle())
                 .isPublic(req.isPublic())
+                .createdAt(java.time.LocalDateTime.now())  // created_at 명시적 설정
                 .build();
         playlistRepo.save(p);
         return PlaylistDto.Response.from(p);
     }
 
-    /* 2) 내 목록 */
+    /* 2) 공개/비공개 상태 변경 */
+    @Transactional
+    public PlaylistDto.Response updateVisibility(Long playlistId, String email, boolean isPublic) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + email));
+        
+        Playlist playlist = playlistRepo.findById(playlistId)
+                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다: " + playlistId));
+        
+        // 플레이리스트 소유자 확인
+        if (!playlist.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("플레이리스트를 수정할 권한이 없습니다.");
+        }
+        
+        System.out.println("변경 전 isPublic: " + playlist.isPublic());
+        System.out.println("새로운 isPublic 값: " + isPublic);
+        
+        playlist.setPublic(isPublic);
+        System.out.println("변경 후 isPublic: " + playlist.isPublic());
+        
+        Playlist savedPlaylist = playlistRepo.save(playlist);
+        System.out.println("저장 후 isPublic: " + savedPlaylist.isPublic());
+        
+        return PlaylistDto.Response.from(playlist);
+    }
+
+    /* 3) 내 목록 */
     @Transactional(readOnly = true)
     public List<PlaylistDto.SimpleResponse> listMyPlaylists(Long userId) {
         return playlistRepo.findByUserId(userId).stream()
@@ -139,9 +167,20 @@ public class PlaylistService {
     /* 10) 공개 플레이리스트 검색 + 페이징 */
     @Transactional(readOnly = true)
     public Page<PlaylistDto.SimpleResponse> searchPublic(String keyword, Pageable pageable) {
-        return playlistRepo
-                .findByTitleContainingIgnoreCaseAndIsPublicTrue(keyword, pageable)
-                .map(PlaylistDto.SimpleResponse::from);
+        System.out.println("=== 공개 플레이리스트 검색 디버깅 ===");
+        System.out.println("검색 키워드: " + keyword);
+        System.out.println("페이지 정보: " + pageable);
+        
+        Page<Playlist> results = playlistRepo
+                .findByTitleContainingIgnoreCaseAndIsPublicTrue(keyword, pageable);
+        
+        System.out.println("검색 결과 개수: " + results.getTotalElements());
+        System.out.println("검색된 플레이리스트들:");
+        results.getContent().forEach(playlist -> {
+            System.out.println("- ID: " + playlist.getId() + ", 제목: " + playlist.getTitle() + ", 공개여부: " + playlist.isPublic());
+        });
+        
+        return results.map(PlaylistDto.SimpleResponse::from);
     }
     
     /* 11) 좋아요 토글 */

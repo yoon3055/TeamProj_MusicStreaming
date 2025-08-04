@@ -1,6 +1,7 @@
 package com.music.user.entity;
 
-import com.music.user.dto.PasswordUpdateDto;
+import com.music.user.dto.UserDto;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,12 +33,25 @@ public class User {
 
     private String socialId;
 
-    // Entity -> DTO 변환
-    public PasswordUpdateDto toDto() {
-        return PasswordUpdateDto.builder()
-                .id(this.id)
-                .email(this.email).build();
+    private String refreshToken;
+
+    // // Entity -> DTO 변환
+    // public PasswordUpdateDto toDto() {
+    //     return PasswordUpdateDto.builder()
+    //             .id(this.id)
+    //             .email(this.email).build();
+    // }
+
+        // Entity -> DTO 변환
+    public UserDto toDto() {
+        return UserDto.builder()
+                        .id(this.id)
+                        .nickname(this.nickname)
+                        .email(this.email)
+                        .password(this.password)
+                        .profileImage(this.profileImage)
+                        .refreshToken(this.refreshToken)
+                        .role(this.role)
+                        .build();
     }
-
-
 }

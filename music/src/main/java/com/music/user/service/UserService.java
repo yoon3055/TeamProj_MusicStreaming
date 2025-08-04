@@ -1,25 +1,29 @@
 package com.music.user.service;
 
-
+import com.music.jwt.JwtUtil;
 import com.music.user.dto.PasswordUpdateDto;
 import com.music.user.dto.UserCreateDto;
+import com.music.user.dto.UserDto;
 import com.music.user.dto.UserLoginDto;
+import com.music.user.entity.Role;
 import com.music.user.entity.SocialType;
 import com.music.user.entity.User;
 import com.music.user.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
@@ -28,7 +32,17 @@ public class UserService {
     private static final String PW_FAIL = "비밀번호 틀림";
     private static final String PRESENT = "이미 가입된 사용자";
 
+    // @Value("${s3.url}")
+    // private String bucketUrl;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -45,61 +59,157 @@ public class UserService {
         return user;
     }
 
+    // // 회원가입
+    // @Transactional
+    // public Map<String, Object> create2(UserCreateDto userCreateDto) {
+    //     // 데이터베이스에서 가져오는것
+    //     Optional<User> user = userRepository.findByEmail(userCreateDto.getEmail());
+    //     Map<String, Object> resultMap = new HashMap<>();
+
+    //     // 유저가 존재하는것
+    //     if(user.isPresent()) {
+    //         System.out.println("regist : 이미 가입된 사용자");
+    //         resultMap.put("result", PRESENT);
+    //     } else { // 유저가 없는것
+    //         System.out.println("===== registUser =====");
+    //         userCreateDto.setPassword(passwordEncoder.encode(userCreateDto.getPassword())); // 비밀번호 암호화
+    //         userRepository.save(userCreateDto.toEntity());
+    //         resultMap.put("result", userCreateDto);
+    //     }
+    //     return resultMap;
+    // }
+
+        // db 여러 작업을 묶는것
     // 회원가입
     @Transactional
-    public Map<String, Object> create2(UserCreateDto userCreateDto) {
-        // 데이터베이스에서 가져오는것
-        Optional<User> user = userRepository.findByEmail(userCreateDto.getEmail());
+    public Map<String, Object> registUser(UserDto userDto) {
+
+        // 데이터베이스에서 유저를 가져오는것
+        Optional<User> user = userRepository.findByEmail(userDto.getEmail());
         Map<String, Object> resultMap = new HashMap<>();
 
-        // 유저가 존재하는것
+
+
+        // 유저가 있는것
         if(user.isPresent()) {
             System.out.println("regist : 이미 가입된 사용자");
             resultMap.put("result", PRESENT);
-        } else { // 유저가 없는것
+
+
+
+        // 유저가 없는것
+        // 유저를 만들어주는것
+        } else {
             System.out.println("===== registUser =====");
-            userCreateDto.setPassword(passwordEncoder.encode(userCreateDto.getPassword())); // 비밀번호 암호화
-            userRepository.save(userCreateDto.toEntity());
-            resultMap.put("result", userCreateDto);
+            userDto.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화
+            
+            // admin@music.com으로 가입하면 ADMIN 역할 부여
+            if ("admin@music.com".equals(userDto.getEmail())) {
+                userDto.setRole(Role.ADMIN);
+                System.out.println("관리자 계정으로 가입: " + userDto.getEmail());
+            } else {
+                userDto.setRole(Role.USER);
+            }
+            
+            userRepository.save(userDto.toEntity());
+            resultMap.put("result", userDto);
         }
+
+
         return resultMap;
+
+        
     }
 
+    // public User login(UserLoginDto userLoginDto){
+    //     Optional<User> optMember = userRepository.findByEmail(userLoginDto.getEmail());
+    //     if(!optMember.isPresent()){
+    //         throw new IllegalArgumentException("email이 존재하지 않습니다.");
+    //     }
 
+    //     User user = optMember.get();
+    //     if(!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())){
+    //         throw new IllegalArgumentException("password가 일치하지 않습니다.");
+    //     }
+    //     return user;
+    // }
 
+        // 로그인
+        public Map<String, Object> login(String email, String pw) {
 
+            // 디버깅을 위한 로그 추가
+            System.out.println("===== 로그인 시도 =====");
+            System.out.println("입력된 이메일: [" + email + "]");
+            System.out.println("이메일 길이: " + email.length());
+            System.out.println("입력된 비밀번호 길이: " + (pw != null ? pw.length() : "null"));
 
-
-
-
-
-    public User login(UserLoginDto userLoginDto){
-        Optional<User> optMember = userRepository.findByEmail(userLoginDto.getEmail());
-        if(!optMember.isPresent()){
-            throw new IllegalArgumentException("email이 존재하지 않습니다.");
+            // 데이터베이스에서 유저를 가져오는것
+            Optional<User> user = userRepository.findByEmail(email);
+    
+            // 디버깅을 위한 로그 추가
+            System.out.println("DB 조회 결과: " + (user.isPresent() ? "사용자 발견" : "사용자 없음"));
+            if (user.isPresent()) {
+                System.out.println("DB에서 찾은 이메일: [" + user.get().getEmail() + "]");
+                System.out.println("DB 비밀번호 존재 여부: " + (user.get().getPassword() != null));
+            }
+    
+            // 해당 email의 회원이 존재하며, 입력받은 비밀번호가 db에 저장된 비밀번호(암호화된)와 matches 되면 로그인
+            Map<String, Object> result = new HashMap<>();
+            if(user.isPresent()) {
+                UserDto userDto = user.get().toDto();
+    
+                // 비밀번호가 일치하지 않는것
+                if(!passwordEncoder.matches(pw, user.get().getPassword())) {
+                    result.put("type", FAIL);
+                    result.put("result", PW_FAIL);
+                    System.out.println("login : 비밀번호 틀림");
+                } else {
+                    // 인증 성공 시 auth-token만 발급
+                    System.out.println("===== 로그인 성공 =====");
+                    String authToken = jwtUtil.createAuthToken(email);
+                    
+                    result.put("type", SUCCESS);
+                    result.put("result", userDto);
+                    result.put("authToken", authToken);
+                    result.put("id", userDto.getId());
+                    result.put("email", userDto.getEmail());
+                    result.put("nickname", userDto.getNickname());
+                    result.put("profileImage", userDto.getProfileImage());
+                    result.put("role", userDto.getRole());
+                }
+            } else {
+                result.put("type", FAIL);
+                result.put("result", NONE);
+                System.out.println("login : " + email + "에 해당하는 사용자 없음");
+            }
+            return result;
         }
 
-        User user = optMember.get();
-        if(!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())){
-            throw new IllegalArgumentException("password가 일치하지 않습니다.");
+            // 로그아웃
+    @Transactional
+    public void logout(String email) {
+        System.out.println("===== logout =====");
+        if(userRepository.findByEmail(email).isPresent()) {
+            // saveRefreshToken(email, null);
+        } else {
+            System.out.println("logout : " + email + "에 해당하는 사용자 없음");
         }
-        return user;
     }
 
-    public User getMemberBySocialId(String socialId){
-        User user = userRepository.findBySocialId(socialId).orElse(null);
-        return user;
-    }
+    // public User getMemberBySocialId(String socialId){
+    //     User user = userRepository.findBySocialId(socialId).orElse(null);
+    //     return user;
+    // }
 
-    public User createOauth(String socialId, String email, SocialType socialType){
-        User user = User.builder()
-                .email(email)
-                .socialType(socialType)
-                .socialId(socialId)
-                .build();
-        userRepository.save(user);
-        return user;
-    }
+    // public User createOauth(String socialId, String email, SocialType socialType){
+    //     User user = User.builder()
+    //             .email(email)
+    //             .socialType(socialType)
+    //             .socialId(socialId)
+    //             .build();
+    //     userRepository.save(user);
+    //     return user;
+    // }
 
     // 임시 비밀번호 생성
     public String getTmpPw() {
@@ -122,22 +232,167 @@ public class UserService {
     // 비밀번호 수정
     @Transactional
     public String updatePw(String pw, String email) {
-        
-        // 데이터베이스에서 찾는것
-        Optional<User> user = userRepository.findByEmail(email);
-
-        // 유저가 존재하는것
-        if(user.isPresent()) {
-            PasswordUpdateDto userDto = user.get().toDto();
-            userDto.setPassword(passwordEncoder.encode(pw)); // 비밀번호 암호화
-            userRepository.save(userDto.toEntity());
+        if(userRepository.findByEmail(email).isPresent()) {
+            System.out.println("===== updatePw =====");
+            User user = userRepository.findByEmail(email).get();
+            user.setPassword(passwordEncoder.encode(pw));
+            userRepository.save(user);
             return SUCCESS;
-
-
-        } else { // 유저가 존재하지 않는것
+        } else {
+            System.out.println("updatePw : " + email + "에 해당하는 사용자 없음");
             return NONE;
         }
+    }
 
+    // 닉네임 수정
+    public String updateNickname(String nickname, String email) {
+        if(userRepository.findByEmail(email).isPresent()) {
+            System.out.println("===== updateNickname =====");
+            User user = userRepository.findByEmail(email).get();
+            
+            // 닉네임 중복 검사 (현재 사용자 제외)
+            List<User> existingUsers = userRepository.findByNickname(nickname);
+            for (User existingUser : existingUsers) {
+                if (!existingUser.getEmail().equals(email)) {
+                    System.out.println("updateNickname : 이미 사용 중인 닉네임");
+                    return "이미 사용 중인 닉네임입니다.";
+                }
+            }
+            
+            user.setNickname(nickname);
+            userRepository.save(user);
+            System.out.println("닉네임 수정 완료: " + email + " -> " + nickname);
+            return SUCCESS;
+        } else {
+            System.out.println("updateNickname : " + email + "에 해당하는 사용자 없음");
+            return NONE;
+        }
+    }
 
+    
+
+        // refreshToken 저장
+    @Transactional
+    public void saveRefreshToken(String email, String refreshToken) {
+
+        // 데이터베이스에서 이메일로 유저를 가져오는것
+        Optional<User> user = userRepository.findByEmail(email);
+
+        // 유저가 있는것
+        if(user.isPresent()) {
+            System.out.println("===== saveRefreshToken =====");
+            System.out.println("사용자 이메일: " + email);
+            System.out.println("사용자 ID: " + user.get().getId());
+            System.out.println("새로운 Refresh Token: " + refreshToken);
+            System.out.println("기존 Refresh Token: " + user.get().getRefreshToken());
+            
+            UserDto userDto = user.get().toDto();
+            userDto.setRefreshToken(refreshToken);
+            User savedUser = userRepository.save(userDto.toEntity());
+            
+            System.out.println("저장 후 Refresh Token: " + savedUser.getRefreshToken());
+            System.out.println("토큰 저장 완료 - 사용자: " + email);
+       } else {
+            System.out.println("saveRefreshToken : " + email + "에 해당하는 사용자 없음");
+        }
+    }
+
+        // 프로필 수정
+        @Transactional
+        public Map<String, Object> updateUser(UserDto userDto, String email) {
+    
+            // 데이터베이스에 유저를 가져오는것
+            Optional<User> user = userRepository.findByEmail(email);
+            Map<String, Object> resultMap = new HashMap<>();
+    
+            // 유저가 있는것
+            if(user.isPresent()) {
+                System.out.println("===== updateUser =====");
+    
+                // 사용자가 입력한 정보를 가져오는것
+                UserDto newUserDto = user.get().toDto();
+    
+                // 사용자가 입력한 정보를 해당 유저에 수정하는것
+                newUserDto.setNickname(userDto.getNickname());
+                newUserDto.setProfileImage(userDto.getProfileImage());
+    
+                userRepository.save(newUserDto.toEntity());
+                
+                resultMap.put("result", newUserDto);
+            } else {
+                resultMap.put("result", NONE);
+            }
+            return resultMap;
+        }
+
+        
+    // 회원 다건 조회
+    public List<UserDto> getAllUser() {
+        List<User> userList = userRepository.findAll();
+        if(userList.size() > 0) {
+            System.out.println("===== getAllUser =====");
+            List<UserDto> userDtoList = new ArrayList<>();
+            for(User u: userList) {
+                UserDto userDto = u.toDto();
+
+                // String image = userDto.getProfileImage();
+                // if(image.length() < 3) {
+                //     userDto.setProfileImage(image);
+                // } else {
+                //     userDto.setProfileImage(bucketUrl + "/" + image);
+                // }
+
+                userDtoList.add(userDto);
+            }
+            return userDtoList;
+        } else  {
+            System.out.println("getAllUser : 사용자 없음");
+            return null;
+        }
+    }
+
+        // email로 회원 단건 조회
+        public UserDto getUser(String email) {
+            if(userRepository.findByEmail(email).isPresent()) {
+                System.out.println("===== getUser =====");
+                UserDto userDto = userRepository.findByEmail(email).get().toDto();
+    
+                // String image = userDto.getProfileImage();
+                // if(image.length() < 3) {
+                //     userDto.setImage(image);
+                // } else {
+                //     userDto.setImage(bucketUrl + "/" + userDto.getImage());
+                // }
+    
+                return userDto;
+            } else {
+                System.out.println("getUser : " + email + "에 해당하는 사용자 없음");
+                return null;
+            }
+        }
+
+            // 이름으로 회원 다건 조회
+    public List<UserDto> searchUser(String nickname) {
+        List<User> userList = userRepository.findByNickname(nickname);
+        if(userList.size() > 0) {
+            System.out.println("===== searchUser =====");
+            List<UserDto> userDtoList = new ArrayList<>();
+            for(User u: userList) {
+                UserDto userDto = u.toDto();
+
+                // String image = userDto.getProfileImage();
+                // if(image.length() < 3) {
+                //     userDto.setProfileImage(image);
+                // } else {
+                //     userDto.setProfileImage(bucketUrl + "/" + userDto.getProfileImage());
+                // }
+
+                userDtoList.add(userDto);
+            }
+            return userDtoList;
+        } else {
+            System.out.println("searchUser : " + nickname + "에 해당하는 사용자 없음");
+            return null;
+        }
     }
 }

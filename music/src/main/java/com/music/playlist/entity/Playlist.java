@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -45,6 +46,12 @@ public class Playlist {
     @Column(name = "view_count", nullable = false)
     private int viewCount = 0;
 
+    /* JPA 라이프사이클 메서드 */
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     /* 좋아요 +1 / -1, 조회수 +1 헬퍼 메서드 */
     public void increaseLike()  { this.likeCount++;  }
     public void decreaseLike()  { this.likeCount--;  }
@@ -53,5 +60,4 @@ public class Playlist {
 
 // Lombok을 사용하면 아래 생성자, Getter, Setter 코드를 자동으로 생성할 수 있어 편리합니다.
 // @NoArgsConstructor, @AllArgsConstructor, @Getter, @Setter 어노테이션 사용 권장
-
 }

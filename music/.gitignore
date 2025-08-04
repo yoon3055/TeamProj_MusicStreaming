@@ -30,7 +30,7 @@ gradle-app.setting
 .vscode/
 
 ### Application Properties ###
-src/main/resources/application.properties
+# src/main/resources/application.properties
 src/main/resources/application-*.properties
 
 ### Logs ###

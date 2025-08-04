@@ -1,6 +1,6 @@
 package com.music.subscription.service;
 
-import com.music.common.auth.JwtTokenProvider;
+
 import com.music.subscription.dto.UserSubscriptionDto;
 import com.music.subscription.entity.SubscriptionPlan;
 import com.music.subscription.entity.UserSubscription;
@@ -15,13 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
     private final UserSubscriptionRepository subRepo;
     private final SubscriptionPlanRepository planRepo;
     private final UserRepository userRepo;
-    private final JwtTokenProvider jwtTokenProvider;
+
 
     /**
      * 새 구독 생성(이전 활성 구독은 종료 처리)
