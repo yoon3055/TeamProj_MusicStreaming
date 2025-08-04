@@ -54,23 +54,6 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
-    // @PostMapping("/create")
-    // public ResponseEntity<?> userCreate2(@RequestBody UserCreateDto userCreateDto){
-
-    //     try {
-    //         // 중복 확인하는것
-    //         Map<String, Object> resultMap = userService.create2(userCreateDto);
-    //         if(resultMap.get("result").equals(PRESENT)) { // 이미 가입된 사용자
-    //             return new ResponseEntity<String>(PRESENT, HttpStatus.NOT_ACCEPTABLE);
-    //         } else { // 회원가입 성공
-    //             return new ResponseEntity<String>(SUCCESS, HttpStatus.ACCEPTED);
-    //         }
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //         return new ResponseEntity<String>(FAIL, HttpStatus.OK);
-    //     }
-    // }
-
     @Operation(summary = "회원가입", description = "회원 정보 저장 (JWT 인증x)")
     @PostMapping("/create")
     public ResponseEntity<String> regist(@RequestBody UserDto userDto) throws Exception {
@@ -90,27 +73,6 @@ public class UserController {
             return new ResponseEntity<String>(FAIL, HttpStatus.OK);
         }
     }
-
-
-
-
-
-
-
-
-//     @PostMapping("/doLogin")
-//     public ResponseEntity<?> doLogin(@RequestBody UserLoginDto userLoginDto){
-// //        email, password 일치한지 검증
-//         User user = userService.login(userLoginDto);
-
-// //        일치할 경우 jwt accesstoken 생성
-//         String jwtToken = jwtTokenProvider.createToken(user.getEmail(), user.getRole().toString());
-
-//         Map<String, Object> loginInfo = new HashMap<>();
-//         loginInfo.put("id", user.getId());
-//         loginInfo.put("token", jwtToken);
-//         return new ResponseEntity<>(loginInfo, HttpStatus.OK);
-//     }
 
         // 로그인
         @Operation(summary = "로그인", description = "회원 정보 저장 (JWT 인증x)")
@@ -132,7 +94,7 @@ public class UserController {
                     } else { // 비밀번호 틀림
                         resultMap.put("result", PW_FAIL);
                     }
-                    return new ResponseEntity<Map<String, Object>>(resultMap, HttpStatus.OK);
+                    return new ResponseEntity<Map<String, Object>>(resultMap, HttpStatus.UNAUTHORIZED);
                 } else {
                     // 로그인 성공 - auth token만 사용
                     resultMap.put("jwt-auth-token", resultLogin.get("authToken"));
@@ -155,28 +117,6 @@ public class UserController {
                 return new ResponseEntity<Map<String, Object>>(resultMap, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-
-//     @PostMapping("/google/doLogin")
-//     public ResponseEntity<?> googleLogin(@RequestBody RedirectDto redirectDto){
-// //        accesstoken 발급
-//         AccessTokenDto accessTokenDto = googleService.getAccessToken(redirectDto.getCode());
-// //        사용자정보 얻기
-//         GoogleProfileDto googleProfileDto = googleService.getGoogleProfile(accessTokenDto.getAccess_token());
-// //        회원가입이 되어 있지 않다면 회원가입
-//         User originalUser = userService.getMemberBySocialId(googleProfileDto.getSub());
-//         if(originalUser == null){
-//             originalUser = userService.createOauth(googleProfileDto.getSub(), googleProfileDto.getEmail(), SocialType.GOOGLE);
-//         }
-// //        회원가입돼 있는 회원이라면 토큰발급
-//         String jwtToken = jwtTokenProvider.createToken(originalUser.getEmail(), originalUser.getRole().toString());
-
-//         Map<String, Object> loginInfo = new HashMap<>();
-//         loginInfo.put("id", originalUser.getId());
-//         loginInfo.put("token", jwtToken);
-//         return new ResponseEntity<>(loginInfo, HttpStatus.OK);
-//     }
-
-
 
     // 로그아웃
     @Operation(summary = "로그아웃", description = "로그아웃하고 토큰 null로 변환")

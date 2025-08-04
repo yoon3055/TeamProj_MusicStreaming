@@ -102,6 +102,16 @@ const AdminDashboard = () => {
             <p>구독 플랜 및 사용자 구독 상태 관리</p>
             <small>{stats.activeSubscriptions}명이 구독 중</small>
           </Link>
+
+          <Link
+            to="/admin/files"
+            className="admin-menu-card"
+            onClick={() => handleMenuClick('파일 관리')}
+          >
+            <h3>파일 관리</h3>
+            <p>음악 업로드 & 유지 보수 관리</p>
+            <small>{stats.activeSubscriptions}개의 음악 등록중</small>
+          </Link>
         </div>
       </div>
       
