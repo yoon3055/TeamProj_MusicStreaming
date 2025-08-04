@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class PlaylistDto {
@@ -83,6 +84,7 @@ public class PlaylistDto {
     @AllArgsConstructor
     @Builder
     public static class VisibilityRequest {
+        @JsonProperty("isPublic")
         private boolean isPublic;   // true = 공개, false = 비공개
     }
 

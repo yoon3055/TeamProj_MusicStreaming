@@ -23,9 +23,23 @@ public class PlaylistController {
     /** 1) 플레이리스트 생성 */
     @PostMapping
     public ResponseEntity<PlaylistDto.Response> create(
+            @RequestAttribute String email,  // JWT에서 추출한 이메일
             @RequestBody PlaylistDto.Request req) {
-        return ResponseEntity.ok(playlistService.createPlaylist(req));
+        try {
+            System.out.println("=== 플레이리스트 생성 디버깅 ===");
+            System.out.println("JWT에서 추출한 이메일: " + email);
+            System.out.println("요청 데이터 - 제목: " + req.getTitle() + ", 공개여부: " + req.isPublic());
+            
+            PlaylistDto.Response response = playlistService.createPlaylist(email, req);
+            System.out.println("플레이리스트 생성 성공: " + response.getId());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("플레이리스트 생성 중 에러 발생: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
+
 
     /** 2) 내 플레이리스트 목록 조회 */
     @GetMapping
@@ -41,7 +55,28 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.getPlaylist(id));
     }
 
-    /** 4) 플레이리스트 수정 */
+    /** 4) 플레이리스트 공개/비공개 상태 변경 */
+    @PutMapping("/{id}/visibility")
+    public ResponseEntity<PlaylistDto.Response> updateVisibility(
+            @RequestAttribute String email,  // JWT에서 추출한 이메일
+            @PathVariable Long id,
+            @RequestBody PlaylistDto.VisibilityRequest req) {
+        try {
+            System.out.println("=== 플레이리스트 공개/비공개 변경 디버깅 ===");
+            System.out.println("JWT에서 추출한 이메일: " + email);
+            System.out.println("플레이리스트 ID: " + id + ", 새 공개상태: " + req.isPublic());
+            
+            PlaylistDto.Response response = playlistService.updateVisibility(id, email, req.isPublic());
+            System.out.println("공개/비공개 변경 성공: " + response.getId());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("공개/비공개 변경 중 에러 발생: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /** 5) 플레이리스트 수정 */
     @PutMapping("/{id}")
     public ResponseEntity<PlaylistDto.Response> update(
             @PathVariable Long id,
@@ -49,7 +84,7 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.updatePlaylist(id, req));
     }
 
-    /** 5) 플레이리스트 삭제 */
+    /** 6) 플레이리스트 삭제 */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id) {
@@ -81,16 +116,7 @@ public class PlaylistController {
         playlistService.removeTrack(playlistId, songId);
         return ResponseEntity.noContent().build();
     }
-    
-    /* 9) 공개/비공개 전환 */
-    @PutMapping("/{id}/visibility")
-    public ResponseEntity<PlaylistDto.Response> changeVisibility(
-            @PathVariable Long id,
-            @RequestBody PlaylistDto.VisibilityRequest req) {
 
-        return ResponseEntity.ok(
-                playlistService.changeVisibility(id, req.isPublic()));
-    }
 
     /* 10) 공개 플레이리스트 검색 */
     @GetMapping("/public")
