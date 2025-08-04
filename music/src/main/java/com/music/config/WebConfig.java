@@ -1,4 +1,4 @@
-package com.music.config2;
+package com.music.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -14,6 +15,10 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.music.interceptor.JwtInterceptor;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -51,7 +56,9 @@ public class WebConfig implements WebMvcConfigurer {
                     "/webjars/**",
                     "/uploads/**",          // 업로드된 파일 접근 제외
                     "/admin-upload.html",   // 관리자 업로드 페이지 제외
-                    "/api/admin/music/formats" // 지원 형식 조회는 토큰 없이 접근 가능
+                    "/api/admin/music/formats", // 지원 형식 조회는 토큰 없이 접근 가능
+                    "/admin/files/**",
+                    "/admin/**"
                 ); // 적용 제외 경로
     }
     
@@ -73,12 +80,53 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().disable()
-                .csrf().disable()
-                .formLogin().disable()
-                .headers().frameOptions().disable();
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable())
+            .sessionManagement(session -> session.disable())
+            .headers(headers -> headers.frameOptions().disable())
+            .authorizeHttpRequests(auth -> auth
+                // 로그인 관련 엔드포인트는 인증 없이 접근 허용
+                .requestMatchers(
+                    "/user/login/**", 
+                    "/user/regist/**", 
+                    "/user/create/**", 
+                    "/user/doLogin",
+                    "/user/doLogin/**",
+                    "/user/check/**", 
+                    "/user/sendPw/**", 
+                    "/error",
+                    "/error/**",
+                    "/swagger-ui/**", 
+                    "/api-docs/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/webjars/**",
+                    "/uploads/**",
+                    "/admin-upload.html",
+                    "/api/admin/music/formats"
+                ).permitAll()
+                // 나머지 요청은 인증 필요 (JWT 인터셉터에서 처리)
+                .anyRequest().permitAll() // 일단 모든 요청 허용하고 JWT 인터셉터에서 처리
+            );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     // 오리진 // 리액트가 실행되는 서버 // 스프링부트가 실행되는 서버
@@ -91,16 +139,16 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 
                 // 모든 출처에서 오는 요청을 허용하는것
-                .allowedOrigins("*")
+                .allowedOriginPatterns("http://localhost:3000", "http://127.0.0.1:3000")
 
                 // 모든 메서드를 허용하는것
-                .allowedMethods("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 
                 // 로그인 상태를 유지하는것 // 서버한테 내가 누구인지 말하는것
                 // 인증 정보를 허용하는것
-                .allowCredentials(false)
+                .allowCredentials(true)
 
                 // 캐시 시간을 설정하는것
-                .maxAge(3000);
+                .maxAge(3600);
     }
 }

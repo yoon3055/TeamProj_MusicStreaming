@@ -3,7 +3,7 @@ import { AuthContext } from './AuthContext';
 import axios from 'axios';
 
 // 🌐 개발 모드 변수
-const DEV_MODE = true;
+const DEV_MODE = false;
 
 // 더미 데이터 (개발 모드에서만 사용)
 const mockUser = {
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // ✅ 일반 로그인 함수
-  const login = useCallback(async (identifier, password) => {
+  const login = useCallback(async (credentials) => {
     setLoading(true);
     if (DEV_MODE) {
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -101,21 +101,45 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await apiClient.post('/user/doLogin', { identifier, password });
-      const { token, user: userData, subscriptionDetails } = response.data;
+      console.log('[AUTH_PROVIDER_LOGIN] Sending login request:', credentials);
+      const response = await apiClient.post('/user/doLogin', { 
+        email: credentials.identifier, 
+        password: credentials.password 
+      });
+      
+      console.log('[AUTH_PROVIDER_LOGIN] Response received:', response.data);
+      
+      const responseData = response.data;
+      
+      // 백엔드 응답 구조에 맞게 수정
+      const token = responseData['jwt-auth-token'];
+      const userData = {
+        id: responseData.id,
+        email: responseData.email,
+        nickname: responseData.nickname,
+        profileImage: responseData.profileImage,
+        role: responseData.role
+      };
       
       localStorage.setItem('jwt', token);
       
       setUser(userData);
       setIsSubscribed(userData.isSubscribed || false);
-      setSubscriptionDetails(subscriptionDetails || null);
-      setProfileBgImage(userData.profileBgImage || '/images/K-045.jpg');
+      setSubscriptionDetails(null); // 구독 정보는 별도 API로 가져와야 함
+      setProfileBgImage(userData.profileImage || '/images/K-045.jpg');
       
       console.log('[AUTH_PROVIDER_LOGIN] Login successful:', userData);
       return true;
     } catch (error) {
       console.error('[AUTH_PROVIDER_LOGIN] Login failed:', error);
-      return false;
+      console.error('[AUTH_PROVIDER_LOGIN] Error response:', error.response?.data);
+      
+      // 에러를 다시 throw하여 LoginPage에서 catch할 수 있도록 함
+      if (error.response?.status === 401) {
+        throw new Error(error.response.data?.result || '이메일 또는 비밀번호가 올바르지 않습니다.');
+      } else {
+        throw new Error('로그인 중 오류가 발생했습니다.');
+      }
     } finally {
       setLoading(false);
     }
@@ -132,7 +156,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIsSubscribed(userData.isSubscribed || false);
       setSubscriptionDetails(subscriptionDetails || null);
-      setProfileBgImage(userData.profileBgImage || '/images/K-045.jpg');
+      setProfileBgImage(userData.profileImage || '/images/K-045.jpg');
       console.log('[AUTH_PROVIDER_SOCIAL] Social login successful:', userData);
       return true;
     } catch (error) {
