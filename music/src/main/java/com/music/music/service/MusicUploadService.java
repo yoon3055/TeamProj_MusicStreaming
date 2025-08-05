@@ -1,6 +1,7 @@
 package com.music.music.service;
 
 import com.music.music.dto.SongUploadDto;
+import com.music.music.dto.SongListDto;
 import com.music.music.entity.Album;
 import com.music.music.entity.Artist;
 import com.music.music.entity.Song;
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -105,26 +107,110 @@ public class MusicUploadService {
      * 음악 파일 삭제
      */
     public boolean deleteMusic(Long songId) {
-        Optional<Song> songOpt = songRepository.findById(songId);
-        if (songOpt.isEmpty()) {
-            return false;
-        }
-        
-        Song song = songOpt.get();
+        log.info("음악 파일 삭제 시작: songId={}", songId);
         
         try {
-            // 1. 실제 파일 삭제
-            deleteFile(song.getAudioUrl());
+            Optional<Song> songOpt = songRepository.findById(songId);
+            if (songOpt.isEmpty()) {
+                log.warn("삭제할 음악 파일을 찾을 수 없음: songId={}", songId);
+                return false;
+            }
             
-            // 2. 데이터베이스에서 삭제
+            Song song = songOpt.get();
+            String audioUrl = song.getAudioUrl();
+            
+            // 데이터베이스에서 삭제
             songRepository.delete(song);
+            log.debug("데이터베이스에서 삭제 완료: {}", song.getTitle());
             
-            log.info("음악 파일 삭제 완료: {} (ID: {})", song.getTitle(), song.getId());
+            // 파일 시스템에서 삭제
+            deleteFile(audioUrl);
+            
+            log.info("음악 파일 삭제 완료: {} (ID: {})", song.getTitle(), songId);
             return true;
             
         } catch (Exception e) {
-            log.error("음악 파일 삭제 중 오류 발생: {}", e.getMessage());
-            throw new RuntimeException("파일 삭제 중 오류가 발생했습니다.", e);
+            log.error("음악 파일 삭제 중 오류 발생: songId={}", songId, e);
+            return false;
+        }
+    }
+
+    /**
+     * 모든 음악 파일 목록 조회 (DTO 반환)
+     */
+    public List<SongListDto> getAllSongs() {
+        log.info("음악 파일 목록 조회 시작");
+        
+        try {
+            List<Song> songs = songRepository.findAllByOrderByCreatedAtDesc();
+            log.info("음악 파일 목록 조회 완료: {}개 파일", songs.size());
+            
+            // 엔티티를 DTO로 변환
+            List<SongListDto> songDtos = songs.stream()
+                    .map(this::convertToDto)
+                    .toList();
+            
+            log.info("DTO 변환 완료: {}개 파일", songDtos.size());
+            return songDtos;
+        } catch (Exception e) {
+            log.error("음악 파일 목록 조회 중 오류 발생", e);
+            throw new RuntimeException("음악 파일 목록 조회에 실패했습니다", e);
+        }
+    }
+    
+    /**
+     * Song 엔티티를 SongListDto로 변환
+     */
+    private SongListDto convertToDto(Song song) {
+        try {
+            SongListDto.SongListDtoBuilder builder = SongListDto.builder()
+                    .id(song.getId())
+                    .title(song.getTitle())
+                    .genre(song.getGenre())
+                    .originalFileName(song.getOriginalFileName())
+                    .fileSize(song.getFileSize())
+                    .fileFormat(song.getFileFormat())
+                    .duration(song.getDuration())
+                    .audioUrl(song.getAudioUrl())
+                    .uploadedBy(song.getUploadedBy())
+                    .createdAt(song.getCreatedAt())
+                    .updatedAt(song.getUpdatedAt());
+            
+            // Artist 정보 변환 (Lazy Loading 방지)
+            if (song.getArtist() != null) {
+                SongListDto.ArtistInfo artistInfo = SongListDto.ArtistInfo.builder()
+                        .id(song.getArtist().getId())
+                        .name(song.getArtist().getName())
+                        .build();
+                builder.artist(artistInfo);
+                builder.artistName(song.getArtist().getName());
+            }
+            
+            // Album 정보 변환 (Lazy Loading 방지)
+            if (song.getAlbum() != null) {
+                SongListDto.AlbumInfo albumInfo = SongListDto.AlbumInfo.builder()
+                        .id(song.getAlbum().getId())
+                        .title(song.getAlbum().getTitle())
+                        .build();
+                builder.album(albumInfo);
+                builder.albumTitle(song.getAlbum().getTitle());
+            }
+            
+            return builder.build();
+        } catch (Exception e) {
+            log.error("DTO 변환 중 오류 발생 - Song ID: {}", song.getId(), e);
+            // 기본 정보만으로 DTO 생성
+            return SongListDto.builder()
+                    .id(song.getId())
+                    .title(song.getTitle())
+                    .originalFileName(song.getOriginalFileName())
+                    .fileSize(song.getFileSize())
+                    .fileFormat(song.getFileFormat())
+                    .duration(song.getDuration())
+                    .audioUrl(song.getAudioUrl())
+                    .uploadedBy(song.getUploadedBy())
+                    .createdAt(song.getCreatedAt())
+                    .build();
         }
     }
 

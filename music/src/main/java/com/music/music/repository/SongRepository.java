@@ -33,4 +33,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
     // 특정 앨범에 속하며 제목에 특정 문자열을 포함하는 곡을 조회하는 메서드
     List<Song> findByAlbumIdAndTitleContainingIgnoreCase(Long albumId, String title);
+
+    // 모든 곡을 생성일자 기준 내림차순으로 조회하는 메서드
+    List<Song> findAllByOrderByCreatedAtDesc();
 }

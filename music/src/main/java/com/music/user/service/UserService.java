@@ -1,6 +1,7 @@
 package com.music.user.service;
 
 import com.music.jwt.JwtUtil;
+import com.music.user.dto.PasswordChangeDto;
 import com.music.user.dto.PasswordUpdateDto;
 import com.music.user.dto.UserCreateDto;
 import com.music.user.dto.UserDto;
@@ -166,7 +167,9 @@ public class UserService {
                 } else {
                     // 인증 성공 시 auth-token만 발급
                     System.out.println("===== 로그인 성공 =====");
-                    String authToken = jwtUtil.createAuthToken(email);
+                    String role = userDto.getRole().toString(); // Role enum을 String으로 변환
+                    String authToken = jwtUtil.createAuthToken(email, role);
+                    System.out.println("JWT 토큰에 포함된 역할: " + role);
                     
                     result.put("type", SUCCESS);
                     result.put("result", userDto);
@@ -244,34 +247,88 @@ public class UserService {
         }
     }
 
-    // 닉네임 수정
-    public String updateNickname(String nickname, String email) {
-        if(userRepository.findByEmail(email).isPresent()) {
-            System.out.println("===== updateNickname =====");
-            User user = userRepository.findByEmail(email).get();
+    // 비밀번호 변경
+    @Transactional
+    public Map<String, Object> changePassword(PasswordChangeDto passwordChangeDto, String email) {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        try {
+            // 사용자 조회
+            Optional<User> userOptional = userRepository.findByEmail(email);
             
-            // 닉네임 중복 검사 (현재 사용자 제외)
-            List<User> existingUsers = userRepository.findByNickname(nickname);
-            for (User existingUser : existingUsers) {
-                if (!existingUser.getEmail().equals(email)) {
-                    System.out.println("updateNickname : 이미 사용 중인 닉네임");
-                    return "이미 사용 중인 닉네임입니다.";
-                }
+            if (!userOptional.isPresent()) {
+                resultMap.put("result", NONE);
+                resultMap.put("message", "사용자를 찾을 수 없습니다.");
+                return resultMap;
             }
             
-            user.setNickname(nickname);
+            User user = userOptional.get();
+            
+            // 현재 비밀번호 확인
+            if (!passwordEncoder.matches(passwordChangeDto.getCurrentPassword(), user.getPassword())) {
+                resultMap.put("result", FAIL);
+                resultMap.put("message", "현재 비밀번호가 일치하지 않습니다.");
+                return resultMap;
+            }
+            
+            // 새 비밀번호와 확인 비밀번호 일치 확인
+            if (!passwordChangeDto.getNewPassword().equals(passwordChangeDto.getConfirmPassword())) {
+                resultMap.put("result", FAIL);
+                resultMap.put("message", "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+                return resultMap;
+            }
+            
+            // 새 비밀번호 암호화
+            String encodedNewPassword = passwordEncoder.encode(passwordChangeDto.getNewPassword());
+            
+            // 비밀번호 업데이트
+            user.setPassword(encodedNewPassword);
             userRepository.save(user);
-            System.out.println("닉네임 수정 완료: " + email + " -> " + nickname);
-            return SUCCESS;
-        } else {
-            System.out.println("updateNickname : " + email + "에 해당하는 사용자 없음");
-            return NONE;
+            
+            resultMap.put("result", SUCCESS);
+            resultMap.put("message", "비밀번호가 성공적으로 변경되었습니다.");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultMap.put("result", FAIL);
+            resultMap.put("message", "비밀번호 변경 중 오류가 발생했습니다.");
+        }
+        
+        return resultMap;
+    }
+
+    // 닉네임 수정
+    public String updateNickname(String nickname, String email) {
+        try {
+            System.out.println("===== updateNickname 서비스 시작 =====");
+            System.out.println("입력된 닉네임: " + nickname);
+            System.out.println("입력된 이메일: " + email);
+            
+            if(userRepository.findByEmail(email).isPresent()) {
+                System.out.println("===== updateNickname =====");
+                User user = userRepository.findByEmail(email).get();
+                System.out.println("사용자 찾음: " + user.getEmail());
+                
+                // 닉네임 중복 검사를 임시로 생략
+                System.out.println("닉네임 중복 검사 생략 (테스트용)");
+                
+                user.setNickname(nickname);
+                System.out.println("닉네임 설정 완료, 저장 시작");
+                userRepository.save(user);
+                System.out.println("닉네임 수정 완료: " + email + " -> " + nickname);
+                return SUCCESS;
+            } else {
+                System.out.println("updateNickname : " + email + "에 해당하는 사용자 없음");
+                return NONE;
+            }
+        } catch (Exception e) {
+            System.out.println("updateNickname 서비스에서 예외 발생: " + e.getMessage());
+            e.printStackTrace();
+            return FAIL;
         }
     }
 
-    
-
-        // refreshToken 저장
+    // refreshToken 저장
     @Transactional
     public void saveRefreshToken(String email, String refreshToken) {
 

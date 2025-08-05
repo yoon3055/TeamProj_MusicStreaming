@@ -32,7 +32,7 @@ public class MusicUploadController {
     @PostMapping("/upload")
     @Operation(summary = "음악 파일 업로드", description = "관리자가 음악 파일을 업로드합니다.")
     public ResponseEntity<Map<String, Object>> uploadMusic(
-            @RequestAttribute String email,
+            @RequestAttribute("email") String email,
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
             @RequestParam("artistName") String artistName,
@@ -124,11 +124,44 @@ public class MusicUploadController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/list")
+    @Operation(summary = "업로드된 음악 파일 목록 조회", description = "관리자가 업로드한 모든 음악 파일 목록을 조회합니다.")
+    public ResponseEntity<Map<String, Object>> getMusicList(
+            @RequestAttribute("email") String email) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 관리자 권한 체크
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            if (userOpt.isEmpty() || userOpt.get().getRole() != Role.ADMIN) {
+                response.put("success", false);
+                response.put("message", "관리자 권한이 필요합니다.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+
+            // 음악 파일 목록 조회
+            var songs = musicUploadService.getAllSongs();
+            
+            response.put("success", true);
+            response.put("songs", songs);
+            response.put("message", "음악 파일 목록을 성공적으로 조회했습니다.");
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("음악 파일 목록 조회 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "서버 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @DeleteMapping("/{songId}")
     @Operation(summary = "음악 파일 삭제", description = "관리자가 업로드된 음악 파일을 삭제합니다.")
     public ResponseEntity<Map<String, Object>> deleteMusic(
-            @RequestAttribute String email,
-            @PathVariable Long songId) {
+            @RequestAttribute("email") String email,
+            @PathVariable("songId") Long songId) {
         
         Map<String, Object> response = new HashMap<>();
         

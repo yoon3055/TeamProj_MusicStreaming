@@ -55,10 +55,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "/swagger-resources/**",
                     "/webjars/**",
                     "/uploads/**",          // 업로드된 파일 접근 제외
-                    "/admin-upload.html",   // 관리자 업로드 페이지 제외
-                    "/api/admin/music/formats", // 지원 형식 조회는 토큰 없이 접근 가능
-                    "/admin/files/**",
-                    "/admin/**"
+                    "/api/admin/music/formats" // 지원 형식 조회는 토큰 없이 접근 가능
                 ); // 적용 제외 경로
     }
     
