@@ -20,12 +20,6 @@ public class SongUploadDto {
     @Schema(description = "곡 제목", required = true)
     private String title;
 
-    @Schema(description = "아티스트 이름", required = true)
-    private String artistName;
-
-    @Schema(description = "앨범 이름")
-    private String albumName;
-
     @Schema(description = "장르")
     private String genre;
 

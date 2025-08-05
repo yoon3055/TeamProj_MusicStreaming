@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -117,15 +117,9 @@
                 <input type="text" id="title" name="title" required placeholder="곡 제목을 입력하세요">
             </div>
             
-            <div class="form-group">
-                <label for="artistName">아티스트 이름 *</label>
-                <input type="text" id="artistName" name="artistName" required placeholder="아티스트 이름을 입력하세요">
-            </div>
+
             
-            <div class="form-group">
-                <label for="albumName">앨범 이름</label>
-                <input type="text" id="albumName" name="albumName" placeholder="앨범 이름을 입력하세요 (선택사항)">
-            </div>
+
             
             <div class="form-group">
                 <label for="genre">장르</label>
@@ -190,8 +184,6 @@
             // FormData 구성
             formData.append('file', file);
             formData.append('title', document.getElementById('title').value);
-            formData.append('artistName', document.getElementById('artistName').value);
-            formData.append('albumName', document.getElementById('albumName').value);
             formData.append('genre', document.getElementById('genre').value);
             
             // UI 상태 변경
@@ -258,4 +250,4 @@
         });
     </script>
 </body>
-</html> -->
+</html>

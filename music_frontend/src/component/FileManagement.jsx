@@ -19,8 +19,6 @@ const FileManagement = () => {
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    artistName: '',
-    albumName: '',
     genre: ''
   });
 
@@ -165,11 +163,6 @@ const FileManagement = () => {
       return;
     }
 
-    if (!formData.artistName.trim()) {
-      window.showToast('아티스트 이름을 입력해주세요.', 'error');
-      return;
-    }
-
     setUploading(true);
     window.showToast('파일을 서버에 업로드하는 중...', 'info');
 
@@ -178,11 +171,6 @@ const FileManagement = () => {
       const uploadFormData = new FormData();
       uploadFormData.append('file', selectedFile);
       uploadFormData.append('title', formData.title.trim());
-      uploadFormData.append('artistName', formData.artistName.trim());
-      
-      if (formData.albumName.trim()) {
-        uploadFormData.append('albumName', formData.albumName.trim());
-      }
       
       if (formData.genre.trim()) {
         uploadFormData.append('genre', formData.genre.trim());
@@ -385,30 +373,6 @@ const FileManagement = () => {
                 />
               </label>
               <label>
-                아티스트 이름 *
-                <input
-                  type="text"
-                  value={formData.artistName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, artistName: e.target.value }))}
-                  placeholder="아티스트 이름을 입력하세요"
-                  className="file-management-input"
-                  disabled={uploading}
-                />
-              </label>
-            </div>
-            <div className="file-management-form-row">
-              <label>
-                앨범 이름
-                <input
-                  type="text"
-                  value={formData.albumName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, albumName: e.target.value }))}
-                  placeholder="앨범 이름 (선택사항)"
-                  className="file-management-input"
-                  disabled={uploading}
-                />
-              </label>
-              <label>
                 장르
                 <input
                   type="text"
@@ -500,8 +464,6 @@ const FileManagement = () => {
                   <tr>
                     <th>앨범 커버</th>
                     <th>곡 제목</th>
-                    <th>아티스트</th>
-                    <th>앨범</th>
                     <th>장르</th>
                     <th>파일명</th>
                     <th>크기</th>
@@ -523,8 +485,6 @@ const FileManagement = () => {
                         />
                       </td>
                       <td className="file-title">{file.title}</td>
-                      <td>{file.artist?.name || file.artistName || '알 수 없음'}</td>
-                      <td>{file.album?.title || '-'}</td>
                       <td>{file.genre || '-'}</td>
                       <td className="file-name">{file.originalFileName}</td>
                       <td className="file-size">
