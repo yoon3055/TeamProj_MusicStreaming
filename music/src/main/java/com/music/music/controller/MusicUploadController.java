@@ -35,8 +35,6 @@ public class MusicUploadController {
             @RequestAttribute("email") String email,
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
-            @RequestParam("artistName") String artistName,
-            @RequestParam(value = "albumName", required = false) String albumName,
             @RequestParam(value = "genre", required = false) String genre) {
         
         Map<String, Object> response = new HashMap<>();
@@ -86,8 +84,6 @@ public class MusicUploadController {
             SongUploadDto uploadDto = SongUploadDto.builder()
                     .file(file)
                     .title(title)
-                    .artistName(artistName)
-                    .albumName(albumName)
                     .genre(genre)
                     .uploadedBy(email)
                     .build();

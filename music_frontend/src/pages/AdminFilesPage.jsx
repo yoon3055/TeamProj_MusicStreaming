@@ -143,8 +143,6 @@ const AdminFilesPage = () => {
             <thead>
               <tr>
                 <th>제목</th>
-                <th>아티스트</th>
-                <th>앨범</th>
                 <th>장르</th>
                 <th>파일명</th>
                 <th>크기</th>
@@ -159,8 +157,6 @@ const AdminFilesPage = () => {
               {files.map((file) => (
                 <tr key={file.id}>
                   <td className="file-title">{file.title}</td>
-                  <td>{file.artist?.name || '알 수 없음'}</td>
-                  <td>{file.album?.title || '-'}</td>
                   <td>{file.genre || '-'}</td>
                   <td className="file-name">{file.originalFileName}</td>
                   <td>{formatFileSize(file.fileSize)}</td>

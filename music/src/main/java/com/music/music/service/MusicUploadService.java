@@ -2,11 +2,7 @@ package com.music.music.service;
 
 import com.music.music.dto.SongUploadDto;
 import com.music.music.dto.SongListDto;
-import com.music.music.entity.Album;
-import com.music.music.entity.Artist;
 import com.music.music.entity.Song;
-import com.music.music.repository.AlbumRepository;
-import com.music.music.repository.ArtistRepository;
 import com.music.music.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +27,6 @@ import java.util.UUID;
 public class MusicUploadService {
 
     private final SongRepository songRepository;
-    private final ArtistRepository artistRepository;
-    private final AlbumRepository albumRepository;
 
     // application.properties에서 설정할 파일 저장 경로
     @Value("${music.upload.path:uploads/music}")
@@ -56,18 +50,7 @@ public class MusicUploadService {
             String audioUrl = baseUrl + "/uploads/music/" + savedFileName;
             log.debug("파일 저장 완료: {}", audioUrl);
             
-            // 2. 아티스트 조회 또는 생성
-            log.debug("아티스트 처리 시작: {}", uploadDto.getArtistName());
-            Artist artist = findOrCreateArtist(uploadDto.getArtistName());
-            log.debug("아티스트 처리 완료: {} (ID: {})", artist.getName(), artist.getId());
-            
-            // 3. 앨범 조회 또는 생성 (앨범명이 있는 경우)
-            Album album = null;
-            if (uploadDto.getAlbumName() != null && !uploadDto.getAlbumName().trim().isEmpty()) {
-                log.debug("앨범 처리 시작: {}", uploadDto.getAlbumName());
-                album = findOrCreateAlbum(uploadDto.getAlbumName(), artist);
-                log.debug("앨범 처리 완료: {} (ID: {})", album.getTitle(), album.getId());
-            }
+            // 2. 아티스트는 null로 설정 (아티스트 기능 제거)
             
             // 4. 파일 메타데이터 추출
             log.debug("메타데이터 추출 시작");
@@ -79,8 +62,8 @@ public class MusicUploadService {
             log.debug("Song 엔티티 생성 및 저장 시작");
             Song song = Song.builder()
                     .title(uploadDto.getTitle())
-                    .artist(artist)
-                    .album(album)
+                    .artist(null)  // 아티스트 기능 제거
+                    .album(null)  // 앨범 기능 제거
                     .audioUrl(audioUrl)
                     .genre(uploadDto.getGenre())
                     .originalFileName(file.getOriginalFilename())
@@ -295,36 +278,9 @@ public class MusicUploadService {
         }
     }
 
-    /**
-     * 아티스트 조회 또는 생성
-     */
-    private Artist findOrCreateArtist(String artistName) {
-        return artistRepository.findFirstByName(artistName)
-                .orElseGet(() -> {
-                    Artist newArtist = new Artist();
-                    newArtist.setName(artistName);
-                    Artist savedArtist = artistRepository.save(newArtist);
-                    log.info("새 아티스트 생성: {}", artistName);
-                    return savedArtist;
-                });
-    }
 
-    /**
-     * 앨범 조회 또는 생성
-     */
-    private Album findOrCreateAlbum(String albumName, Artist artist) {
-        return albumRepository.findByTitleAndArtist(albumName, artist)
-                .orElseGet(() -> {
-                    Album newAlbum = new Album();
-                    newAlbum.setTitle(albumName);
-                    newAlbum.setArtist(artist);
-                    // 발매일은 현재 날짜로 설정
-                    newAlbum.setReleaseDate(java.time.LocalDate.now());
-                    Album savedAlbum = albumRepository.save(newAlbum);
-                    log.info("새 앨범 생성: {} by {}", albumName, artist.getName());
-                    return savedAlbum;
-                });
-    }
+
+
 
     /**
      * 파일 확장자에서 형식 추출
