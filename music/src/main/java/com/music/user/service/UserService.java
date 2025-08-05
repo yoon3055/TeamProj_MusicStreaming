@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import  java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -430,7 +430,7 @@ public class UserService {
 
             // 이름으로 회원 다건 조회
     public List<UserDto> searchUser(String nickname) {
-        List<User> userList = userRepository.findByNickname(nickname);
+        List<User> userList = userRepository.findByEmailContainingIgnoreCaseOrNicknameContainingIgnoreCase("", nickname);
         if(userList.size() > 0) {
             System.out.println("===== searchUser =====");
             List<UserDto> userDtoList = new ArrayList<>();

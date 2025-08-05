@@ -1,4 +1,6 @@
-package com.music.user.entity;
+package com.music.follow.entity;
+
+import com.music.user.entity.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +18,7 @@ import jakarta.persistence.UniqueConstraint;
                 @UniqueConstraint(columnNames = {"follower_id", "following_id"}) // follower_id와 following_id 조합을 유니크하게 설정
         }
 )
-public class Follow {
+public class UserFollow {
 
     @Id // 기본 키(Primary Key)임을 나타냅니다.
     @GeneratedValue(strategy = GenerationType.IDENTITY) // ID 자동 생성을 데이터베이스에 위임합니다.
@@ -37,12 +39,12 @@ public class Follow {
     // Lombok을 사용하면 아래 생성자, Getter, Setter 코드를 자동으로 생성할 수 있어 편리합니다.
     // @NoArgsConstructor, @AllArgsConstructor, @Getter, @Setter 어노테이션 사용 권장
 
-    public Follow() {
+    public UserFollow() {
         // JPA에서 필수적인 기본 생성자
     }
 
     // 모든 필드를 포함하는 생성자 (ID 제외, ID는 자동 생성)
-    public Follow(User follower, User following) {
+    public UserFollow(User follower, User following) {
         this.follower = follower;
         this.following = following;
     }

@@ -1,6 +1,5 @@
 package com.music.subscription.service;
 
-
 import com.music.subscription.dto.UserSubscriptionDto;
 import com.music.subscription.entity.SubscriptionPlan;
 import com.music.subscription.entity.UserSubscription;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
@@ -23,50 +21,32 @@ public class SubscriptionService {
     private final SubscriptionPlanRepository planRepo;
     private final UserRepository userRepo;
 
-
     /**
      * 새 구독 생성(이전 활성 구독은 종료 처리)
      */
     @Transactional
     public UserSubscriptionDto.Response subscribePlan(Long userId, Long planId) {
-        // 1) 기존 활성 구독 종료
         subRepo.findByUserIdAndIsActiveTrue(userId)
-               .ifPresent(active -> {
-                   active.setActive(false);
-                   active.setEndDate(LocalDateTime.now());
-               });
+                .ifPresent(active -> {
+                    active.setActive(false);
+                    active.setEndDate(LocalDateTime.now());
+                });
 
-        // 2) 플랜 조회
         SubscriptionPlan plan = planRepo.findById(planId)
-            .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
-
-        // 3) User 프록시 가져오기
+                .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
         User user = userRepo.getReferenceById(userId);
 
-        // 4) 새 구독 생성
         UserSubscription sub = UserSubscription.builder()
-            .user(user)
-            .plan(plan)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusDays(plan.getDurationDays()))
-            .isActive(true)
-            .build();
+                .user(user)
+                .plan(plan)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(plan.getDurationDays()))
+                .isActive(true)
+                .build();
         subRepo.save(sub);
 
-        // 5) DTO 변환 반환
         return UserSubscriptionDto.Response.from(sub);
     }
-
-//    /**
-//     * 토큰에서 userId 추출 후, 활성 구독 조회
-//     */
-//    @Transactional(readOnly = true)
-//    public UserSubscriptionDto.Response getCurrentSubscription(String token) {
-//        Long userId = Long.valueOf(jwtTokenProvider.getUsername(token));
-//        UserSubscription sub = subRepo.findByUserIdAndIsActiveTrue(userId)
-//            .orElseThrow(() -> new EntityNotFoundException("Active subscription not found"));
-//        return UserSubscriptionDto.Response.from(sub);
-//    }
 
     /**
      * 구독 취소 (isActive=false, endDate=now), SimpleResponse 반환
@@ -74,9 +54,35 @@ public class SubscriptionService {
     @Transactional
     public UserSubscriptionDto.SimpleResponse cancelSubscription(Long subId) {
         UserSubscription sub = subRepo.findById(subId)
-            .orElseThrow(() -> new EntityNotFoundException("Subscription not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Subscription not found"));
         sub.setActive(false);
         sub.setEndDate(LocalDateTime.now());
         return UserSubscriptionDto.SimpleResponse.from(sub);
+    }
+
+    /**
+     * 관리자용: 사용자 구독 정보 수정
+     */
+    @Transactional
+    public UserSubscriptionDto.Response updateUserSubscription(Long userId, UserSubscriptionDto.UpdateRequest request) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        UserSubscription currentSub = subRepo.findByUserIdAndIsActiveTrue(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Active subscription not found"));
+
+        if (request.getPlanId() != null) {
+            SubscriptionPlan newPlan = planRepo.findById(request.getPlanId())
+                    .orElseThrow(() -> new EntityNotFoundException("Plan not found"));
+            currentSub.setPlan(newPlan);
+        }
+
+        if (request.getEndDate() != null) {
+            currentSub.setEndDate(request.getEndDate());
+        }
+
+        currentSub.setActive(request.isActive());
+
+        return UserSubscriptionDto.Response.from(subRepo.save(currentSub));
     }
 }
