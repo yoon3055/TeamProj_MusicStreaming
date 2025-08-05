@@ -30,10 +30,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 댓글 내용(content)에 특정 문자열이 포함된 댓글을 검색하는 메서드 (대소문자 구분 없이)
     List<Comment> findByContentContainingIgnoreCase(String content);
+    
+    List<Comment> findAllByOrderByCreatedAtDesc();
 
     // 특정 곡에 달린 댓글의 총 개수를 세는 메서드
     long countBySongId(Long songId);
 
     // 특정 사용자가 작성한 댓글의 총 개수를 세는 메서드
     long countByUserId(Long userId);
+    
+
 }

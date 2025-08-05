@@ -4,6 +4,7 @@ import com.music.user.dto.UserDto;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
@@ -32,26 +33,26 @@ public class User {
     private SocialType socialType;
 
     private String socialId;
-
     private String refreshToken;
 
-    // // Entity -> DTO 변환
-    // public PasswordUpdateDto toDto() {
-    //     return PasswordUpdateDto.builder()
-    //             .id(this.id)
-    //             .email(this.email).build();
-    // }
+    // ✅ 가입일 (생성 시 자동 저장)
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-        // Entity -> DTO 변환
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     public UserDto toDto() {
         return UserDto.builder()
-                        .id(this.id)
-                        .nickname(this.nickname)
-                        .email(this.email)
-                        .password(this.password)
-                        .profileImage(this.profileImage)
-                        .refreshToken(this.refreshToken)
-                        .role(this.role)
-                        .build();
+                .id(this.id)
+                .nickname(this.nickname)
+                .email(this.email)
+                .password(this.password)
+                .profileImage(this.profileImage)
+                .refreshToken(this.refreshToken)
+                .role(this.role)
+                .build();
     }
 }

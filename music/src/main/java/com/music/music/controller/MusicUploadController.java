@@ -198,6 +198,6 @@ public class MusicUploadController {
     private boolean isValidAudioFormat(String contentType) {
         return contentType.equals("audio/mpeg") ||  // MP3
                contentType.equals("audio/wav") ||   // WAV
-               contentType.equals("audio/flac");    // FLAC
-    }
+				contentType.equals("audio/flac"); // FLAC
+	}
 }

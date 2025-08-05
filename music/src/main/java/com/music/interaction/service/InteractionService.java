@@ -1,5 +1,6 @@
 package com.music.interaction.service;
 
+import com.music.artist.repository.ArtistRepository;
 import com.music.interaction.dto.CommentDto;
 import com.music.interaction.dto.LikeDto;
 import com.music.interaction.dto.ReportDto;
@@ -10,6 +11,9 @@ import com.music.interaction.repository.CommentRepository;
 import com.music.interaction.repository.LikeRepository;
 import com.music.interaction.repository.ReportRepository;
 import com.music.music.entity.Song;
+import com.music.music.entity.Album;
+import com.music.artist.entity.Artist;
+import com.music.music.repository.AlbumRepository;
 import com.music.music.repository.SongRepository;
 import com.music.user.entity.User;
 import com.music.user.repository.UserRepository;
@@ -32,6 +36,9 @@ public class InteractionService {
 	private final ReportRepository reportRepository;
 	private final UserRepository userRepository;
 	private final SongRepository songRepository;
+	private final AlbumRepository albumRepository;
+	private final ArtistRepository artistRepository;
+
 
 	// ====== COMMENT ======
 	public CommentDto.Response addComment(CommentDto.Request request) {
@@ -88,6 +95,44 @@ public class InteractionService {
 	public List<LikeDto.SimpleResponse> getLikesBySong(Long songId) {
 		return likeRepository.findBySongId(songId).stream().map(LikeDto.SimpleResponse::from)
 				.collect(Collectors.toList());
+	}
+	
+	// ====== LIKE 수 조회 ======
+	public long countLikesBySongId(Long songId) {
+	    return likeRepository.countBySongId(songId);
+	}
+	public long countLikesByAlbumId(Long albumId) {
+	    return likeRepository.countBySong_AlbumId(albumId);
+	}
+
+	public long countLikesByArtistId(Long artistId) {
+	    return likeRepository.countBySong_ArtistId(artistId);
+	}
+	
+	// ====== LIKE COUNT 증가 ======
+	public boolean increaseLikeCount(String type, Long id) {
+	    switch (type.toLowerCase()) {
+	        case "song":
+	            Song song = songRepository.findById(id)
+	                    .orElseThrow(() -> new RuntimeException("곡을 찾을 수 없습니다."));
+	            song.setLikeCount(song.getLikeCount() + 1);
+	            return true;
+
+	        case "album":
+	            Album album = albumRepository.findById(id)
+	                    .orElseThrow(() -> new RuntimeException("앨범을 찾을 수 없습니다."));
+	            album.setLikeCount(album.getLikeCount() + 1);
+	            return true;
+
+	        case "artist":
+	            Artist artist = artistRepository.findById(id)
+	                    .orElseThrow(() -> new RuntimeException("아티스트를 찾을 수 없습니다."));
+	            artist.setLikeCount(artist.getLikeCount() + 1);
+	            return true;
+
+	        default:
+	            return false;
+	    }
 	}
 
 	// ====== REPORT ======

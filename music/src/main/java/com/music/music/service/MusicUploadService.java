@@ -2,7 +2,11 @@ package com.music.music.service;
 
 import com.music.music.dto.SongUploadDto;
 import com.music.music.dto.SongListDto;
+import com.music.music.entity.Album;
+import com.music.artist.entity.Artist;
 import com.music.music.entity.Song;
+import com.music.music.repository.AlbumRepository;
+import com.music.artist.repository.ArtistRepository;
 import com.music.music.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

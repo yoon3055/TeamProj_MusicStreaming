@@ -1,7 +1,7 @@
 package com.music.music.dto;
 
 import com.music.music.entity.Album;
-import com.music.music.entity.Artist;
+import com.music.artist.entity.Artist;
 import com.music.music.entity.Song;
 import lombok.Getter;
 import lombok.Setter;

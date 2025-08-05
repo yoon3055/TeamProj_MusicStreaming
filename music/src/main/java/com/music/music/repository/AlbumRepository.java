@@ -2,7 +2,7 @@ package com.music.music.repository;
 
 
 import com.music.music.entity.Album;
-import com.music.music.entity.Artist;
+import com.music.artist.entity.Artist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

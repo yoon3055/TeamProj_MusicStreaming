@@ -14,10 +14,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // email로 사용자 찾기
     Optional<User> findByEmail(String email);
     Optional<User> findBySocialId(String socialId);
-
-    // nickname으로 사용자 찾기
-    List<User> findByNickname(String nickname);
-
+    
+ // 🔍 이메일 또는 닉네임이 키워드에 포함된 사용자 검색
+    List<User> findByEmailContainingIgnoreCaseOrNicknameContainingIgnoreCase(String email, String nickname);
 
     // 이메일 존재 여부 확인
     boolean existsByEmail(String email);

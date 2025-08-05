@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.music.artist.entity.Artist;
+
 @Entity
 @Getter
 @Setter
@@ -65,4 +67,16 @@ public class Song {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+    
+    @Column(name = "like_count")
+    private int likeCount = 0; // 기본값 0
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
 }

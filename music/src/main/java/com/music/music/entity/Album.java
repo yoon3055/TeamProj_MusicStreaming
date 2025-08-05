@@ -12,6 +12,8 @@ import lombok.Setter;
 
 import java.time.LocalDate; // release_date 필드를 위해 import
 
+import com.music.artist.entity.Artist;
+
 @Getter
 @Setter
 @Entity // 이 클래스가 JPA 엔티티임을 나타냅니다.
@@ -35,6 +37,18 @@ public class Album {
 
     @Column(name = "cover_image", length = 500) // VARCHAR(500), NULL 가능
     private String coverImage; // 앨범 커버 이미지 URL
+    
+    @Column(name = "like_count")
+    private int likeCount = 0; // 기본값 0
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
 
 // Lombok을 사용하면 아래 생성자, Getter, Setter 코드를 자동으로 생성할 수 있어 편리합니다.
 // @NoArgsConstructor, @AllArgsConstructor, @Getter, @Setter 어노테이션 사용 권장
