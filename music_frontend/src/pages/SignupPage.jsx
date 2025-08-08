@@ -33,7 +33,7 @@ const SignupPage = () => {
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
             try {
               const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
-              const res = await axios.post(`${apiUrl}/user/create`, values);
+              const res = await axios.post(`${apiUrl}/api/users/register`, values);
 
               // JWT 저장
               localStorage.setItem('jwt', res.data.token);

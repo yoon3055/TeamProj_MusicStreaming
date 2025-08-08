@@ -1,138 +1,187 @@
-import React, { useState, useEffect } from 'react';
-import  FilterButtons  from '../component/FilterButtons.jsx';
-import LoadingToast from '../component/LoadingToast';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/UserManagement.css';
-import axios from 'axios';
-
-// 모의 데이터
-const mockUsers = [
-  { id: 'user1', email: 'user1@example.com', nickname: 'UserOne', role: 'USER', createdAt: '2025-07-01' },
-  { id: 'user2', email: 'user2@example.com', nickname: 'UserTwo', role: 'USER', createdAt: '2025-07-02' },
-  { id: 'admin1', email: 'admin@example.com', nickname: 'Admin', role: 'ADMIN', createdAt: '2025-06-01' },
-];
 
 const UserManagement = () => {
+  const { user, logout, apiClient } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editForm, setEditForm] = useState({ email: '', role: '', subscriptionPlan: '' });
+  const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
 
-  const filters = [
-    { label: '전체', value: 'all' },
-    { label: '일반 사용자', value: 'USER' },
-    { label: '관리자', value: 'ADMIN' },
-  ];
-
-  // 모의 데이터 로드
   useEffect(() => {
-    // 실제 API 호출 (주석 처리)
-    
+    if (!user || user.role !== 'ADMIN') {
+      window.showToast('관리자 권한이 필요합니다.', 'error');
+      logout();
+      return;
+    }
+
     const fetchUsers = async () => {
+      setLoading(true);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_REACT_APP_API_URL}/api/admin/users`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
-        });
-        setUsers(res.data);
-      } catch (err) {
-        setError(err.message || '사용자 데이터를 불러오는 데 실패했습니다.');
+        if (DEV_MODE) {
+          setTimeout(() => {
+            setUsers([
+              { id: 1, email: 'user1@example.com', role: 'USER', subscriptionPlan: 'Free' },
+              { id: 2, email: 'user2@example.com', role: 'USER', subscriptionPlan: 'Premium' },
+              { id: 3, email: 'admin@example.com', role: 'ADMIN', subscriptionPlan: 'Pro' },
+            ]);
+            window.showToast('모의 사용자 목록을 불러왔습니다.', 'success');
+            setLoading(false);
+          }, 1000);
+          return;
+        }
+
+        const response = await apiClient.get('/api/admin/users');
+        setUsers(response.data);
+        window.showToast('사용자 목록을 불러왔습니다.', 'success');
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        setError('사용자 목록을 불러오지 못했습니다.');
+        window.showToast('사용자 목록을 불러오지 못했습니다.', 'error');
       } finally {
-        setLoading(false);
+        if (!DEV_MODE) setLoading(false);
       }
     };
     fetchUsers();
-    
-    
-    setTimeout(() => {
-      setUsers(mockUsers);
+  }, [user, logout, apiClient]);
+
+  const handleEdit = (user) => {
+    setEditingUser(user.id);
+    setEditForm({ email: user.email, role: user.role, subscriptionPlan: user.subscriptionPlan });
+  };
+
+  const handleUpdate = async (userId) => {
+    setLoading(true);
+    try {
+      if (DEV_MODE) {
+        setUsers(prev =>
+          prev.map(u => (u.id === userId ? { ...u, ...editForm } : u))
+        );
+        window.showToast('사용자 정보가 수정되었습니다.', 'success');
+      } else {
+        await apiClient.put(`/api/admin/users/${userId}`, editForm);
+        setUsers(prev =>
+          prev.map(u => (u.id === userId ? { ...u, ...editForm } : u))
+        );
+        window.showToast('사용자 정보가 수정되었습니다.', 'success');
+      }
+      setEditingUser(null);
+      setEditForm({ email: '', role: '', subscriptionPlan: '' });
+    } catch (error) {
+      console.error('Failed to update user:', error);
+      window.showToast('사용자 정보 수정에 실패했습니다.', 'error');
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
-
-  // 검색 및 필터링된 사용자 목록
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.nickname.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filter === 'all' || user.role === filter;
-    return matchesSearch && matchesFilter;
-  });
-
-  // 사용자 삭제 (모의)
-  const handleDelete = (userId) => {
-    if (window.confirm('이 사용자를 삭제하시겠습니까?')) {
-      setUsers(users.filter(user => user.id !== userId));
-      // 실제 API 호출 (주석 처리)
-      // axios.delete(`${import.meta.env.VITE_REACT_APP_API_URL}/api/admin/users/${userId}`, {
-      //   headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
-      // });
     }
   };
 
-  // 사용자 수정 (모의)
-  const handleEdit = (userId) => {
-    alert(`사용자 ${userId} 수정 (모달 또는 페이지 이동 구현 필요)`);
+  const handleDelete = async (userId) => {
+    setLoading(true);
+    try {
+      if (DEV_MODE) {
+        setUsers(prev => prev.filter(u => u.id !== userId));
+        window.showToast('사용자가 삭제되었습니다.', 'success');
+      } else {
+        await apiClient.delete(`/api/admin/users/${userId}`);
+        setUsers(prev => prev.filter(u => u.id !== userId));
+        window.showToast('사용자가 삭제되었습니다.', 'success');
+      }
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      window.showToast('사용자 삭제에 실패했습니다.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <div className="user-management-container">
-      <h2 className="user-management-title">사용자 관리</h2>
-      <LoadingToast isLoading={loading} onDismiss={() => setLoading(false)} />
-      {error && <p className="user-management-error">{error}</p>}
-
-      <div className="user-management-controls">
-        <input
-          type="text"
-          placeholder="이메일 또는 닉네임으로 검색"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="user-management-search"
-        />
-        <FilterButtons
-          currentFilter={filter}
-          onFilterChange={setFilter}
-          filters={filters}
-        />
+  if (loading) {
+    return (
+      <div className="user-management">
+        <p className="loading-text">로딩 중...</p>
       </div>
+    );
+  }
 
-      <table className="user-management-table">
+  if (error) {
+    return (
+      <div className="user-management">
+        <p className="admin-error">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="user-management">
+      <h1>사용자 관리</h1>
+      <table className="user-table">
         <thead>
           <tr>
+            <th>ID</th>
             <th>이메일</th>
-            <th>닉네임</th>
-            <th>권한</th>
-            <th>가입일</th>
+            <th>역할</th>
+            <th>구독 플랜</th>
             <th>작업</th>
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.length === 0 ? (
-            <tr>
-              <td colSpan="5" className="user-management-empty">사용자 없음</td>
+          {users.map(user => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>
+                {editingUser === user.id ? (
+                  <input
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  />
+                ) : (
+                  user.email
+                )}
+              </td>
+              <td>
+                {editingUser === user.id ? (
+                  <select
+                    value={editForm.role}
+                    onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  >
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                ) : (
+                  user.role
+                )}
+              </td>
+              <td>
+                {editingUser === user.id ? (
+                  <select
+                    value={editForm.subscriptionPlan}
+                    onChange={(e) => setEditForm({ ...editForm, subscriptionPlan: e.target.value })}
+                  >
+                    <option value="Free">Free</option>
+                    <option value="Premium">Premium</option>
+                    <option value="Pro">Pro</option>
+                  </select>
+                ) : (
+                  user.subscriptionPlan
+                )}
+              </td>
+              <td>
+                {editingUser === user.id ? (
+                  <>
+                    <button onClick={() => handleUpdate(user.id)}>저장</button>
+                    <button onClick={() => setEditingUser(null)}>취소</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => handleEdit(user)}>수정</button>
+                    <button onClick={() => handleDelete(user.id)}>삭제</button>
+                  </>
+                )}
+              </td>
             </tr>
-          ) : (
-            filteredUsers.map(user => (
-              <tr key={user.id}>
-                <td>{user.email}</td>
-                <td>{user.nickname}</td>
-                <td>{user.role}</td>
-                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    onClick={() => handleEdit(user.id)}
-                    className="user-management-btn user-management-btn-edit"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    className="user-management-btn user-management-btn-delete"
-                  >
-                    삭제
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>

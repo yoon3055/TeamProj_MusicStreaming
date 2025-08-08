@@ -1,6 +1,5 @@
 // src/components/RankingChart.jsx
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import '../styles/RankingPage.css';
 
 function formatLength(seconds) {
@@ -9,55 +8,47 @@ function formatLength(seconds) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-const RankingChart = () => {
-  const [rankingList, setRankingList] = useState([]);
+// props로 rankingList, liked, followed, added, toggle 함수들을 받습니다.
+const RankingChart = ({ rankingList, liked, followed, added, toggleLike, toggleFollow, toggleAdd }) => {
   const [hoveredId, setHoveredId] = useState(null);
-  const [liked, setLiked] = useState({});
-  const [followed, setFollowed] = useState({});
-  const [added, setAdded] = useState({});
 
-  useEffect(() => {
-    // 실제 API 경로에 맞게 변경
-    axios.get('/api/ranking')
-      .then(res => {
-        setRankingList(res.data);
-      })
-      .catch(err => {
-        console.error('랭킹 데이터 로드 실패:', err);
-      });
-  }, []);
-
-  const toggleLike = (id) => setLiked(prev => ({ ...prev, [id]: !prev[id] }));
-  const toggleFollow = (id) => setFollowed(prev => ({ ...prev, [id]: !prev[id] }));
-  const toggleAdd = (id) => setAdded(prev => ({ ...prev, [id]: !prev[id] }));
+  if (!rankingList || rankingList.length === 0) {
+    return (
+      <div className="ranking-chart-container">
+        <p className="no-data-text">데이터가 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="ranking-page-container">
-      <h1>랭킹 차트 (백엔드 연동)</h1>
-
+    <div className="ranking-chart-container">
       <div className="ranking-list">
-        {rankingList.length === 0 && <p>데이터가 없습니다.</p>}
-
-        {rankingList.map((album, idx) => (
+        {rankingList.map((item) => (
           <div
             className="ranking-item"
-            key={album.id}
-            onMouseEnter={() => setHoveredId(album.id)}
+            key={item.id}
+            onMouseEnter={() => setHoveredId(item.id)}
             onMouseLeave={() => setHoveredId(null)}
           >
-            <div className="ranking-rank">{idx + 1}</div>
-            <img src={album.coverUrl} alt={`${album.title} 커버`} className="ranking-cover" />
+            <div className="ranking-rank">{item.rank}</div>
+            
+            {item.type === 'album' && (
+              <img src={item.coverUrl} alt={`${item.title} 커버`} className="ranking-cover" />
+            )}
+            {item.type === 'artist' && (
+              <div className="ranking-artist-placeholder">아티스트</div>
+            )}
 
             <div className="album-artist-info">
-              <div className="album-title" title={album.title}>{album.title}</div>
-              <div className="artist-name" title={album.artist}>{album.artist}</div>
+              <div className="album-title" title={item.title}>{item.title}</div>
+              <div className="artist-name" title={item.artist}>{item.artist}</div>
             </div>
 
             <div className="play-button-container">
-              {hoveredId === album.id && (
+              {hoveredId === item.id && item.type === 'album' && (
                 <button
                   className="play-button"
-                  onClick={() => alert(`재생: ${album.title}`)}
+                  onClick={() => alert(`재생: ${item.title}`)}
                   aria-label="재생"
                 >
                   ▶
@@ -66,19 +57,22 @@ const RankingChart = () => {
             </div>
 
             <div className="song-info">
-              곡수: {album.songCount} / 길이: {formatLength(album.length)}
+              {item.type === 'album' && `곡수: ${item.songCount} / 길이: ${formatLength(item.length)}`}
+              {item.type === 'artist' && `팔로워: ${item.followers}`}
             </div>
 
             <div className="action-buttons">
-              <button className={`action-button ${liked[album.id] ? 'active' : ''}`} onClick={() => toggleLike(album.id)} aria-label="좋아요">
-                ❤️ {album.likes}
+              <button className={`action-button ${liked[item.entityId] ? 'active' : ''}`} onClick={() => toggleLike(item.entityId, item.type)} aria-label="좋아요">
+                ❤️ {item.likes}
               </button>
-              <button className={`action-button ${followed[album.id] ? 'active' : ''}`} onClick={() => toggleFollow(album.id)} aria-label="팔로우">
-                👥 {album.followers}
+              <button className={`action-button ${followed[item.entityId] ? 'active' : ''}`} onClick={() => toggleFollow(item.entityId, item.type)} aria-label="팔로우">
+                👥 {item.followers}
               </button>
-              <button className={`action-button ${added[album.id] ? 'active' : ''}`} onClick={() => toggleAdd(album.id)} aria-label="담기">
-                ➕ 담기
-              </button>
+              {item.type === 'album' && (
+                <button className={`action-button ${added[item.entityId] ? 'active' : ''}`} onClick={() => toggleAdd(item.entityId)} aria-label="담기">
+                  ➕ 담기
+                </button>
+              )}
             </div>
           </div>
         ))}

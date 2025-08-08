@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext'; // useAuth 임포트
+import { useAuth } from '../context/AuthContext'; // AuthContext 훅
 import '../styles/LoginPage.css';
 
 const LoginSchema = Yup.object().shape({
@@ -16,7 +16,7 @@ const LoginSchema = Yup.object().shape({
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // useAuth로 login 함수 가져오기
+  const { login } = useAuth();
   const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
 
   const handleOAuth2Redirect = useCallback(async () => {
@@ -27,12 +27,13 @@ const LoginPage = () => {
     if (code && provider) {
       try {
         const endpoint = provider === 'kakao' ? '/user/kakao/doLogin' : '/login/oauth2/code/google';
-        const res = await axios.get(`${API_BASE_URL}${endpoint}?code=${code}`);
-        console.log('OAuth2 응답:', res.data);
+        const res = await axios.post(`${API_BASE_URL}${endpoint}?code=${code}`);
 
         localStorage.setItem('jwt', res.data.token);
+
         if (res.data.user) {
-          await login({ identifier: res.data.user.email, password: '' }); // login 함수 호출
+          // 비밀번호 없이 로그인 시도 - 서버가 허용한다면 가능
+          await login({ email: res.data.user.email, password: '' });
         }
         alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인 성공!`);
         navigate('/');
@@ -41,7 +42,7 @@ const LoginPage = () => {
         alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인에 실패했습니다.`);
       }
     }
-  }, [API_BASE_URL, navigate, login]);
+  }, [API_BASE_URL, login, navigate]);
 
   useEffect(() => {
     handleOAuth2Redirect();
@@ -60,7 +61,7 @@ const LoginPage = () => {
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
             setSubmitting(true);
             try {
-              const success = await login({ identifier: values.email, password: values.password });
+              const success = await login({ email: values.email, password: values.password });
               if (success) {
                 alert('로그인 성공!');
                 navigate('/');

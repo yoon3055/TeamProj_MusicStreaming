@@ -4,69 +4,84 @@ import { MusicPlayerContext } from '../context/MusicPlayerContext';
 import { FaUpload, FaDownload, FaTrash, FaPlus } from 'react-icons/fa';
 import '../styles/FileManagement.css';
 import noSongImage from '../assets/default-cover.jpg';
-import axios from 'axios';
 
-// API 기본 URL
-const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
+
+// IndexedDB 헬퍼 함수
+const dbName = 'musicPlayerDB';
+const storeName = 'uploadedFiles';
+
+const openDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, 2);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.createObjectStore(storeName, { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = (event) => resolve(event.target.result);
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+const saveFileToDB = async (fileObj) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.put(fileObj);
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+const getAllFilesFromDB = async () => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readonly');
+    const store = transaction.objectStore(storeName);
+    const request = store.getAll();
+    request.onsuccess = (event) => resolve(event.target.result);
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+const deleteFileFromDB = async (fileId) => {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.delete(fileId);
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
 
 const FileManagement = () => {
   const { user } = useContext(AuthContext);
   const { addSongToPlaylist } = useContext(MusicPlayerContext);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedFileUrl, setSelectedFileUrl] = useState(null);
   const [selectedCover, setSelectedCover] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    genre: ''
-  });
 
   useEffect(() => {
+    const loadFiles = async () => {
+      try {
+        window.showToast('파일 목록을 불러오는 중...', 'info');
+        const files = await getAllFilesFromDB();
+        setUploadedFiles(files);
+        if (files.length > 0) {
+          window.showToast(`${files.length}개의 파일을 불러왔습니다.`, 'success');
+        } else {
+          window.showToast('저장된 파일이 없습니다.', 'info');
+        }
+      } catch (error) {
+        console.error('Failed to load files from IndexedDB:', error);
+        window.showToast('파일 목록 로드에 실패했습니다.', 'error');
+      }
+    };
     loadFiles();
   }, []);
-
-  // 서버에서 업로드된 음악 파일 목록 조회
-  const loadFiles = async () => {
-    try {
-      console.log('파일 목록 조회 시작...');
-      const response = await axios.get(`${API_BASE_URL}/api/admin/music/list`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt')}`
-        }
-      });
-      
-      console.log('API 응답:', response.data);
-      
-      if (response.data.success) {
-        const songs = response.data.songs || [];
-        console.log('불러온 파일 개수:', songs.length);
-        setUploadedFiles(songs);
-        
-        // 파일 개수에 따라 다른 메시지 표시
-        if (songs.length > 0) {
-          window.showToast(`${songs.length}개의 파일을 불러왔습니다.`, 'success');
-        } else {
-          console.log('업로드된 파일이 없습니다.');
-        }
-      } else {
-        console.error('API 응답 실패:', response.data.message);
-        window.showToast(response.data.message || '파일 목록 로드에 실패했습니다.', 'error');
-        setUploadedFiles([]);
-      }
-    } catch (error) {
-      console.error('Failed to load files from server:', error);
-      
-      // 더 자세한 에러 정보 출력
-      if (error.response) {
-        console.error('응답 상태:', error.response.status);
-        console.error('응답 데이터:', error.response.data);
-      }
-      
-      window.showToast('파일 목록 로드에 실패했습니다. 네트워크 연결을 확인해주세요.', 'error');
-      setUploadedFiles([]);
-    }
-  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -79,34 +94,33 @@ const FileManagement = () => {
     const validAudioTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/flac'];
     const validExtensions = ['.mp3', '.wav', '.flac'];
     const extension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-    if (!validAudioTypes.includes(file.type) && !validExtensions.includes(extension)) {
+    if (!validAudioTypes.includes(file.type) || !validExtensions.includes(extension)) {
       window.showToast('지원되는 파일 형식: MP3, WAV, FLAC', 'error');
       console.log('Invalid audio file:', { type: file.type, extension });
       setSelectedFile(null);
-      e.target.value = '';
+      e.target.value = ''; // 파일 입력 초기화
       return;
     }
 
-    // 파일 크기 체크 (200MB 제한)
-    const maxSize = 200 * 1024 * 1024; // 200MB
+    // 파일 크기 체크 (50MB 제한)
+    const maxSize = 50 * 1024 * 1024; // 50MB
     if (file.size > maxSize) {
-      window.showToast('파일 크기는 200MB 이하여야 합니다.', 'error');
-      console.log('File too large:', file.size);
+      window.showToast('파일 크기는 50MB 이하여야 합니다.', 'error');
       setSelectedFile(null);
       e.target.value = '';
       return;
     }
 
-    const fileUrl = URL.createObjectURL(file);
-    setSelectedFile(file); // 원본 File 객체 그대로 저장
-    setSelectedFileUrl(fileUrl); // URL은 별도로 관리
-    
-    // 파일명에서 제목 추출 (확장자 제거)
-    const fileName = file.name.replace(/\.[^/.]+$/, "");
-    setFormData(prev => ({ ...prev, title: fileName }));
-    
-    console.log('Audio file selected:', file.name, file.type, file.size);
+    const fileData = {
+      file: file,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: URL.createObjectURL(file),
+    };
+    setSelectedFile(fileData);
     window.showToast('오디오 파일이 선택되었습니다.', 'success');
+    console.log('Selected audio file:', fileData);
   };
 
   const handleCoverChange = (e) => {
@@ -149,73 +163,59 @@ const FileManagement = () => {
   const handleUpload = async () => {
     if (!user) {
       window.showToast('로그인이 필요합니다.', 'error');
+      console.log('Upload failed: User not logged in');
+      setSelectedFile(null);
+      setSelectedCover(null);
       return;
     }
 
     if (!selectedFile) {
       window.showToast('업로드할 오디오 파일을 선택해주세요.', 'error');
+      console.log('Upload failed: No audio file selected');
       return;
     }
 
-    // 필수 정보 검증
-    if (!formData.title.trim()) {
-      window.showToast('곡 제목을 입력해주세요.', 'error');
-      return;
-    }
+    window.showToast('파일을 업로드하는 중...', 'info');
 
-    setUploading(true);
-    window.showToast('파일을 서버에 업로드하는 중...', 'info');
+    const songId = `admin-upload-${Date.now()}`;
+    const newFile = {
+      id: songId,
+      name: selectedFile.name,
+      artist: '관리자 업로드',
+      coverUrl: selectedCover ? selectedCover.url : noSongImage,
+      url: selectedFile.url,
+      isLocal: true,
+      fileData: selectedFile.file,
+      coverFile: selectedCover ? selectedCover.file : null,
+      size: selectedFile.size,
+      uploadedAt: new Date().toISOString(),
+    };
 
     try {
-      // FormData 생성
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', selectedFile);
-      uploadFormData.append('title', formData.title.trim());
-      
-      if (formData.genre.trim()) {
-        uploadFormData.append('genre', formData.genre.trim());
-      }
-
-      // 서버에 업로드
-      const response = await axios.post(`${API_BASE_URL}/api/admin/music/upload`, uploadFormData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('jwt')}`
-        }
-      });
-
-      if (response.data.success) {
-        window.showToast(`${formData.title} 파일이 성공적으로 업로드되었습니다.`, 'success');
-        
-        // 폼 초기화 먼저 수행
-        setSelectedFile(null);
-        setSelectedFileUrl(null);
-        setSelectedCover(null);
-        setFormData({ title: '', artistName: '', albumName: '', genre: '' });
-        document.getElementById('audio-upload').value = '';
-        if (document.getElementById('cover-upload')) {
-          document.getElementById('cover-upload').value = '';
-        }
-        
-        // 파일 목록 새로고침 (약간의 지연 후)
-        setTimeout(async () => {
-          try {
-            await loadFiles();
-            window.showToast('파일 목록이 업데이트되었습니다.', 'info');
-          } catch (error) {
-            console.error('Failed to refresh file list:', error);
-            window.showToast('파일 목록 새로고침에 실패했습니다. 수동으로 새로고침 버튼을 클릭해주세요.', 'warning');
-          }
-        }, 500);
-      } else {
-        window.showToast(response.data.message || '업로드에 실패했습니다.', 'error');
-      }
+      await saveFileToDB(newFile);
+      setUploadedFiles((prevFiles) => [...prevFiles, newFile]);
+      window.showToast(`${selectedFile.name} 파일이 성공적으로 업로드되었습니다.`, 'success');
+      console.log('Upload successful:', newFile);
+      setSelectedFile(null);
+      setSelectedCover(null);
+      // 파일 입력 초기화
+      document.getElementById('audio-upload').value = '';
+      document.getElementById('cover-upload').value = '';
     } catch (error) {
       console.error('Upload failed:', error);
-      const errorMessage = error.response?.data?.message || '서버 오류가 발생했습니다.';
-      window.showToast(errorMessage, 'error');
-    } finally {
-      setUploading(false);
+      try {
+        await saveFileToDB(newFile);
+        setUploadedFiles((prevFiles) => [...prevFiles, newFile]);
+        window.showToast(`${selectedFile.name} 파일이 로컬에 저장되었습니다.`, 'success');
+        console.log('Local upload successful:', newFile);
+      } catch (localError) {
+        window.showToast('파일 업로드 및 로컬 저장에 실패했습니다.', 'error');
+        console.error('Local upload failed:', localError);
+      }
+      setSelectedFile(null);
+      setSelectedCover(null);
+      document.getElementById('audio-upload').value = '';
+      document.getElementById('cover-upload').value = '';
     }
   };
 
@@ -259,66 +259,19 @@ const FileManagement = () => {
     }
   };
 
-  const handleDelete = async (songId, title) => {
-    // 삭제 확인 대화상자
-    const confirmMessage = `"${title}" 파일을 정말 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`;
-    if (!window.confirm(confirmMessage)) {
+  const handleDelete = async (fileId, fileName) => {
+    if (!window.confirm(`"${fileName}" 파일을 삭제하시겠습니까?`)) {
       return;
     }
 
     try {
-      console.log(`파일 삭제 시작 - ID: ${songId}, 제목: ${title}`);
-      window.showToast('파일을 삭제하는 중...', 'info');
-      
-      const response = await axios.delete(`${API_BASE_URL}/api/admin/music/${songId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwt')}`
-        }
-      });
-
-      console.log('삭제 응답:', response.data);
-
-      if (response.data.success) {
-        window.showToast(`"${title}" 파일이 성공적으로 삭제되었습니다.`, 'success');
-        
-        // 파일 목록에서 해당 항목을 즉시 제거 (UI 반응성 향상)
-        setUploadedFiles(prevFiles => 
-          prevFiles.filter(file => file.id !== songId)
-        );
-        
-        // 서버에서 최신 목록 다시 불러오기
-        setTimeout(async () => {
-          try {
-            await loadFiles();
-            console.log('삭제 후 파일 목록 새로고침 완료');
-          } catch (error) {
-            console.error('파일 목록 새로고침 실패:', error);
-          }
-        }, 500);
-        
-      } else {
-        console.error('삭제 실패:', response.data.message);
-        window.showToast(response.data.message || '삭제에 실패했습니다.', 'error');
-      }
+      await deleteFileFromDB(fileId);
+      setUploadedFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+      window.showToast(`${fileName} 파일이 삭제되었습니다.`, 'success');
+      console.log('File deleted:', fileId);
     } catch (error) {
-      console.error('Delete failed:', error);
-      
-      // 더 자세한 에러 정보 출력
-      if (error.response) {
-        console.error('응답 상태:', error.response.status);
-        console.error('응답 데이터:', error.response.data);
-        
-        if (error.response.status === 404) {
-          window.showToast('삭제할 파일을 찾을 수 없습니다.', 'error');
-        } else if (error.response.status === 403) {
-          window.showToast('삭제 권한이 없습니다. 관리자 권한을 확인해주세요.', 'error');
-        } else {
-          const errorMessage = error.response?.data?.message || '파일 삭제 중 오류가 발생했습니다.';
-          window.showToast(errorMessage, 'error');
-        }
-      } else {
-        window.showToast('네트워크 오류가 발생했습니다. 연결을 확인해주세요.', 'error');
-      }
+      window.showToast('파일 삭제에 실패했습니다.', 'error');
+      console.error('IndexedDB delete failed:', error);
     }
   };
 
@@ -346,65 +299,28 @@ const FileManagement = () => {
       <h2 className="file-management-title">파일 관리자 페이지</h2>
       <div className="file-management-controls">
         <label className="file-management-label">
-          오디오 파일 선택 (최대 200MB)
+          오디오 파일 선택 (최대 50MB)
           <input
             type="file"
             id="audio-upload"
             accept="audio/mp3,audio/mpeg,audio/wav,audio/x-wav,audio/flac"
             onChange={handleFileChange}
             className="file-management-upload-input"
-            disabled={uploading}
           />
         </label>
-        
-        {selectedFile && (
-          <div className="file-management-form">
-            <h3>곡 정보 입력</h3>
-            <div className="file-management-form-row">
-              <label>
-                곡 제목 *
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="곡 제목을 입력하세요"
-                  className="file-management-input"
-                  disabled={uploading}
-                />
-              </label>
-              <label>
-                장르
-                <input
-                  type="text"
-                  value={formData.genre}
-                  onChange={(e) => setFormData(prev => ({ ...prev, genre: e.target.value }))}
-                  placeholder="장르 (선택사항)"
-                  className="file-management-input"
-                  disabled={uploading}
-                />
-              </label>
-            </div>
-          </div>
-        )}
-        
-        <div className="file-management-buttons">
-          <button 
-            onClick={handleUpload} 
-            className="file-management-btn file-management-btn-upload"
-            disabled={!selectedFile || uploading}
-          >
-            <FaUpload /> {uploading ? '업로드 중...' : '업로드'}
-          </button>
-          {selectedFile && (
-            <button 
-              onClick={handleCancelUpload} 
-              className="file-management-btn file-management-btn-cancel"
-              disabled={uploading}
-            >
-              취소
-            </button>
-          )}
-        </div>
+        <label className="file-management-label">
+          앨범 커버 선택 (선택 사항, 최대 5MB)
+          <input
+            type="file"
+            id="cover-upload"
+            accept="image/jpeg,image/png"
+            onChange={handleCoverChange}
+            className="file-management-upload-input"
+          />
+        </label>
+        <button onClick={handleUpload} className="file-management-btn file-management-btn-upload">
+          <FaUpload /> 업로드
+        </button>
       </div>
 
       {selectedFile && (
@@ -420,7 +336,7 @@ const FileManagement = () => {
               <p><strong>파일명:</strong> {selectedFile.name}</p>
               <p><strong>크기:</strong> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
               <p><strong>형식:</strong> {selectedFile.type}</p>
-              <audio controls src={selectedFileUrl} className="file-management-preview-audio" />
+              <audio controls src={selectedFile.url} className="file-management-preview-audio" />
             </div>
           </div>
           <div className="file-management-preview-buttons">
@@ -440,111 +356,62 @@ const FileManagement = () => {
         </div>
       )}
 
-      {/* 업로드된 파일 목록 섹션 */}
-      <div className="file-management-section">
-        <div className="file-management-section-header">
-          <h2>업로드된 파일 목록</h2>
-          <div className="file-management-stats">
-            <span className="file-count">총 {uploadedFiles.length}개 파일</span>
-            <button 
-              onClick={loadFiles} 
-              className="file-management-btn file-management-btn-refresh"
-              disabled={uploading}
-            >
-              새로고침
-            </button>
-          </div>
-        </div>
-
-        <div className="file-management-list">
-          {uploadedFiles.length > 0 ? (
-            <div className="file-management-table-container">
-              <table className="file-management-table">
-                <thead>
-                  <tr>
-                    <th>앨범 커버</th>
-                    <th>곡 제목</th>
-                    <th>장르</th>
-                    <th>파일명</th>
-                    <th>크기</th>
-                    <th>형식</th>
-                    <th>재생시간</th>
-                    <th>업로드일</th>
-                    <th>업로드자</th>
-                    <th>작업</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {uploadedFiles.map((file) => (
-                    <tr key={file.id}>
-                      <td>
-                        <img
-                          src={file.coverUrl || noSongImage}
-                          alt="앨범 커버"
-                          className="file-management-table-cover"
-                        />
-                      </td>
-                      <td className="file-title">{file.title}</td>
-                      <td>{file.genre || '-'}</td>
-                      <td className="file-name">{file.originalFileName}</td>
-                      <td className="file-size">
-                        {file.fileSize ? (file.fileSize / 1024 / 1024).toFixed(2) + ' MB' : 'N/A'}
-                      </td>
-                      <td className="file-format">
-                        {file.fileFormat ? file.fileFormat.toUpperCase() : 'N/A'}
-                      </td>
-                      <td className="file-duration">
-                        {file.duration ? `${Math.floor(file.duration / 60)}:${(file.duration % 60).toString().padStart(2, '0')}` : '알 수 없음'}
-                      </td>
-                      <td className="file-date">
-                        {file.createdAt ? new Date(file.createdAt).toLocaleDateString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }) : '알 수 없음'}
-                      </td>
-                      <td className="file-uploader">{file.uploadedBy || '-'}</td>
-                      <td className="file-actions">
-                        <div className="action-buttons">
-                          <button
-                            onClick={() => handleDownload(file)}
-                            className="file-management-btn file-management-btn-download"
-                            disabled={user?.role !== 'ADMIN'}
-                            title={user?.role !== 'ADMIN' ? '관리자만 다운로드 가능' : '다운로드'}
-                          >
-                            <FaDownload />
-                          </button>
-                          <button
-                            onClick={() => handleAddToPlaylist(file)}
-                            className="file-management-btn file-management-btn-add"
-                            title="플레이리스트에 추가"
-                          >
-                            <FaPlus />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(file.id, file.title)}
-                            className="file-management-btn file-management-btn-delete"
-                            disabled={uploading}
-                            title="삭제"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="file-management-empty">
-              <p>업로드된 파일이 없습니다.</p>
-              <p className="empty-subtitle">음악 파일을 업로드하여 관리를 시작하세요.</p>
-            </div>
-          )}
-        </div>
+      <div className="file-management-list">
+        {uploadedFiles.length > 0 ? (
+          <table className="file-management-table">
+            <thead>
+              <tr>
+                <th>앨범 커버</th>
+                <th>파일명</th>
+                <th>아티스트</th>
+                <th>크기</th>
+                <th>업로드 날짜</th>
+                <th>작업</th>
+              </tr>
+            </thead>
+            <tbody>
+              {uploadedFiles.map((file) => (
+                <tr key={file.id}>
+                  <td>
+                    <img
+                      src={file.coverUrl}
+                      alt="앨범 커버"
+                      className="file-management-table-cover"
+                    />
+                  </td>
+                  <td>{file.name}</td>
+                  <td>{file.artist}</td>
+                  <td>{(file.size / 1024 / 1024).toFixed(2)} MB</td>
+                  <td>{new Date(file.uploadedAt).toLocaleString()}</td>
+                  <td>
+                    <button
+                      onClick={() => handleDownload(file)}
+                      className="file-management-btn file-management-btn-download"
+                      disabled={user?.role !== 'ADMIN'}
+                      title={user?.role !== 'ADMIN' ? '관리자만 다운로드 가능' : ''}
+                    >
+                      <FaDownload />
+                    </button>
+                    <button
+                      onClick={() => handleAddToPlaylist(file)}
+                      className="file-management-btn file-management-btn-add"
+                    >
+                      <FaPlus />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(file.id, file.name)}
+                      className="file-management-btn file-management-btn-delete"
+                    >
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="file-management-empty">업로드된 파일이 없습니다.</p>
+        )}
       </div>
     </div>
   );

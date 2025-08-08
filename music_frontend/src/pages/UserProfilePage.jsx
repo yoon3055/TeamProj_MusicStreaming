@@ -20,27 +20,11 @@ const UserProfilePage = () => {
   const [history, setHistory] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [nickname, setNickname] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // 비밀번호 변경을 위한 별도 state
-  const [passwordChangeMode, setPasswordChangeMode] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
   const navigate = useNavigate();
   const jwt = localStorage.getItem('jwt'); // JWT는 실제 백엔드 연동 시 필요
-
-  // JWT 토큰 검증
-  useEffect(() => {
-    if (!jwt) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return;
-    }
-    console.log('JWT 토큰:', jwt);
-  }, [jwt, navigate]);
 
   // 사용자 프로필 정보를 가져오는 함수
   const fetchProfile = useCallback(() => {
@@ -104,94 +88,13 @@ const UserProfilePage = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      if (passwordChangeMode) {
-        // 비밀번호 변경 처리
-        await handlePasswordChange();
-      } else {
-        // 일반 프로필 업데이트 (닉네임만)
-        console.log('닉네임 업데이트 시작:', nickname);
-        console.log('JWT 토큰:', jwt);
-        
-        if (!jwt) {
-          alert('로그인이 필요합니다.');
-          navigate('/login');
-          return;
-        }
-        
-        const response = await fetch('http://localhost:8080/user/nickname_change', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${jwt}`
-          },
-          body: JSON.stringify({
-            nickname: nickname
-          })
-        });
-        
-        console.log('응답 상태:', response.status);
-        console.log('응답 헤더:', response.headers);
-
-        if (response.ok) {
-          setProfile({ ...profile, nickname });
-          setEditMode(false);
-          alert('프로필이 업데이트되었습니다!');
-        } else {
-          throw new Error('프로필 업데이트에 실패했습니다.');
-        }
-      }
+      // 실제 백엔드 연동 로직 (현재는 목업)
+      setProfile({ ...profile, nickname });
+      setEditMode(false);
+      setPassword(''); // 비밀번호 초기화
+      alert('프로필이 업데이트되었습니다!');
     } catch (err) {
       alert('업데이트 실패: ' + err.message);
-    }
-  };
-
-  // 비밀번호 변경 처리
-  const handlePasswordChange = async () => {
-    try {
-      // 입력 검증
-      if (!currentPassword || !newPassword || !confirmPassword) {
-        alert('모든 비밀번호 필드를 입력해주세요.');
-        return;
-      }
-
-      if (newPassword !== confirmPassword) {
-        alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
-        return;
-      }
-
-      if (newPassword.length < 6) {
-        alert('새 비밀번호는 최소 6자 이상이어야 합니다.');
-        return;
-      }
-
-      const response = await fetch('http://localhost:8080/user/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`
-        },
-        body: JSON.stringify({
-          currentPassword: currentPassword,
-          newPassword: newPassword,
-          confirmPassword: confirmPassword
-        })
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.result === 'success') {
-        alert(result.message || '비밀번호가 성공적으로 변경되었습니다!');
-        setPasswordChangeMode(false);
-        setEditMode(false);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      } else {
-        alert(result.message || '비밀번호 변경에 실패했습니다.');
-      }
-    } catch (err) {
-      console.error('Password change error:', err);
-      alert('비밀번호 변경 중 오류가 발생했습니다.');
     }
   };
 
@@ -279,39 +182,13 @@ const UserProfilePage = () => {
                         className="user-profile-input"
                         placeholder="새 닉네임"
                       />
-                      {passwordChangeMode ? (
-                        <div>
-                          <input
-                            type="password"
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
-                            placeholder="현재 비밀번호"
-                            className="user-profile-input"
-                          />
-                          <input
-                            type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="새 비밀번호"
-                            className="user-profile-input"
-                          />
-                          <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="새 비밀번호 확인"
-                            className="user-profile-input"
-                          />
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setPasswordChangeMode(true)}
-                          className="btn-default"
-                        >
-                          비밀번호 변경
-                        </button>
-                      )}
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="새 비밀번호 (선택 사항)"
+                        className="user-profile-input"
+                      />
                       <div className="user-profile-button-row">
                         <button
                           type="button"

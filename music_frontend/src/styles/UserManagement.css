@@ -1,74 +1,62 @@
-.user-management-container {
-  max-width: 1200px;
-  margin: 0 auto;
+.user-management {
   padding: 20px;
 }
 
-.user-management-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #2d3748;
-  margin-bottom: 20px;
-}
-
-.user-management-controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.user-management-search {
-  padding: 10px;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
-  flex: 1;
-}
-
-.user-management-table {
+.user-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-.user-management-table th,
-.user-management-table td {
-  padding: 12px;
+.user-table th,
+.user-table td {
+  padding: 10px;
+  border: 1px solid #dee2e6;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
 }
 
-.user-management-table th {
-  background: #edf2f7;
+.user-table th {
+  background-color: #f8f9fa;
   font-weight: bold;
 }
 
-.user-management-btn {
-  padding: 6px 12px;
+.user-table input,
+.user-table select {
+  padding: 5px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.user-table button {
+  padding: 5px 10px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-right: 5px;
 }
 
-.user-management-btn-edit {
-  background: #3182ce;
+.user-table button:first-of-type {
+  background-color: #007bff;
   color: #fff;
 }
 
-.user-management-btn-delete {
-  background: #e53e3e;
+.user-table button:last-of-type {
+  background-color: #ff4d4f;
   color: #fff;
 }
 
-.user-management-empty {
+.loading-text {
   text-align: center;
-  padding: 20px;
-  color: #718096;
+  font-size: 1.2rem;
+  color: #333;
+  margin-top: 50px;
 }
 
-.user-management-error {
-  color: #e53e3e;
+.admin-error {
   text-align: center;
-  margin-bottom: 20px;
+  color: #ff4d4f;
+  font-size: 1.2rem;
+  margin-top: 50px;
 }
