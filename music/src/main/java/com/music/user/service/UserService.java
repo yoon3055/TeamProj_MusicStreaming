@@ -38,18 +38,14 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private JwtUtil jwtUtil;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
     public User create(UserCreateDto userCreateDto){
         User user = User.builder()
                 .email(userCreateDto.getEmail())
@@ -81,29 +77,21 @@ public class UserService {
     // }
 
         // db 여러 작업을 묶는것
-    // 회원가입
+ // 회원가입
     @Transactional
     public Map<String, Object> registUser(UserDto userDto) {
-
         // 데이터베이스에서 유저를 가져오는것
         Optional<User> user = userRepository.findByEmail(userDto.getEmail());
         Map<String, Object> resultMap = new HashMap<>();
-
-
-
         // 유저가 있는것
         if(user.isPresent()) {
             System.out.println("regist : 이미 가입된 사용자");
             resultMap.put("result", PRESENT);
-
-
-
         // 유저가 없는것
         // 유저를 만들어주는것
         } else {
             System.out.println("===== registUser =====");
             userDto.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화
-            
             // admin@music.com으로 가입하면 ADMIN 역할 부여
             if ("admin@music.com".equals(userDto.getEmail())) {
                 userDto.setRole(Role.ADMIN);
@@ -111,16 +99,13 @@ public class UserService {
             } else {
                 userDto.setRole(Role.USER);
             }
-            
             userRepository.save(userDto.toEntity());
             resultMap.put("result", userDto);
         }
-
-
         return resultMap;
-
-        
     }
+
+
 
     // public User login(UserLoginDto userLoginDto){
     //     Optional<User> optMember = userRepository.findByEmail(userLoginDto.getEmail());

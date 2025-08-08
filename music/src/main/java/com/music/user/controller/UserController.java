@@ -1,5 +1,4 @@
 package com.music.user.controller;
-
 import com.music.jwt.JwtUtil;
 import com.music.user.dto.*;
 import com.music.user.dto.PasswordChangeDto;
@@ -8,10 +7,8 @@ import com.music.user.entity.User;
 import com.music.user.service.GoogleService;
 import com.music.user.service.MailService;
 import com.music.user.service.UserService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,20 +24,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 @RestController
-@RequestMapping("/api/users")  // ✅ 통일된 URL Prefix
+@RequestMapping("/api/users")  // :흰색_확인_표시: 통일된 URL Prefix
 public class UserController {
-
     @Autowired private UserService userService;
     @Autowired private JwtUtil jwtUtil;
     @Autowired private MailService mailService;
-
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private static final String UNAUTHORIZED = "unauthorized";
@@ -49,8 +42,7 @@ public class UserController {
     private static final String PW_FAIL = "비밀번호 틀림";
     private static final String PRESENT = "이미 가입된 사용자";
     private static final String EXPIRED = "token expired";
-
-    // ✅ 회원가입
+    // :흰색_확인_표시: 회원가입
     @Operation(summary = "회원가입", description = "회원 정보 저장 (JWT 인증x)")
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserDto userDto) throws Exception {
@@ -60,20 +52,17 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(SUCCESS);
     }
-
-    // ✅ 로그인
+    // :흰색_확인_표시: 로그인
     @Operation(summary = "로그인", description = "이메일/비밀번호 기반 로그인 (JWT 인증x)")
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserDto userDto) throws Exception {
         Map<String, Object> resultLogin = userService.login(userDto.getEmail(), userDto.getPassword());
         Map<String, Object> resultMap = new HashMap<>();
-
         if (FAIL.equals(resultLogin.get("type"))) {
             String result = (String) resultLogin.get("result");
             resultMap.put("result", result);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resultMap);
         }
-
         resultMap.put("jwt-auth-token", resultLogin.get("authToken"));
         resultMap.put("id", resultLogin.get("id"));
         resultMap.put("email", resultLogin.get("email"));
@@ -83,23 +72,20 @@ public class UserController {
         resultMap.put("result", SUCCESS);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(resultMap);
     }
-
-    // ✅ 로그아웃
+    // :흰색_확인_표시: 로그아웃
     @Operation(summary = "로그아웃", description = "토큰을 무효화합니다.")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestAttribute("email") String email) {
         userService.logout(email);
         return ResponseEntity.ok(SUCCESS);
     }
-
-    // ✅ 비밀번호 찾기 (임시 발급)
+    // :흰색_확인_표시: 비밀번호 찾기 (임시 발급)
     @Operation(summary = "비밀번호 찾기", description = "임시 비밀번호 이메일 전송 (JWT 인증x)")
     @PostMapping("/send-password")
     public ResponseEntity<String> sendTemporaryPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String tmpPw = userService.getTmpPw();
         String result = userService.updatePw(tmpPw, email);
-
         if (SUCCESS.equals(result)) {
             MailDto mailDto = mailService.createMail(tmpPw, email);
             mailService.sendMail(mailDto);
@@ -107,31 +93,26 @@ public class UserController {
         }
         return ResponseEntity.ok(FAIL);
     }
-
-    // ✅ 내 프로필 조회
+    // :흰색_확인_표시: 내 프로필 조회
     @Operation(summary = "내 정보 조회", description = "JWT 토큰 기반 사용자 정보 반환")
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMyInfo(@RequestAttribute("email") String email) throws Exception {
         return ResponseEntity.ok(userService.getUser(email));
     }
-
-    // ✅ 닉네임 변경
+    // :흰색_확인_표시: 닉네임 변경
     @Operation(summary = "닉네임 변경", description = "로그인한 사용자의 닉네임을 수정합니다.")
     @PutMapping("/nickname")
     public ResponseEntity<String> updateNickname(@RequestBody Map<String, String> request,
                                                  HttpServletRequest httpRequest) {
         String email = (String) httpRequest.getAttribute("email");
         String newNickname = request.get("nickname");
-
         if (newNickname == null || newNickname.isBlank()) {
             return ResponseEntity.badRequest().body("닉네임이 비어있습니다.");
         }
-
         String result = userService.updateNickname(newNickname, email);
         return result.equals(SUCCESS) ? ResponseEntity.ok(SUCCESS) : ResponseEntity.badRequest().body(result);
     }
-
-    // ✅ 프로필 전체 수정
+    // :흰색_확인_표시: 프로필 전체 수정
     @Operation(summary = "회원 정보 수정", description = "이메일 기반 사용자 정보 수정")
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody UserDto userDto,
@@ -141,23 +122,19 @@ public class UserController {
                 ? ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(NONE)
                 : ResponseEntity.ok(SUCCESS);
     }
-
-    // ✅ 비밀번호 변경
+    // :흰색_확인_표시: 비밀번호 변경
     @Operation(summary = "비밀번호 변경", description = "기존 비밀번호 기반 변경")
     @PostMapping("/password")
     public ResponseEntity<Map<String, Object>> changePassword(
             @RequestBody PasswordChangeDto passwordChangeDto,
             @RequestAttribute("email") String email) {
-
         Map<String, Object> resultMap = userService.changePassword(passwordChangeDto, email);
         String result = (String) resultMap.get("result");
-
         if (SUCCESS.equals(result)) return ResponseEntity.ok(resultMap);
         if (NONE.equals(result)) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultMap);
         return ResponseEntity.badRequest().body(resultMap);
     }
-
-    // ✅ 이메일 중복 확인
+    // :흰색_확인_표시: 이메일 중복 확인
     @Operation(summary = "이메일 중복 확인", description = "가입된 이메일인지 확인 (JWT 인증x)")
     @GetMapping("/check-email")
     public ResponseEntity<String> checkEmail(@RequestParam String email) throws Exception {
@@ -165,22 +142,19 @@ public class UserController {
                 ? ResponseEntity.status(HttpStatus.ACCEPTED).body(NONE)
                 : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(PRESENT);
     }
-
-    // ✅ 닉네임으로 유저 검색
+    // :흰색_확인_표시: 닉네임으로 유저 검색
     @Operation(summary = "닉네임으로 검색", description = "특정 닉네임을 포함하는 사용자 목록 조회")
     @GetMapping("/search")
     public ResponseEntity<List<UserDto>> searchUser(@RequestParam String nickname) throws Exception {
         return ResponseEntity.ok(userService.searchUser(nickname));
     }
-
-    // ✅ 모든 유저 조회 (관리자용)
+    // :흰색_확인_표시: 모든 유저 조회 (관리자용)
     @Operation(summary = "전체 유저 조회", description = "모든 사용자 정보를 반환합니다.")
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() throws Exception {
         return ResponseEntity.ok(userService.getAllUser());
     }
 }
-
     // // 프로필 이미지를 파일로 업로드
     // @Operation(summary = "프로필 이미지 파일 업로드", description = "프로필 이미지를 파일로 업로드")
     // @PostMapping("/uploadFile")
@@ -198,7 +172,6 @@ public class UserController {
     //         return new ResponseEntity<String>(FAIL, HttpStatus.OK);
     //     }
     // }
-
     // // 프로필 이미지를 디폴트 이미지로 업로드
     // @Operation(summary = "프로필 이미지 디폴트 업로드", description = "프로필 이미지를 디폴트 이미지로 업로드")
     // @PostMapping("/uploadImage")
@@ -216,7 +189,6 @@ public class UserController {
     //         return new ResponseEntity<String>(FAIL, HttpStatus.OK);
     //     }
     // }
-
     // // 프로필 이미지 삭제
     // @Operation(summary = "프로필 이미지 삭제", description = "프로필 이미지 삭제")
     // @DeleteMapping("/deleteImage")
@@ -231,33 +203,3 @@ public class UserController {
     //         return new ResponseEntity<String>(FAIL, HttpStatus.OK);
     //     }
     // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
