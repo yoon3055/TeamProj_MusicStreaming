@@ -1,4 +1,5 @@
 // src/pages/PlaylistPage.jsx
+
 import React, { useEffect, useState, useContext } from 'react';
 import PlaylistDrawer from '../component/PlaylistDrawer';
 import PlaylistBox from '../component/PlaylistBox';
@@ -56,16 +57,18 @@ const PlaylistPage = () => {
       },
     ]);
 
-    // ✅ 좋아요한 음악 및 최근 감상 음악 더미 데이터
+    // ✅ 좋아요한 음악 및 최근 감상 음악 더미 데이터 (새로운 필드 추가)
     setLikes([
-      { id: 'like1', title: '눈 내리는 거리', artist: '발라더', coverUrl: '/images/K-058.jpg' },
-      { id: 'like2', title: '여름의 끝', artist: '서정 밴드', coverUrl: '/images/K-059.jpg' },
-      { id: 'like3', title: '겨울 바다', artist: '포크 듀오', coverUrl: '/images/K-060.jpg' },
+      { id: 'like1', title: '눈 내리는 거리', artist: '발라더', coverUrl: '/images/K-058.jpg', likeCount: 50, isLiked: true, isFollowed: true },
+      { id: 'like2', title: '여름의 끝', artist: '서정 밴드', coverUrl: '/images/K-059.jpg', likeCount: 25, isLiked: false, isFollowed: false },
+      { id: 'like3', title: '겨울 바다', artist: '포크 듀오', coverUrl: '/images/K-060.jpg', likeCount: 78, isLiked: true, isFollowed: false },
+      { id: 'like4', title: '가을의 속삭임', artist: '발라드 가수', coverUrl: '/images/K-061.jpg', likeCount: 42, isLiked: false, isFollowed: true }
     ]);
     setRecent([
-      { id: 'rec1', title: '별빛 아래서', artist: '포크 가수', coverUrl: '/images/K-057.jpg' },
-      { id: 'rec2', title: '비 오는 오후', artist: '재즈 트리오', coverUrl: '/images/K-056.jpg' },
-      { id: 'rec3', title: '아침 안개', artist: '인디 아티스트', coverUrl: '/images/K-055.jpg' },
+      { id: 'rec1', title: '별빛 아래서', artist: '포크 가수', coverUrl: '/images/K-057.jpg', likeCount: 10, isLiked: true, isFollowed: false },
+      { id: 'rec2', title: '비 오는 오후', artist: '재즈 트리오', coverUrl: '/images/K-056.jpg', likeCount: 33, isLiked: true, isFollowed: true },
+      { id: 'rec3', title: '아침 안개', artist: '인디 아티스트', coverUrl: '/images/K-055.jpg', likeCount: 19, isLiked: false, isFollowed: false },
+      { id: 'rec4', title: '밤의 멜로디', artist: '클래식 연주자', coverUrl: '/images/K-054.jpg', likeCount: 88, isLiked: true, isFollowed: true }
     ]);
   }, []);
 
@@ -77,7 +80,6 @@ const PlaylistPage = () => {
     playSong(songsToPlay);
   };
 
-  // 🔧 좋아요/팔로우 상태 변경 핸들러 (API 연동 필요)
   const handleToggleLike = (playlistId) => {
     setPlaylists((prev) =>
       prev.map((pl) =>
@@ -86,9 +88,19 @@ const PlaylistPage = () => {
           : pl
       )
     );
-    // ❗ TODO: axios.post(`/api/playlists/${playlistId}/like-toggle`);
+    // ❗ TODO: 좋아요 상태 변경 API 호출 로직 추가
   };
 
+  const handleToggleLikeForBox = (songId, section) => {
+    if (section === 'likes') {
+      setLikes(prev => prev.map(s => s.id === songId ? { ...s, isLiked: !s.isLiked, likeCount: s.isLiked ? s.likeCount - 1 : s.likeCount + 1 } : s));
+      // ❗ TODO: 좋아요 상태 변경 API 호출 로직 추가
+    } else if (section === 'recent') {
+      setRecent(prev => prev.map(s => s.id === songId ? { ...s, isLiked: !s.isLiked, likeCount: s.isLiked ? s.likeCount - 1 : s.likeCount + 1 } : s));
+      // ❗ TODO: 좋아요 상태 변경 API 호출 로직 추가
+    }
+  };
+  
   const handleToggleFollow = (playlistId) => {
     setPlaylists((prev) =>
       prev.map((pl) =>
@@ -97,7 +109,18 @@ const PlaylistPage = () => {
           : pl
       )
     );
-    // ❗ TODO: axios.post(`/api/playlists/${playlistId}/follow-toggle`);
+    // ❗ TODO: 팔로우 상태 변경 API 호출 로직 추가
+  };
+
+  /* ✅ 팔로우 기능을 모달 대신 토글로 변경 */
+  const handleToggleFollowForBox = (songId, section) => {
+    if (section === 'likes') {
+      setLikes(prev => prev.map(s => s.id === songId ? { ...s, isFollowed: !s.isFollowed } : s));
+      // ❗ TODO: 팔로우 상태 변경 API 호출 로직 추가
+    } else if (section === 'recent') {
+      setRecent(prev => prev.map(s => s.id === songId ? { ...s, isFollowed: !s.isFollowed } : s));
+      // ❗ TODO: 팔로우 상태 변경 API 호출 로직 추가
+    }
   };
 
   const handleEdit = (playlistId) => {
@@ -108,12 +131,14 @@ const PlaylistPage = () => {
   const handleDelete = (playlistId) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       setPlaylists((prev) => prev.filter((pl) => pl.id !== playlistId));
-      // ❗ TODO: axios.delete(`/api/playlists/${playlistId}`);
+      // ❗ TODO: 삭제 API 호출 로직 추가
     }
   };
 
-  const likesTotalPages = Math.ceil(likes.length / 2);
-  const recentTotalPages = Math.ceil(recent.length / 2);
+  /* ✅ itemsPerPage를 4로 변경하여 totalPages를 다시 계산 */
+  const itemsPerPage = 4;
+  const likesTotalPages = Math.ceil(likes.length / itemsPerPage);
+  const recentTotalPages = Math.ceil(recent.length / itemsPerPage);
 
   return (
     <div className="playlist-page-container">
@@ -145,7 +170,13 @@ const PlaylistPage = () => {
             />
           </div>
         </div>
-        <PlaylistBox songs={likes} currentPage={likesCurrentPage} itemsPerPage={2} />
+        <PlaylistBox 
+          songs={likes} 
+          currentPage={likesCurrentPage} 
+          itemsPerPage={itemsPerPage}
+          onToggleLike={(id) => handleToggleLikeForBox(id, 'likes')}
+          onToggleFollow={(id) => handleToggleFollowForBox(id, 'likes')}
+        />
         <div className="pagination-dots">
           {Array.from({ length: likesTotalPages }).map((_, idx) => (
             <button
@@ -169,7 +200,13 @@ const PlaylistPage = () => {
             />
           </div>
         </div>
-        <PlaylistBox songs={recent} currentPage={recentCurrentPage} itemsPerPage={2} />
+        <PlaylistBox 
+          songs={recent} 
+          currentPage={recentCurrentPage} 
+          itemsPerPage={itemsPerPage}
+          onToggleLike={(id) => handleToggleLikeForBox(id, 'recent')}
+          onToggleFollow={(id) => handleToggleFollowForBox(id, 'recent')}
+        />
         <div className="pagination-dots">
           {Array.from({ length: recentTotalPages }).map((_, idx) => (
             <button

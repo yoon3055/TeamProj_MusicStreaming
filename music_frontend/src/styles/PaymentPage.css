@@ -1,58 +1,128 @@
-/* src/styles/paymentpage.css */
-.payment-page-container {
+/* ==================================== */
+/* PlaylistPage.css: 수정된 스타일 */
+/* ==================================== */
+
+/* 변수 정의 (필요시) */
+:root {
+  --main-bg-color: #f7f9fc;
+  --card-bg-color: #ffffff;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --accent-blue: #007bff;
+  --accent-red: #ff5050;
+  --border-color: #e0e0e0;
+}
+
+/* 메인 페이지 컨테이너 */
+.playlist-page-container {
+  padding: 40px 20px;
+  background-color: var(--main-bg-color);
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  color: var(--text-primary);
+}
+
+/* 페이지 제목 */
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+/* 섹션 컨테이너 */
+.playlist-section-box {
+  margin-bottom: 60px;
+}
+
+.section-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-right: 10px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 페이지네이션 버튼 영역 */
+.pagination-nav {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 캐러셀 내비게이션 버튼 */
+.carousel-nav-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--flo-bg-dark); /* bg-gray-900 */
-  padding: 1.5rem; /* p-6 */
-  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.payment-card {
-  background-color: var(--flo-bg-medium); /* bg-gray-800 */
-  padding: 2rem; /* p-8 */
-  border-radius: 0.5rem; /* rounded-lg */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
-  max-width: 28rem; /* max-w-md */
-  width: 100%;
-  text-align: center;
-  border: 1px solid var(--flo-bg-medium); /* border border-gray-700 */
-  color: var(--flo-text-white);
+.carousel-nav-button:hover {
+  background-color: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
 }
 
-.payment-title {
-  font-size: 1.875rem; /* text-3xl */
-  font-weight: bold;
-  margin-bottom: 1.5rem; /* mb-6 */
+.carousel-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+  color: var(--text-secondary);
+  border-color: #d0d0d0;
 }
 
-.payment-button {
-  width: 100%;
-  background-color: var(--flo-accent-emerald); /* bg-emerald-600 */
-  color: var(--flo-text-white);
-  font-weight: 600;
-  padding: 0.75rem; /* py-3 */
-  border-radius: 0.5rem; /* rounded-lg */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
-  transition: all 0.2s ease; /* transition-colors duration-200 */
+/* 페이지네이션 도트 */
+.pagination-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pagination-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border-color);
   border: none;
   cursor: pointer;
-  outline: none; /* focus:outline-none */
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
-.payment-button:hover {
-  background-color: #0d9488; /* hover:bg-emerald-700 */
+.pagination-dot.active {
+  background-color: var(--accent-blue);
+  transform: scale(1.2);
 }
 
-.payment-button:focus {
-  box-shadow: 0 0 0 2px var(--flo-accent-emerald); /* focus:ring-2 focus:ring-emerald-500 */
+.pagination-dot:hover {
+  background-color: var(--accent-blue);
 }
 
-/* .payment-options-container {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-} */
+/* 추가 스타일 (선택사항) */
+.playlist-section-box h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-top: 0;
+  color: var(--text-primary);
+}

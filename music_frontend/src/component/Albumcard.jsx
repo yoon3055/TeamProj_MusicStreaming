@@ -1,40 +1,58 @@
-// src/components/Albumcard.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+// src/component/Albumcard.jsx
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { FaHeart, FaRegHeart, FaPlay } from 'react-icons/fa';
+import { MusicPlayerContext } from '../context/MusicPlayerContext';
+import '../styles/LikesFollowsPage.css';
 
-import '../styles/AlbumCardPage.css';
+const Albumcard = ({ album, onToggleLike }) => {
+  const { id, title, artist, coverUrl, isLiked, songs } = album;
+  const { playSong } = useContext(MusicPlayerContext);
 
-const Albumcard = ({ album, size = 'md', className }) => {
+  const handleCardClick = () => {
+    if (playSong) {
+      playSong(songs);
+    }
+  };
+
+  const handleLikeToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onToggleLike) {
+      onToggleLike(id);
+    }
+  };
+
   return (
-    <div className={`album-card ${size === 'sm' ? 'album-card-sm' : size === 'lg' ? 'album-card-lg' : 'album-card-md'} ${className || ''}`}>
-      <Link to={`/album/${album.id}`} className="album-card-link">
-        <img
-          src={album.coverUrl}
-          alt={album.title}
-          className="album-card-image"
-        />
-        <div className="album-card-info">
-          <h4 className="album-card-title">{album.title}</h4>
-          <p className="album-card-artist">{album.artist}</p>
-          {/* ✨ size="sm"일 때는 메타 정보 표시 안 함 */}
-          {size !== 'sm' && (album.songCount !== undefined || album.updatedAt) && (
-            <div className="album-card-meta">
-              {album.songCount !== undefined && (
-                <span className="album-card-song-count">{album.songCount}곡</span>
-              )}
-              {album.updatedAt && (
-                <span className="album-card-updated-at">{album.updatedAt} </span>
-              )}
-            </div>
-          )}
+    <div className="playlist-card album-card-custom" onClick={handleCardClick}>
+      <Link to={`/album/${id}`} className="playlist-link">
+        <div className="playlist-image-wrapper">
+          <img src={coverUrl} alt={title} className="playlist-image" />
+          <div className="play-overlay">
+            <button
+              className="play-button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCardClick();
+              }}
+              aria-label="재생"
+            >
+              <FaPlay />
+            </button>
+          </div>
+        </div>
+        <div className="playlist-info">
+          <h4 className="playlist-title">{title}</h4>
+          <p className="playlist-artist">{artist}</p>
         </div>
       </Link>
-      <div className="album-card-wrapper"> 
-  <div className="album-hover-overlay">
-    <button className="play-button">▶</button>
-  </div>
-</div>
+      <div className="playlist-actions">
+        <button onClick={handleLikeToggle} className="playlist-like-btn" aria-label="좋아요 토글">
+          {isLiked ? <FaHeart className="liked" /> : <FaRegHeart />}
+        </button>
+      </div>
     </div>
   );
 };
@@ -44,12 +62,17 @@ Albumcard.propTypes = {
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     artist: PropTypes.string.isRequired,
-    coverUrl: PropTypes.string,
-    songCount: PropTypes.number,
-    updatedAt: PropTypes.string,
+    coverUrl: PropTypes.string.isRequired,
+    isLiked: PropTypes.bool.isRequired,
+    songs: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string,
+        url: PropTypes.string,
+      })
+    ),
   }).isRequired,
-  size: PropTypes.oneOf(['sm', 'md', 'lg']),
-  className: PropTypes.string,
+  onToggleLike: PropTypes.func.isRequired,
 };
 
 export default Albumcard;

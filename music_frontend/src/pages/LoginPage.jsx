@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext'; // AuthContext 훅
+import { useAuth } from '../context/AuthContext';
 import '../styles/LoginPage.css';
 
 const LoginSchema = Yup.object().shape({
@@ -25,26 +25,30 @@ const LoginPage = () => {
     const provider = urlParams.get('state');
 
     if (code && provider) {
+      console.log(`[LOGIN_PAGE] Handling ${provider} OAuth redirect, code:`, code);
       try {
         const endpoint = provider === 'kakao' ? '/user/kakao/doLogin' : '/login/oauth2/code/google';
-        const res = await axios.post(`${API_BASE_URL}${endpoint}?code=${code}`);
+        const res = await axios.get(`${API_BASE_URL}${endpoint}?code=${code}`);
+        console.log(`[LOGIN_PAGE] ${provider} OAuth response:`, res.data);
 
-        localStorage.setItem('jwt', res.data.token);
-
-        if (res.data.user) {
-          // 비밀번호 없이 로그인 시도 - 서버가 허용한다면 가능
-          await login({ email: res.data.user.email, password: '' });
+        const token = res.data.token;
+        if (token) {
+          localStorage.setItem('jwt', token); // 토큰 먼저 저장
+          await login({ identifier: res.data.user?.email || '', password: '' });
+          alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인 성공!`);
+          navigate('/');
+        } else {
+          throw new Error('No token received');
         }
-        alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인 성공!`);
-        navigate('/');
       } catch (err) {
-        console.error(`${provider} 로그인 실패:`, err.response?.data || err.message);
+        console.error(`[LOGIN_PAGE] ${provider} 로그인 실패:`, err.response?.data || err.message);
         alert(`${provider === 'kakao' ? '카카오' : 'Google'} 로그인에 실패했습니다.`);
       }
     }
-  }, [API_BASE_URL, login, navigate]);
+  }, [API_BASE_URL, navigate, login]);
 
   useEffect(() => {
+    console.log('[LOGIN_PAGE] Checking for OAuth redirect');
     handleOAuth2Redirect();
   }, [handleOAuth2Redirect]);
 
@@ -59,18 +63,21 @@ const LoginPage = () => {
           initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
+            console.log('[LOGIN_PAGE] Submitting login form:', values);
             setSubmitting(true);
             try {
-              const success = await login({ email: values.email, password: values.password });
+              const success = await login({ identifier: values.email, password: values.password });
               if (success) {
+                console.log('[LOGIN_PAGE] Login successful, redirecting to /');
                 alert('로그인 성공!');
                 navigate('/');
               } else {
+                console.log('[LOGIN_PAGE] Login failed, setting form errors');
                 setFieldError('email', '이메일 또는 비밀번호가 올바르지 않습니다.');
                 setFieldError('password', ' ');
               }
             } catch (err) {
-              console.error('로그인 실패:', err.response?.data || err.message);
+              console.error('[LOGIN_PAGE] Login error:', err.response?.data || err.message);
               setFieldError('email', err.response?.data?.message || '이메일 또는 비밀번호가 올바르지 않습니다.');
               setFieldError('password', ' ');
             } finally {
@@ -128,13 +135,13 @@ const LoginPage = () => {
               <div className="oauth-login">
                 <a
                   href={`${API_BASE_URL}/oauth2/authorization/google`}
-                  className="oauth-button google-login-button"
+                  className="google-login-button"
                 >
                   Google로 로그인
                 </a>
                 <a
                   href={`${API_BASE_URL}/oauth2/authorization/kakao`}
-                  className="oauth-button kakao-login-button"
+                  className="kakao-login-button"
                 >
                   카카오로 로그인
                 </a>

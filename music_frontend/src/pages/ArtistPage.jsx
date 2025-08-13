@@ -1,170 +1,442 @@
-// src/pages/ArtistPage.jsx
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios'; // 🌐 백엔드 통신을 위한 axios 임포트
-import { AuthContext } from '../context/AuthContext'; // 🌐 AuthContext 임포트
-
-import '../styles/ArtistPage.css'; // ✨ CSS 파일 임포트
+import { useParams, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { MusicPlayerContext } from '../context/MusicPlayerContext';
+import { loadMusicListFromDB, loadPlaylistsFromDB, getAllSongsFromDB, handleAction } from '../services/indexDB';
+import { ArrowLeft, Play, Heart, Share2, Users, Music, Disc, MoreVertical } from 'lucide-react';
+import '../styles/ArtistPage.css';
 import artistPlaceholder from '../assets/default-cover.jpg';
 
 const ArtistPage = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext); // 🌐 사용자 정보 가져오기
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const { playSong, addToQueue } = useContext(MusicPlayerContext);
+  
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isFollowing, setIsFollowing] = useState(false); // 🌐 팔로우 상태 관리
+  const [_, setPlaylists] = useState([]);
+  const [__, setMusicList] = useState([]);
+  const [___, setError] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [albums, setAlbums] = useState([]);
+  const [topSongs, setTopSongs] = useState([]);
+  const [activeTab, setActiveTab] = useState('overview');
 
-  // 🌐 localStorage에서 토큰 값을 가져옵니다.
-  const token = localStorage.getItem('token');
-
-  // 🌐 아티스트 상세 정보 및 팔로우 상태 가져오기
-  const fetchArtistData = useCallback(async () => {
+  const fetchArtistDataFromDB = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const artistRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/artists/${id}`);
-      setArtist(artistRes.data);
+      const allSongs = await getAllSongsFromDB();
+      const playlists = await loadPlaylistsFromDB();
+      const musicList = await loadMusicListFromDB();
 
-      // 🌐 로그인된 사용자라면 팔로우 상태도 함께 확인
-      if (user && user.id) {
-        const followRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${user.id}/following-artists/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setIsFollowing(followRes.data.isFollowing); // 🌐 백엔드 응답에 따라 상태 설정
+      setPlaylists(playlists);
+      setMusicList(musicList);
+
+      const artistSongs = allSongs.filter(song => 
+        song.artist === id || 
+        song.artist?.toLowerCase().includes(id.toLowerCase()) ||
+        song.id === id
+      );
+
+      if (artistSongs.length === 0) {
+        throw new Error('해당 아티스트의 곡을 찾을 수 없습니다.');
       }
+
+      const firstSong = artistSongs[0];
+      const artistInfo = {
+        id: id,
+        name: firstSong.artist || id,
+        profileImage: firstSong.coverUrl || firstSong.albumArt || artistPlaceholder,
+        backgroundImage: firstSong.coverUrl || firstSong.albumArt,
+        genre: firstSong.genre || 'Various',
+        bio: `${firstSong.artist}의 음악을 감상해보세요.`,
+        followerCount: Math.floor(Math.random() * 1000) + 100,
+        socialLinks: null
+      };
+
+      setArtist(artistInfo);
+      setFollowerCount(artistInfo.followerCount);
+
+      const sortedSongs = artistSongs.sort((a, b) => {
+        if (b.playCount && a.playCount) return b.playCount - a.playCount;
+        if (b.isLiked && !a.isLiked) return 1;
+        if (!b.isLiked && a.isLiked) return -1;
+        return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+      });
+      
+      setTopSongs(sortedSongs);
+
+      const albumsMap = {};
+      artistSongs.forEach(song => {
+        const albumKey = song.albumTitle || song.title;
+        if (!albumsMap[albumKey]) {
+          albumsMap[albumKey] = {
+            id: song.id + '_album',
+            title: albumKey,
+            artist: song.artist,
+            coverUrl: song.coverUrl || song.albumArt,
+            releaseDate: song.updatedAt || new Date().toISOString(),
+            trackCount: 0,
+            songs: []
+          };
+        }
+        albumsMap[albumKey].trackCount++;
+        albumsMap[albumKey].songs.push(song);
+      });
+
+      const albumsList = Object.values(albumsMap);
+      setAlbums(albumsList);
+
+      setIsFollowing(Math.random() > 0.5);
+
     } catch (err) {
-      console.error('🌐 아티스트 상세 정보 또는 팔로우 상태 가져오기 실패:', err);
-      setError('아티스트 정보를 불러오는 데 실패했습니다.');
-      setArtist(null);
+      setError(err.message || '아티스트 정보를 불러오는 데 실패했습니다.');
     } finally {
       setLoading(false);
     }
-  }, [id, user, token]); // 🌐 user와 token을 의존성에 추가
+  }, [id]);
 
   useEffect(() => {
-    fetchArtistData();
-  }, [fetchArtistData]);
+    if (id) {
+      fetchArtistDataFromDB();
+    }
+  }, [fetchArtistDataFromDB, id]);
 
-  // 🌐 팔로우 버튼 클릭 핸들러
   const handleFollowToggle = useCallback(async () => {
     if (!user) {
       alert('로그인 후 이용할 수 있는 기능입니다.');
       return;
     }
+    
     try {
-      if (isFollowing) {
-        // 🌐 팔로우 취소 API 호출
-        await axios.delete(`${process.env.REACT_APP_API_URL}/api/users/${user.id}/following-artists/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setIsFollowing(false);
-        alert('아티스트 팔로우를 취소했습니다.');
-      } else {
-        // 🌐 팔로우 설정 API 호출
-        await axios.post(`${process.env.REACT_APP_API_URL}/api/users/${user.id}/following-artists`, { artistId: id }, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setIsFollowing(true);
-        alert('아티스트를 팔로우 했습니다!');
-      }
-    } catch (error) {
-      console.error('🌐 팔로우 상태 변경 실패:', error);
-      alert('팔로우 상태 변경에 실패했습니다.');
+      await handleAction('toggle_follow', { id: artist.id, isFollowing: !isFollowing });
+      setIsFollowing(!isFollowing);
+      setFollowerCount(prev => isFollowing ? prev - 1 : prev + 1);
+      window.showToast?.(`${artist.name}을(를) ${isFollowing ? '언팔로우' : '팔로우'}했습니다.`, 'success');
+    } catch (err) {
+      window.showToast?.(err.message || '팔로우 상태 변경에 실패했습니다.', 'error');
     }
-  }, [id, isFollowing, user, token]); // 🌐 id, isFollowing, user, token을 의존성에 추가
+  }, [user, isFollowing, artist]);
+
+  const handlePlayTopSongs = () => {
+    if (topSongs.length > 0) {
+      addToQueue(topSongs);
+      playSong(topSongs[0]);
+      navigate('/art');
+    }
+  };
+
+  const handleSongClick = (song) => {
+    playSong(song);
+    navigate('/art');
+  };
+
+  const handleAlbumClick = (album) => {
+    if (album.songs && album.songs.length > 0) {
+      addToQueue(album.songs);
+      playSong(album.songs[0]);
+      navigate('/art');
+    }
+  };
+
+  const handleShareArtist = async () => {
+    if (!artist) return;
+
+    const shareData = {
+      title: artist.name,
+      text: `아티스트 ${artist.name}의 음악을 들어보세요!`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // 공유 취소됨
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      window.showToast?.('아티스트 링크가 클립보드에 복사되었습니다.', 'success');
+    }
+  };
+
+  const handleAddToQueue = (song) => {
+    addToQueue([song]);
+    window.showToast?.(`${song.title}이(가) 재생목록에 추가되었습니다.`, 'success');
+  };
+
+  const formatDuration = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   if (loading) {
     return (
-      <div className="artist-page-loading">
-        아티스트 정보를 불러오는 중입니다...
+      <div className="artist-page">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>아티스트 정보를 불러오는 중...</p>
+        </div>
       </div>
     );
   }
-  if (error || !artist) {
+
+  if (___) {
     return (
-      <div className="artist-page-loading">
-        {error || '아티스트를 찾을 수 없습니다.'}
+      <div className="artist-page">
+        <div className="error-message">
+          <p>{___}</p>
+          <button onClick={fetchArtistDataFromDB} className="retry-btn">다시 시도</button>
+          <button onClick={() => navigate(-1)} className="back-btn">뒤로 가기</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!artist) {
+    return (
+      <div className="artist-page">
+        <div className="no-data">
+          <p>아티스트 정보를 찾을 수 없습니다.</p>
+          <button onClick={() => navigate(-1)} className="back-btn">뒤로 가기</button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="artist-page-container">
-      {/* 아티스트 프로필 섹션 */}
-      <div className="artist-profile-section">
-        <img
-          src={artist.profileImageUrl || artistPlaceholder}
-          alt={artist.name}
-          className="artist-profile-image"
-        />
-        <div className="artist-profile-info">
-          <div className="artist-profile-text-info">
-            <h2 className="artist-profile-name">{artist.name}</h2>
-            {artist.genre && (
-              <p className="artist-profile-genre">장르: {artist.genre}</p>
-            )}
-            <p className="artist-profile-bio">
-              {artist.bio || '아티스트 소개가 없습니다.'}
-            </p>
-          </div>
+    <div className="artist-page">
+      <div className="artist-nav">
+        <button onClick={() => navigate(-1)} className="back-btn">
+          <ArrowLeft size={20} />
+        </button>
+        <span>아티스트</span>
+      </div>
 
-          {/* 팔로우 버튼 추가 */}
-          <div className="artist-follow-action">
-            <button
-              onClick={handleFollowToggle}
-              className={`artist-follow-button ${isFollowing ? 'artist-following' : ''}`}
-            >
-              {isFollowing ? (
-                <svg className="artist-follow-icon" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path>
-                </svg>
-              ) : (
-                <svg className="artist-follow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-              )}
-              <span>{isFollowing ? '팔로우 중' : '팔로우'}</span>
-            </button>
-          </div>
-
-          {/* 🌐 소셜 미디어 링크 등 추가 정보 (선택 사항) */}
-          {artist.socialLinks && (
-            <div className="artist-social-links">
-              {artist.socialLinks.facebook && (
-                <a href={artist.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="artist-social-link">Facebook</a>
-              )}
-              {artist.socialLinks.twitter && (
-                <a href={artist.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="artist-social-link">Twitter</a>
-              )}
+      <div className="artist-header">
+        <div className="artist-background">
+          <img 
+            src={artist.backgroundImage || artist.profileImage || artistPlaceholder} 
+            alt={artist.name}
+            className="background-image"
+            onError={(e) => { e.target.src = artistPlaceholder; }}
+          />
+          <div className="header-overlay">
+            <div className="artist-main-info">
+              <img 
+                src={artist.profileImage || artistPlaceholder} 
+                alt={artist.name} 
+                className="artist-image"
+                onError={(e) => { e.target.src = artistPlaceholder; }}
+              />
+              <div className="artist-details">
+                <h1 className="artist-name">{artist.name}</h1>
+                <div className="artist-stats">
+                  <span className="stat-item">
+                    <Users size={16} />
+                    {followerCount.toLocaleString()} 팔로워
+                  </span>
+                  <span className="stat-item">
+                    <Music size={16} />
+                    {topSongs.length}곡
+                  </span>
+                  {artist.genre && (
+                    <span className="stat-item">
+                      <Music size={16} />
+                      {artist.genre}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          )}
+          </div>
+        </div>
+
+        <div className="artist-actions">
+          <button onClick={handlePlayTopSongs} className="btn btn-primary play-btn">
+            <Play size={16} />
+            재생
+          </button>
+          
+          <button 
+            onClick={handleFollowToggle} 
+            className={`btn ${isFollowing ? 'btn-secondary' : 'btn-accent'} follow-btn`}
+            disabled={!user}
+          >
+            <Heart size={16} />
+            {isFollowing ? '팔로잉' : '팔로우'}
+          </button>
+          
+          <button onClick={handleShareArtist} className="btn btn-secondary share-btn">
+            <Share2 size={16} />
+            공유
+          </button>
+          
+          <button className="btn btn-secondary more-btn">
+            <MoreVertical size={16} />
+          </button>
         </div>
       </div>
 
-      {/* 🌐 아티스트의 앨범 또는 인기곡 섹션 (선택 사항) */}
-      {/*
-      <div className="artist-albums-section">
-        <h3 className="artist-section-title">주요 앨범</h3>
-        <div className="artist-albums-grid">
-          {artist.albums && artist.albums.map(album => (
-            <Albumcard key={album.id} album={album} size="sm" />
-          ))}
-        </div>
+      <div className="artist-tabs">
+        <button 
+          className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          개요
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'songs' ? 'active' : ''}`}
+          onClick={() => setActiveTab('songs')}
+        >
+          인기곡
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'albums' ? 'active' : ''}`}
+          onClick={() => setActiveTab('albums')}
+        >
+          앨범
+        </button>
       </div>
 
-      <div className="artist-songs-section">
-        <h3 className="artist-section-title">인기곡</h3>
-        <ul className="artist-songs-list">
-          {artist.topSongs && artist.topSongs.map((song, idx) => (
-            <li key={song.id} className="artist-song-item">
-              <span className="artist-song-title-text">{idx + 1}. {song.title}</span>
-              <span className="artist-song-artist-text">{song.artist}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="artist-content">
+        {activeTab === 'overview' && (
+          <div className="overview-tab">
+            {artist.bio && (
+              <div className="artist-bio-section">
+                <h2 className="section-title">소개</h2>
+                <p className="artist-bio">{artist.bio}</p>
+              </div>
+            )}
+
+            {topSongs.length > 0 && (
+              <div className="popular-songs-section">
+                <h2 className="section-title">인기곡</h2>
+                <div className="songs-list">
+                  {topSongs.slice(0, 5).map((song, index) => (
+                    <div key={song.id} className="song-item">
+                      <span className="song-rank">{index + 1}</span>
+                      <img 
+                        src={song.albumArt || song.coverUrl || artistPlaceholder}
+                        alt={song.title}
+                        className="song-image"
+                        onError={(e) => { e.target.src = artistPlaceholder; }}
+                      />
+                      <div className="song-info" onClick={() => handleSongClick(song)}>
+                        <span className="song-title">{song.title}</span>
+                        <span className="song-plays">
+                          {song.playCount?.toLocaleString() || Math.floor(Math.random() * 10000)} 재생
+                        </span>
+                      </div>
+                      <span className="song-duration">{formatDuration(song.duration || 180)}</span>
+                    </div>
+                  ))}
+                </div>
+                {topSongs.length > 5 && (
+                  <button className="show-more-btn" onClick={() => setActiveTab('songs')}>
+                    더 보기
+                  </button>
+                )}
+              </div>
+            )}
+
+            {albums.length > 0 && (
+              <div className="recent-albums-section">
+                <h2 className="section-title">앨범</h2>
+                <div className="albums-grid">
+                  {albums.slice(0, 4).map(album => (
+                    <div key={album.id} className="album-card" onClick={() => handleAlbumClick(album)}>
+                      <img 
+                        src={album.coverUrl || artistPlaceholder}
+                        alt={album.title}
+                        className="album-cover"
+                        onError={(e) => { e.target.src = artistPlaceholder; }}
+                      />
+                      <div className="album-info">
+                        <h3 className="album-title">{album.title}</h3>
+                        <p className="album-year">{album.releaseDate ? new Date(album.releaseDate).getFullYear() : ''}</p>
+                        <p className="album-tracks">{album.trackCount}곡</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {albums.length > 4 && (
+                  <button className="show-more-btn" onClick={() => setActiveTab('albums')}>
+                    더 보기
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'songs' && (
+          <div className="songs-tab">
+            <h2 className="section-title">인기곡</h2>
+            {topSongs.length > 0 ? (
+              <div className="full-songs-list">
+                {topSongs.map((song, index) => (
+                  <div key={song.id} className="song-item">
+                    <span className="song-rank">{index + 1}</span>
+                    <img 
+                      src={song.albumArt || song.coverUrl || artistPlaceholder}
+                      alt={song.title}
+                      className="song-image"
+                      onError={(e) => { e.target.src = artistPlaceholder; }}
+                    />
+                    <div className="song-info" onClick={() => handleSongClick(song)}>
+                      <span className="song-title">{song.title}</span>
+                      <div className="song-meta">
+                        <span className="song-album">{song.albumTitle || song.title}</span>
+                        <span className="song-plays">
+                          {song.playCount?.toLocaleString() || Math.floor(Math.random() * 10000)} 재생
+                        </span>
+                      </div>
+                    </div>
+                    <span className="song-duration">{formatDuration(song.duration || 180)}</span>
+                    <button className="add-to-queue-btn" onClick={() => handleAddToQueue(song)} title="재생목록에 추가">+</button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-data">인기곡 정보가 없습니다.</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'albums' && (
+          <div className="albums-tab">
+            <h2 className="section-title">앨범</h2>
+            {albums.length > 0 ? (
+              <div className="full-albums-grid">
+                {albums.map(album => (
+                  <div key={album.id} className="album-card" onClick={() => handleAlbumClick(album)}>
+                    <img 
+                      src={album.coverUrl || artistPlaceholder}
+                      alt={album.title}
+                      className="album-cover"
+                      onError={(e) => { e.target.src = artistPlaceholder; }}
+                    />
+                    <div className="album-info">
+                      <h3 className="album-title">{album.title}</h3>
+                      <div className="album-meta">
+                        <span className="album-year">{album.releaseDate ? new Date(album.releaseDate).getFullYear() : ''}</span>
+                        <span className="album-tracks"><Disc size={12} />{album.trackCount || 0}곡</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-data">앨범 정보가 없습니다.</p>
+            )}
+          </div>
+        )}
       </div>
-      */}
     </div>
   );
 };

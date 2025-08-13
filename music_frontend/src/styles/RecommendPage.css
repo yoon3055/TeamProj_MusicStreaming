@@ -13,59 +13,34 @@
 
 /* --- .recommend-section (각 추천 섹션의 전체 컨테이너) --- */
 .recommend-section {
-  padding: 15px; /* 원본 패딩 유지 */
-  /* ✨ 배경색 유지 (기존 linear-gradient)하며 투명한 느낌 주기 ✨ */
-  /* linear-gradient의 RGBA 값을 직접 수정하여 투명도를 부여. */
-  background: linear-gradient(90deg, rgba(0, 123, 255, 0.4), rgba(255, 64, 129, 0.2)); /* ✨ 투명도만 낮춤 (0.7 -> 0.4, 0.3 -> 0.2) ✨ */
-  /* ✨ 투명 유리창 효과 (backdrop-filter) ✨ */
-  backdrop-filter: blur(8px); /* 뒤 배경 블러 처리 (유리창 효과 핵심) */
-  border: none; /* 테두리 제거 */
-  border-radius: 12px;
-  /* ✨ 테두리 색깔을 진하게 번지는 그림자 효과로 대체 (해시태그 색상) ✨ */
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6), 0 0 15px rgba(255, 64, 129, 0.4); /* ✨ 파란색과 분홍색이 번지는 느낌, 농도 조절 ✨ */
-
-  max-width: 100%;
-  overflow-x: hidden;
-   background: linear-gradient(90deg, rgba(0, 123, 255, 0.4), rgba(255, 64, 129, 0.2)); /* 현재 사용 중인 그라데이션 */
-
+  padding: 15px;
   backdrop-filter: blur(8px);
   border: none;
   border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6), 0 0 15px rgba(255, 64, 129, 0.4);
-
   max-width: 100%;
   overflow-x: hidden;
-  
-  transition: background 0.8s ease-in-out; 
+  transition: background 0.8s ease-in-out;
 }
 
-
+/* 배경 그라데이션 스키마 */
 .recommend-section.gradient-scheme-1 {
   background: linear-gradient(90deg, rgba(0, 123, 255, 0.4), rgba(255, 64, 129, 0.2));
   box-shadow: 0 0 15px rgba(0, 123, 255, 0.6), 0 0 15px rgba(255, 64, 129, 0.4);
 }
 
 .recommend-section.gradient-scheme-2 {
-  background: linear-gradient(90deg, rgba(255, 165, 0, 0.4), rgba(138, 43, 226, 0.2)); /* 주황-보라 계열 */
+  background: linear-gradient(90deg, rgba(255, 165, 0, 0.4), rgba(138, 43, 226, 0.2));
   box-shadow: 0 0 15px rgba(255, 165, 0, 0.6), 0 0 15px rgba(138, 43, 226, 0.4);
 }
 
 .recommend-section.gradient-scheme-3 {
-  background: linear-gradient(90deg, rgba(60, 179, 113, 0.4), rgba(30, 144, 255, 0.2)); /* 초록-파랑 계열 */
+  background: linear-gradient(90deg, rgba(60, 179, 113, 0.4), rgba(30, 144, 255, 0.2));
   box-shadow: 0 0 15px rgba(60, 179, 113, 0.6), 0 0 15px rgba(30, 144, 255, 0.4);
 }
 
 .recommend-section.gradient-scheme-4 {
-  background: linear-gradient(90deg, rgba(255, 0, 0, 0.4), rgba(255, 255, 0, 0.2)); /* 빨강-노랑 계열 */
+  background: linear-gradient(90deg, rgba(255, 0, 0, 0.4), rgba(255, 255, 0, 0.2));
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 15px rgba(255, 255, 0, 0.4);
-}
-  
-
-
-.recommend-section.popular-artists,
-.recommend-section.genres {
-  padding: 15px; /* 원본 패딩 유지 */
-  margin: 0;
 }
 
 .section-title {
@@ -74,11 +49,10 @@
   gap: 10px;
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--flo-accent-color); /* FLO 변수 유지 */
-  margin-bottom: 15px; /* 원본 마진 유지 */
+  color: var(--flo-accent-color);
+  margin-bottom: 15px;
   padding-bottom: 8px;
-  /* ✨ 밑줄선 색깔 배경색이랑 어울리게 (해시태그 색상) ✨ */
-  border-bottom: 1px solid #7700ff; /* ✨ 연한 파란색 계열, 배경과 어울리게 ✨ */
+  border-bottom: 1px solid #7700ff;
 }
 
 .card-grid {
@@ -94,16 +68,15 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 15px;
-  overflow-x: scroll; /* 원본 속성 유지 */
+  overflow-x: scroll;
   scroll-behavior: smooth;
   max-width: 100%;
-  /* ✨ 앨범카드와 페이지 도트 사이 밑줄선 추가 및 간격 확보 ✨ */
-  padding-bottom: 20px; /* ✨ 변경: 캐러셀 하단에 여유 간격 */
-  border-bottom: 1px solid #7700ff; /* ✨ 변경: 밑줄선 추가 (연한 파란색 계열) ✨ */
-  margin-bottom: 20px; /* ✨ 변경: 밑줄선과 도트 사이 간격 */
+  padding-bottom: 20px;
+  border-bottom: 1px solid #7700ff;
+  margin-bottom: 20px;
 }
 
-/* 캐러셀 스크롤바 숨김 (원본 그대로 유지) */
+/* 캐러셀 스크롤바 숨김 */
 .card-carousel::-webkit-scrollbar {
   display: none;
   width: 0;
@@ -114,55 +87,45 @@
   scrollbar-width: none;    /* Firefox */
 }
 
-
-/* --- .album-card (개별 앨범 카드) --- */
-.album-card {
+/* --- .album-card, .category-card, .artist-card (개별 카드) --- */
+/* 아티스트 카드 스타일 추가 */
+.album-card,
+.category-card,
+.artist-card {
   flex-shrink: 0;
   width: 160px;
   height: auto;
-  /* ✨ 배경색 유지 (기존 flo-secondary-bg 기반)하며 투명한 느낌 주기 ✨ */
-  background-color: rgba(249, 249, 249, 0.7); /* ✨ var(--flo-secondary-bg)에 70% 투명도 적용 ✨ */
-  /* ✨ 투명 유리창 효과 (backdrop-filter) ✨ */
+  background-color: rgba(249, 249, 249, 0.7);
   backdrop-filter: blur(5px);
-  border: none; /* 기존 테두리 제거 */
+  border: none;
   border-radius: 12px;
-  /* ✨ 테두리 색깔을 진하게 번지는 그림자 효과로 대체 (해시태그 색상) ✨ */
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4), 0 0 10px rgba(255, 64, 129, 0.2); /* ✨ 파란색과 분홍색 번지는 느낌, 농도 조절 ✨ */
-
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4), 0 0 10px rgba(255, 64, 129, 0.2);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin: 5px 0;
   position: relative;
+  text-align: center; /* 아티스트 카드 내용 가운데 정렬 */
 }
 
-/* --- .category-card (개별 카테고리 카드) --- */
-.category-card {
-  flex-shrink: 0;
-  width: 160px;
-  height: auto;
-  /* ✨ 배경색 유지 (기존 flo-secondary-bg 기반)하며 투명한 느낌 주기 ✨ */
-  background-color: rgba(249, 249, 249, 0.7); /* ✨ var(--flo-secondary-bg)에 70% 투명도 적용 ✨ */
-  /* ✨ 투명 유리창 효과 (backdrop-filter) ✨ */
-  backdrop-filter: blur(5px);
-  border: none; /* 테두리 제거 */
-  border-radius: 12px;
-  /* ✨ 테두리 색깔을 진하게 번지는 그림자 효과로 대체 (해시태그 색상) ✨ */
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4), 0 0 10px rgba(255, 64, 129, 0.2); /* ✨ 파란색과 분홍색 번지는 느낌, 농도 조절 ✨ */
-
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin: 5px 0;
-  position: relative;
+/* 인기 아티스트 섹션의 카드 그리드 스타일 */
+.recommend-section.popular-artists .card-grid .artist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
 }
 
-/* 호버 효과 (기존대로 유지, 그림자만 강조) */
-.album-card:hover, .category-card:hover {
+.album-card:hover,
+.category-card:hover,
+.artist-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 18px rgba(0, 123, 255, 0.8), 0 0 18px rgba(255, 64, 129, 0.5); /* ✨ 호버 시 더욱 강조된 번지는 그림자 ✨ */
+  box-shadow: 0 0 18px rgba(0, 123, 255, 0.8), 0 0 18px rgba(255, 64, 129, 0.5);
 }
 
-/* 앨범 및 카테고리 카드 내부 요소들은 일절 건드리지 않고 원본 스타일 유지 */
-.album-card-image, .category-card-image {
+/* 앨범 및 카테고리 카드 내부 요소 */
+.album-card-image,
+.category-card-image,
+.artist-card-profile-image {
   width: 100px;
   height: 100px;
   object-fit: cover;
@@ -170,274 +133,51 @@
   margin-bottom: 8px;
 }
 
-.category-card-title {
+.artist-card-name {
   font-size: 1.1rem;
   font-weight: bold;
-  color: #ffffff;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 2;
-  pointer-events: none;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 80%;
-}
-
-.category-card-subtitle {
-  font-size: 0.85rem;
-  color: #ffffff;
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 2;
-  pointer-events: none;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 80%;
-}
-
-.category-card:hover .category-card-title,
-.category-card:hover .category-card-subtitle {
-  opacity: 1;
-}
-
-.category-card-overlay {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 12px;
-  background-color: transparent;
-  transition: background-color 0.3s ease;
-  z-index: 1;
-}
-
-.category-card:hover .category-card-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.carousel-nav-button {
-  width: 36px;
-  height: 36px;
-  background-color: rgba(var(--flo-accent-color-rgb), 0.8); /* 원본 FLO 변수 유지 */
-  color: var(--flo-text-white); /* 원본 FLO 변수 유지 */
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  z-index: 10;
-}
-
-.carousel-nav-button:hover {
-  background-color: var(--flo-accent-color-hover); /* 원본 FLO 변수 유지 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-.carousel-nav-button:disabled {
-  background-color: gray !important;
-  cursor: not-allowed;
-  opacity: 0.5;
-  filter: grayscale(80%);
-  box-shadow: none;
-}
-
-.carousel-nav-button:disabled:hover {
-  background-color: gray !important;
-  box-shadow: none;
-}
-
-.carousel-nav-button svg {
-  width: 20px;
-  height: 20px;
-}
-
-/* --- 페이지 도트 버튼 크기 조정 (4분의 1) --- */
-.pagination-dots-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 12px; /* 도트 위쪽 간격 유지 */
-
-}
-
-.pagination-dot {
-  width: 2px; /* ✨ 변경: 너비 (8px의 1/4) */
-  height: 2px; /* ✨ 변경: 높이 (8px의 1/4) */
-  border-radius: 50%;
-  background-color: var(--flo-border-color); /* 원본 FLO 변수 유지 */
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  transform: scale(0.5);
-}
-
-.pagination-dot.active {
-  background-color: var(--flo-accent-color); /* 원본 FLO 변수 유지 */
-  transform: scale(0.5);
-}
-
-.pagination-dot:hover:not(.active) {
-  background-color: var(--flo-text-secondary); /* 원본 FLO 변수 유지 */
-}
-
-.controls-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-end;
-}
-
-.recommend-loading-message,
-.recommend-error-message,
-.recommend-empty-message {
-  text-align: center;
-  color: var(--flo-accent-color); /* 원본 FLO 변수 유지 */
-  font-size: 0.9rem;
-}
-
-/* --- .song-filter-bar-container (상단 필터 바 컨테이너 - 건드리지 않음) --- */
-.song-filter-bar-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* 원본 유지 */
-  position: relative;
-  gap: 0; /* 원본 유지 */
-  padding: 10px 15px; /* 원본 유지 */
-  background-color: var(--flo-primary-bg); /* 원본 유지 */
-  border-radius: 8px; /* 원본 유지 */
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1); /* 원본 유지 */
-  user-select: none; /* 원본 유지 */
-  width: 100%; /* 원본 유지 */
-}
-
-/* 필터 버튼 스타일 (원본 유지) */
-.filter-button {
-  background-color: var(--flo-highlight-bg); /* 원본 유지 */
-  color: var(--flo-text-primary); /* 원본 유지 */
-  border: 1px solid var(--flo-border-color); /* 원본 유지 */
-  padding: 8px 12px; /* 원본 유지 */
-  border-radius: 6px; /* 원본 유지 */
-  cursor: pointer; /* 원본 유지 */
-  font-size: 0.9rem; /* 원본 유지 */
-  transition: background-color 0.2s ease, border-color 0.2s ease; /* 원본 유지 */
-  
-}
-.filter-button:hover {
-  background-color: var(--flo-highlight-bg); /* 원본 유지 */
-  border-color: var(--flo-accent-color); /* 원본 유지 */
-}
-
-
-.genre-filter-toggle-btn {
-  background-color: var(--flo-accent-color); /* 💡 hover 색상을 기본으로 */
-  color: var(--flo-text-white);
-  border: none;
-  border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  max-width: 200px;
-  position: relative;
-  transition: none; /* hover 변화 없도록 */
-}
-
-.genre-filter-toggle-btn:hover {
-  background-color: var(--flo-accent-color); /* 변화 없음 */
-  color: var(--flo-text-white);
-}
-
-/* genre-filter-options-popup (원본 유지) */
-.genre-filter-options-popup {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 100;
-  background-color: var(--flo-bg-primary); /* 원본 유지 */
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
- 
-  min-width: 100px;
-  display: flex;
-  flex-direction: column;
-
-}
-
-.filter-options-content {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-}
-
-.filter-option-item {
-  display: flex;
-  align-items: center;
-  font-size: 0.7rem;
   color: var(--flo-text-primary);
-  cursor: pointer;
+  margin-bottom: 4px;
 }
 
-.filter-option-item input[type="radio"] {
-
-  accent-color: var(--flo-accent-color); /* 원본 유지 */
+/* 좋아요 및 팔로우 섹션 스타일 */
+.artist-card-interactions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-
-.song-filter-bar-options {
+.interaction-item {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* 원본 유지 */
-
-  flex-wrap: wrap; /* 원본 유지 */
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--flo-text-secondary);
 }
 
-.song-filter-bar-message {
-  font-size: 0.75rem;
-  color: var(--flo-text-secondary); /* 원본 유지 */
-}
-.album-card, .category-card {
-  flex-shrink: 0;
-  width: 160px;
-  height: auto;
-  background-color: var(--flo-secondary-bg);
-  border-radius: 12px;
-
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 5px 0;
-  position: relative;
+.interaction-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: var(--flo-text-secondary);
 }
 
-.album-card:hover, .category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+.interaction-toggle-btn.liked {
+  color: red; /* 좋아요 활성화 시 빨간색 */
+}
+.interaction-toggle-btn.followed {
+  color: var(--flo-accent-color); /* 팔로우 활성화 시 강조색 */
 }
 
-.album-card-image, .category-card-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-bottom: 8px;
+.interaction-count {
+  font-weight: 500;
+  color: var(--flo-text-primary);
 }
 
+/* 카테고리 카드 내부 요소 */
 .category-card-title {
   font-size: 1.1rem;
   font-weight: bold;
@@ -535,9 +275,32 @@
   height: 20px;
 }
 
+/* --- 페이지 도트 버튼 크기 조정 (4분의 1) --- */
+.pagination-dots-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
 
+.pagination-dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: var(--flo-border-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  transform: scale(0.5);
+}
 
+.pagination-dot.active {
+  background-color: var(--flo-accent-color);
+  transform: scale(0.5);
+}
 
+.pagination-dot:hover:not(.active) {
+  background-color: var(--flo-text-secondary);
+}
 
 .controls-container {
   display: flex;
@@ -554,34 +317,22 @@
   font-size: 0.9rem;
 }
 
+/* --- .song-filter-bar-container (상단 필터 바 컨테이너) --- */
 .song-filter-bar-container {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* 모든 요소를 우측으로 */
+  justify-content: flex-end;
   position: relative;
-  gap: 0; /* 마진 제거 */
+  gap: 0;
   padding: 10px 15px;
   background-color: var(--flo-primary-bg);
   border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   user-select: none;
   width: 100%;
 }
 
-.song-filter-bar-options {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* 우측 정렬 */
-  gap: 0; /* 마진 제거 */
-  flex-wrap: wrap;
-}
-
-.song-filter-bar-message {
-  font-size: 0.75rem;
-  color: var(--flo-text-gray);
-  margin-right: 0; /* 고음질 버튼과 바짝 붙임 */
-}
-
+/* 필터 버튼 스타일 */
 .filter-button {
   background-color: var(--flo-accent-color);
   color: var(--flo-text-white);
@@ -593,38 +344,58 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   white-space: nowrap;
-  max-width: 200px; /* 사용자 지정 */
-  position: relative; /* 팝업 기준점으로 설정 */
+  max-width: 200px;
+  position: relative;
 }
 
 .filter-button:hover {
   background-color: var(--flo-accent-color-hover);
 }
 
+.genre-filter-toggle-btn {
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 200px;
+  position: relative;
+  transition: none;
+}
+
+.genre-filter-toggle-btn:hover {
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+}
+
+/* genre-filter-options-popup */
 .genre-filter-options-popup {
   position: absolute;
-  top: 0;
-  left: 20%; /* filter-button 기준 오른쪽 */
-  margin: 0;
-  max-width: 450px;
-  background-color: rgba(36, 6, 119, 0); /* 투명한 유리 효과 */
-  
-  border: 2px solid rgba(255, 255, 255, 0); /* 입체적 테두리 */
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  background-color: rgba(36, 6, 119, 0);
+  border: 2px solid rgba(255, 255, 255, 0);
   border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.514); /* 입체적 그림자 */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.514);
   padding: 10px;
-  min-width: 200px; /* 원래 값 복원 */
-  z-index: 1000;
+  min-width: 200px;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
 }
 
 .filter-options-content {
   max-width: 450px;
   display: grid;
-  grid-template-columns: repeat(5, 4fr); /* 3열로 조정 */
+  grid-template-columns: repeat(5, 4fr);
   grid-template-rows: auto;
-  padding: auto; 
-
-} 
+  padding: auto;
+}
 
 .filter-option-item {
   display: flex;
@@ -633,7 +404,7 @@
   padding: 6px 8px;
   border-radius: 6px;
   transition: background-color 0.2s ease, color 0.2s ease;
-  color: #4a4a4a; /* 짙은 회색 글자 */
+  color: #4a4a4a;
   font-size: 0.95rem;
 }
 
@@ -656,4 +427,18 @@
 
 .filter-option-item input[type="radio"]:checked {
   accent-color: var(--flo-accent-color);
+}
+
+.song-filter-bar-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.song-filter-bar-message {
+  font-size: 0.75rem;
+  color: var(--flo-text-gray);
+  margin-right: 0;
 }

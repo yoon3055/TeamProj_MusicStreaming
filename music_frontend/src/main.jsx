@@ -19,14 +19,14 @@ import SubscriptionRouter from './component/SubscriptionRouter';
 // Page Components
 import MainPage from './pages/MainPage';
 import RecommendPage from './pages/RecommendPage';
-import { AlbumDetailPage } from './pages/AlbumDetailPage';
+import AlbumDetailPage  from './pages/AlbumDetailPage';
 import ArtistPage from './pages/ArtistPage';
 import UserProfilePage from './pages/UserProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AlbumArtPage from './pages/AlbumIconPage';
 import CommentsPage from './pages/CommentsPage';
-import HistoryPage from './pages/HistoryPage';
+import HistoryPage from './pages/PlaybackHistoryPage';
 import LikesFollowsPage from './pages/LikesFollowsPage';
 import PaymentFailPage from './pages/PaymentFailPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';

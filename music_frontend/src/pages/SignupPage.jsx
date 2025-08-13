@@ -16,6 +16,7 @@ const SignupPage = () => {
 
   const handleOAuthLogin = (provider) => {
     const baseUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
+    console.log(`[SIGNUP_PAGE] Redirecting to ${provider} OAuth`);
     window.location.href = `${baseUrl}/oauth2/authorization/${provider}`;
   };
 
@@ -31,16 +32,16 @@ const SignupPage = () => {
           initialValues={{ email: '', nickname: '', password: '' }}
           validationSchema={SignupSchema}
           onSubmit={async (values, { setSubmitting, setFieldError }) => {
+            console.log('[SIGNUP_PAGE] Submitting signup form:', values);
             try {
               const apiUrl = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
               const res = await axios.post(`${apiUrl}/api/users/register`, values);
-
-              // JWT 저장
+              console.log('[SIGNUP_PAGE] Signup successful:', res.data);
               localStorage.setItem('jwt', res.data.token);
               alert('회원가입이 완료되었습니다.');
               navigate('/login');
             } catch (err) {
-              console.error('회원가입 실패:', err);
+              console.error('[SIGNUP_PAGE] Signup failed:', err.response?.data || err.message);
               setFieldError('email', err.response?.data?.message || '이메일 오류');
               setFieldError('nickname', ' ');
               setFieldError('password', ' ');

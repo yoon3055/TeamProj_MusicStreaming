@@ -1,71 +1,132 @@
-// src/components/CreatePlaylistModal.jsx
-import React, { useState } from 'react';
-// import axios from 'axios';
-import { createPlaylist } from '../api/playlistApi'; // 🆕 API 호출 함수 임포트
+import React, { useState, useRef, useCallback } from 'react';
+import { FaTimes, FaPlus, FaInfoCircle } from 'react-icons/fa';
+import { v4 as uuidv4 } from 'uuid';
+import { put } from '../services/indexDB';
+import '../styles/HistoryPage.css';
 
-import '../styles/components.css'; // 모달 스타일 (예시)
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-const CreatePlaylistModalPage = ({ selectedSongs, onClose, onPlaylistCreated }) => {
+const CreatePlaylistModalPage = ({ selectedSongs, onRemoveSong, onPlaylistCreated, onClose }) => {
   const [playlistName, setPlaylistName] = useState('');
-  const [isPublic, setIsPublic] = useState(true); // 공개/비공개 상태
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState(null);
+  const [ setPlaylistImage] = useState(null); // 사용되지 않는 변수
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
-  const handleCreate = async () => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!VALID_IMAGE_TYPES.includes(file.type)) {
+        alert('지원하지 않는 이미지 형식입니다. (jpeg, png, webp만 가능)');
+        return;
+      }
+      if (file.size > MAX_IMAGE_SIZE) {
+        alert('이미지 크기는 5MB를 초과할 수 없습니다.');
+        return;
+      }
+      setPlaylistImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCreatePlaylist = useCallback(async (e) => {
+    e.preventDefault();
     if (!playlistName.trim()) {
       alert('플레이리스트 이름을 입력해주세요.');
       return;
     }
-    setCreating(true);
-    setError(null);
-
-    const songIds = selectedSongs.map(song => song.id); // 곡 ID만 전달
 
     try {
-      await createPlaylist(playlistName, songIds, isPublic); // 🆕 playlistApi 사용
-      onPlaylistCreated(); // 생성 성공 콜백
-      alert('플레이리스트가 성공적으로 생성되었습니다!');
-    } catch (err) {
-      console.error('플레이리스트 생성 실패:', err);
-      setError('플레이리스트 생성에 실패했습니다.');
-    } finally {
-      setCreating(false);
+      const newPlaylist = {
+        id: uuidv4(),
+        title: playlistName,
+        songs: selectedSongs,
+        coverUrl: imagePreview, // 이미지를 IndexedDB에 Base64 형태로 저장
+        createdAt: new Date().toISOString(),
+        isLocal: true,
+      };
+
+      await put('playlists', newPlaylist);
+      alert(`플레이리스트 "${playlistName}"이(가) 생성되었습니다.`);
+      onPlaylistCreated();
+      onClose();
+    } catch (error) {
+      console.error('플레이리스트 저장 실패:', error);
+      alert('플레이리스트 생성에 실패했습니다.');
     }
-  };
+  }, [playlistName, selectedSongs, imagePreview, onPlaylistCreated, onClose]);
 
   return (
-    <div className="modal-backdrop">
+    <div className="modal-overlay">
       <div className="modal-content">
+        <button className="modal-close" onClick={onClose}>
+          <FaTimes />
+        </button>
         <h3>새 플레이리스트 만들기</h3>
-        <div className="modal-body">
-          <label htmlFor="playlistName">플레이리스트 이름:</label>
-          <input
-            type="text"
-            id="playlistName"
-            value={playlistName}
-            onChange={(e) => setPlaylistName(e.target.value)}
-            placeholder="플레이리스트 이름"
-          />
-
-          <label>
+        <form onSubmit={handleCreatePlaylist}>
+          <div className="form-group">
+            <label htmlFor="playlistName">플레이리스트 이름</label>
             <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={(e) => setIsPublic(e.target.checked)}
+              type="text"
+              id="playlistName"
+              value={playlistName}
+              onChange={(e) => setPlaylistName(e.target.value)}
+              placeholder="플레이리스트 이름을 입력하세요"
+              className="playlist-name-input"
+              required
             />
-            공개 플레이리스트
-          </label>
+          </div>
 
-          <p>선택된 곡: {selectedSongs.length}개</p>
+          <div className="form-group">
+            <label>플레이리스트 커버</label>
+            <div
+              className="playlist-image-uploader"
+              onClick={() => fileInputRef.current.click()}
+            >
+              {imagePreview ? (
+                <img src={imagePreview} alt="Playlist Cover Preview" className="image-preview" />
+              ) : (
+                <div className="placeholder-text">
+                  <FaPlus />
+                  <span>이미지 추가</span>
+                </div>
+              )}
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageChange}
+              style={{ display: 'none' }}
+              accept={VALID_IMAGE_TYPES.join(',')}
+            />
+            <div className="info-text">
+              <FaInfoCircle />
+              <span>권장 이미지 크기: 500x500</span>
+            </div>
+          </div>
 
-          {error && <p className="error-message">{error}</p>}
-        </div>
-        <div className="modal-footer">
-          <button onClick={handleCreate} disabled={creating}>
-            {creating ? '생성 중...' : '만들기'}
+          <div className="selected-songs-list">
+            <h4>담을 곡 ({selectedSongs.length}곡)</h4>
+            <ul>
+              {selectedSongs.map((song, index) => (
+                <li key={song.id || index}>
+                  <span>{song.title}</span>
+                  <button type="button" onClick={() => onRemoveSong(song)}>
+                    <FaTimes />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <button type="submit" className="create-button">
+            플레이리스트 생성
           </button>
-          <button onClick={onClose} disabled={creating}>취소</button>
-        </div>
+        </form>
       </div>
     </div>
   );

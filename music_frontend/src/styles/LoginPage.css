@@ -174,3 +174,37 @@ body {
   border-radius: 10px;
   box-shadow: 3px 1px 10px rgba(63, 0, 99, 0.3); /* 카카오 로그인 버튼 그림자 */
 }
+/* 소셜 로그인 버튼 공통 스타일 */
+.oauth-login a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-indent: -9999px; /* 텍스트 숨기기 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.oauth-login a:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Google 로그인 버튼 (이미지 경로 수정 필요) */
+.google-login-button {
+  background-image: url('/images/google_login.png'); /* 여기에 실제 구글 버튼 이미지 경로를 넣어주세요 */
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+}
+
+/* 카카오 로그인 버튼 (이미지 경로 수정 필요) */
+.kakao-login-button {
+  background-image: url('/images/kakao_login.png'); /* 여기에 실제 카카오 버튼 이미지 경로를 넣어주세요 */
+  background-color: #fee500;
+  border: none;
+}

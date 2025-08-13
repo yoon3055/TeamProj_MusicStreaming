@@ -69,14 +69,11 @@
   }
 }
 
-.artist-profile-text-info {
-  /* No specific styles here, just groups content */
-}
 
 .artist-profile-name {
-  font-size: 2.25rem; /* text-4xl */
+  font-size: 2.25rem; 
   font-weight: bold;
-  margin-bottom: 0.5rem; /* mb-2 */
+  margin-bottom: 0.5rem; 
 }
 
 .artist-profile-genre {

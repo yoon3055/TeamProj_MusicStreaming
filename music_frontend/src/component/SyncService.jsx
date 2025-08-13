@@ -1,16 +1,24 @@
-import { useEffect, useState, useContext, useCallback } from 'react';
+// src/services/SyncService.jsx
+import { useEffect, useState, useContext, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { debounce } from 'lodash';
-import { getAllLyricsFromDB, deleteLyricsFromDB, getAllFilesFromDB, deleteFileFromDB, getAllPlaylistsFromDB, savePlaylistToDB, deletePlaylistFromDB } from '../utils/indexedDB';
+import { getAll, put, remove } from '../services/indexDB';
 
 const SyncService = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, refreshUser } = useContext(AuthContext); // 가정: refreshUser 추가
   const [isSyncing, setIsSyncing] = useState(false);
-  const [failedSyncs, setFailedSyncs] = useState({ lyrics: [], files: [], playlists: [] });
+  const failedSyncsRef = useRef({ lyrics: new Set(), files: new Set(), playlists: new Set() });
+
   const API_URL = import.meta.env.VITE_REACT_APP_API_URL || 'http://localhost:8080';
   const SYNC_INTERVAL = 300000;
-  const RETRY_INTERVAL = 60000;
+
+  const updateFailedSyncs = (type, id, add) => {
+    const currentSet = failedSyncsRef.current[type];
+    if (add) currentSet.add(id);
+    else currentSet.delete(id);
+    failedSyncsRef.current = { ...failedSyncsRef.current };
+  };
 
   const retry = useCallback(async (fn, retries = 3, delay = 1000) => {
     for (let attempt = 1; attempt <= retries; attempt++) {
@@ -18,148 +26,152 @@ const SyncService = () => {
         return await fn();
       } catch (error) {
         if (attempt === retries) throw error;
-        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt)));
+        await new Promise(r => setTimeout(r, delay * 2 ** attempt));
       }
     }
   }, []);
 
   const syncLyric = useCallback(async (lyric) => {
-    if (!user?.token) throw new Error('인증 토큰이 없습니다.');
+    if (!user?.token) throw new Error('인증 토큰 없음');
     try {
-      await axios.post(
+      const res = await axios.post(
         `${API_URL}/api/lyrics/admin`,
         { songId: lyric.songId, language: lyric.language, lyrics: lyric.lyrics },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      await deleteLyricsFromDB(lyric.id);
+      await remove('lyrics', lyric.id);
       window.showToast(`가사 동기화 성공: ${lyric.songId}`, 'success');
-      setFailedSyncs(prev => ({ ...prev, lyrics: prev.lyrics.filter(id => id !== lyric.id) }));
+      updateFailedSyncs('lyrics', lyric.id, false);
+      return res.data;
     } catch (error) {
       if (error.response?.status === 401 || error.response?.status === 403) {
-        window.showToast('인증 오류가 발생했습니다. 다시 로그인하세요.', 'error');
+        window.showToast('인증 오류. 재로그인 필요.', 'error');
         logout();
+        await refreshUser(); // 재인증 시도
         throw error;
       }
-      setFailedSyncs(prev => ({ ...prev, lyrics: [...new Set([...prev.lyrics, lyric.id])] }));
+      updateFailedSyncs('lyrics', lyric.id, true);
       throw error;
     }
-  }, [user, logout, API_URL]);
+  }, [user, logout, refreshUser, API_URL]);
 
   const syncFile = useCallback(async (file) => {
-    if (!user?.token || user.role !== 'ADMIN') throw new Error('관리자 권한이 필요합니다.');
+    if (!user?.token || user.role !== 'ADMIN') throw new Error('관리자 권한 필요');
     try {
       const formData = new FormData();
       formData.append('audio', file.fileData);
       if (file.coverFile) formData.append('cover', file.coverFile);
       formData.append('name', file.name);
       formData.append('artist', file.artist || '관리자 업로드');
-      const response = await axios.post(
+
+      const res = await axios.post(
         `${API_URL}/api/admin/files/upload`,
         formData,
         { headers: { Authorization: `Bearer ${user.token}`, 'Content-Type': 'multipart/form-data' } }
       );
-      await deleteFileFromDB(file.id);
+      await remove('uploadedFiles', file.id);
       window.showToast(`파일 동기화 성공: ${file.name}`, 'success');
-      setFailedSyncs(prev => ({ ...prev, files: prev.files.filter(id => id !== file.id) }));
-      return response.data;
+      updateFailedSyncs('files', file.id, false);
+      return res.data;
     } catch (error) {
       if (error.response?.status === 401 || error.response?.status === 403) {
-        window.showToast('인증 오류가 발생했습니다. 다시 로그인하세요.', 'error');
+        window.showToast('인증 오류. 재로그인 필요.', 'error');
         logout();
+        await refreshUser();
         throw error;
       }
-      setFailedSyncs(prev => ({ ...prev, files: [...new Set([...prev.files, file.id])] }));
+      updateFailedSyncs('files', file.id, true);
       throw error;
     }
-  }, [user, logout, API_URL]);
+  }, [user, logout, refreshUser, API_URL]);
 
   const syncPlaylist = useCallback(async (playlist) => {
-    if (!user?.token) throw new Error('인증 토큰이 없습니다.');
+    if (!user?.token) throw new Error('인증 토큰 없음');
     try {
-      await axios.post(
+      const res = await axios.post(
         `${API_URL}/api/playlists`,
         { name: playlist.name, songs: playlist.songs },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      await deletePlaylistFromDB(playlist.id);
+      await remove('playlists', playlist.id);
       window.showToast(`플레이리스트 동기화 성공: ${playlist.name}`, 'success');
-      setFailedSyncs(prev => ({ ...prev, playlists: prev.playlists.filter(id => id !== playlist.id) }));
+      updateFailedSyncs('playlists', playlist.id, false);
+      return res.data;
     } catch (error) {
       if (error.response?.status === 401 || error.response?.status === 403) {
-        window.showToast('인증 오류가 발생했습니다. 다시 로그인하세요.', 'error');
+        window.showToast('인증 오류. 재로그인 필요.', 'error');
         logout();
+        await refreshUser();
         throw error;
       }
-      await savePlaylistToDB(playlist);
-      setFailedSyncs(prev => ({ ...prev, playlists: [...new Set([...prev.playlists, playlist.id])] }));
+      await put('playlists', playlist);
+      updateFailedSyncs('playlists', playlist.id, true);
       throw error;
     }
-  }, [user, logout, API_URL]);
+  }, [user, logout, refreshUser, API_URL]);
 
   const syncBatch = useCallback(async (type, items, batchSize) => {
-    const BATCH_SIZE = { lyrics: 10, files: 2, playlists: 5 }; // 내부 정의로 의존성 제거
     const batches = [];
     for (let i = 0; i < items.length; i += batchSize) {
       batches.push(items.slice(i, i + batchSize));
     }
     for (const batch of batches) {
-      await Promise.all(
+      const results = await Promise.allSettled(
         batch.map(item =>
-          retry(() => (type === 'lyrics' ? syncLyric(item) : type === 'files' ? syncFile(item) : syncPlaylist(item))).catch(err => {
-            console.error(`${type} 동기화 실패: ${item.id}`, err);
+          retry(() =>
+            type === 'lyrics' ? syncLyric(item) :
+            type === 'files' ? syncFile(item) :
+            syncPlaylist(item)
+          ).then(serverState => {
+            if (serverState?.timestamp > item.timestamp) {
+              put(type, { ...item, ...serverState });
+            }
+          }).catch(err => {
+            console.error(`${type} 동기화 실패:`, item.id, err);
             window.showToast(`${type} 동기화 실패: ${item.name || item.songId}`, 'error');
           })
         )
       );
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      window.showToast(`${type} 배치: ${successCount}/${batch.length} 성공`, 'info');
     }
   }, [retry, syncLyric, syncFile, syncPlaylist]);
 
   const checkServerAndSync = useCallback(async () => {
-    const BATCH_SIZE = { lyrics: 10, files: 2, playlists: 5 }; // 내부 정의로 의존성 제거
     if (!navigator.onLine) {
-      window.showToast('오프라인 상태입니다. 네트워크 연결 후 동기화됩니다.', 'info');
+      window.showToast('오프라인. 연결 후 재시도.', 'info');
       return;
     }
-    if (!user?.token) {
-      console.log('로그인되지 않음, 동기화 중단');
-      return;
-    }
+    if (!user?.token) return;
     setIsSyncing(true);
     try {
       await axios.get(`${API_URL}/api/ping`, { headers: { Authorization: `Bearer ${user.token}` } });
-      
-      const lyrics = await getAllLyricsFromDB();
-      const targetLyrics = failedSyncs.lyrics.length > 0 ? lyrics.filter(l => failedSyncs.lyrics.includes(l.id)) : lyrics;
-      if (targetLyrics.length > 0) {
-        await syncBatch('lyrics', targetLyrics, BATCH_SIZE.lyrics);
-      }
 
-      if (user.role === 'ADMIN') {
-        const files = await getAllFilesFromDB();
-        const targetFiles = failedSyncs.files.length > 0 ? files.filter(f => failedSyncs.files.includes(f.id)) : files;
-        if (targetFiles.length > 0) {
-          await syncBatch('files', targetFiles, BATCH_SIZE.files);
-        }
-      }
+      const lyrics = await getAll('lyrics');
+      const files = await getAll('uploadedFiles');
+      const playlists = await getAll('playlists');
 
-      const playlists = await getAllPlaylistsFromDB();
-      const targetPlaylists = failedSyncs.playlists.length > 0 ? playlists.filter(p => failedSyncs.playlists.includes(p.id)) : playlists;
-      if (targetPlaylists.length > 0) {
-        await syncBatch('playlists', targetPlaylists, BATCH_SIZE.playlists);
-      }
+      const failedLyrics = lyrics.filter(l => failedSyncsRef.current.lyrics.has(l.id));
+      const failedFiles = files.filter(f => failedSyncsRef.current.files.has(f.id));
+      const failedPlaylists = playlists.filter(p => failedSyncsRef.current.playlists.has(p.id));
 
-      if (failedSyncs.lyrics.length === 0 && failedSyncs.files.length === 0 && failedSyncs.playlists.length === 0) {
-        window.showToast('모든 데이터가 서버와 동기화되었습니다.', 'success');
-      } else {
-        window.showToast('일부 데이터 동기화에 실패했습니다. 다음 시도에 재시도합니다.', 'warning');
-      }
+      const targetLyrics = failedLyrics.length > 0 ? failedLyrics : lyrics;
+      const targetFiles = user.role === 'ADMIN' ? (failedFiles.length > 0 ? failedFiles : files) : [];
+      const targetPlaylists = failedPlaylists.length > 0 ? failedPlaylists : playlists;
+
+      if (targetLyrics.length) await syncBatch('lyrics', targetLyrics, 10);
+      if (targetFiles.length) await syncBatch('files', targetFiles, 2);
+      if (targetPlaylists.length) await syncBatch('playlists', targetPlaylists, 5);
+
+      const totalFailed = Object.values(failedSyncsRef.current).reduce((sum, set) => sum + set.size, 0);
+      window.showToast(totalFailed === 0 ? '전체 동기화 성공' : `실패 ${totalFailed}개. 재시도 중.`, totalFailed === 0 ? 'success' : 'warning');
     } catch (error) {
-      console.error('서버 연결 또는 동기화 실패:', error);
-      window.showToast('서버 연결에 실패했습니다. 다음 시도에 재시도합니다.', 'error');
+      console.error('서버 연결 실패:', error);
+      window.showToast('서버 연결 실패. 재시도.', 'error');
     } finally {
       setIsSyncing(false);
     }
-  }, [user, syncBatch, failedSyncs, API_URL]);
+  }, [user, syncBatch, API_URL]);
 
   useEffect(() => {
     const debouncedShowToast = debounce((message, type) => {
@@ -167,18 +179,15 @@ const SyncService = () => {
     }, 1000);
 
     const handleOnline = () => {
-      console.log('온라인 상태 감지, 동기화 시도');
+      console.log('온라인 감지, 동기화 시도');
       checkServerAndSync();
     };
 
     window.addEventListener('online', handleOnline);
-    const intervalId = setInterval(
-      () => checkServerAndSync(),
-      failedSyncs.lyrics.length > 0 || failedSyncs.files.length > 0 || failedSyncs.playlists.length > 0 ? RETRY_INTERVAL : SYNC_INTERVAL
-    );
+    const intervalId = setInterval(checkServerAndSync, SYNC_INTERVAL);
 
     if (isSyncing) {
-      debouncedShowToast(`데이터를 서버와 동기화 중... (${failedSyncs.lyrics.length + failedSyncs.files.length + failedSyncs.playlists.length}개 남음)`, 'info');
+      debouncedShowToast(`동기화 중... (실패 ${Object.values(failedSyncsRef.current).reduce((sum, set) => sum + set.size, 0)}개)`, 'info');
     }
 
     return () => {
@@ -186,7 +195,7 @@ const SyncService = () => {
       clearInterval(intervalId);
       debouncedShowToast.cancel();
     };
-  }, [isSyncing, checkServerAndSync, failedSyncs]);
+  }, [isSyncing, checkServerAndSync]);
 
   return null;
 };

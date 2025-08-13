@@ -17,7 +17,7 @@ const lyricsStoreName = 'lyrics';
 
 const openDB = () => {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(dbName, 2);
+        const request = indexedDB.open(dbName, 3);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains(fileStoreName)) {
@@ -364,29 +364,32 @@ const MusicPlayer = () => {
         }
     }, [isMuted, volume, audioRef]);
 
-    const handleLocalFileUpload = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const songId = `local-${Date.now()}`;
-            const newSong = {
-                id: songId,
-                name: file.name,
-                artist: '로컬 파일',
-                coverUrl: noSongImage,
-                url: '',
-                isLocal: true,
-            };
+ const handleLocalFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const songId = `local-${Date.now()}`;
+        const newSong = {
+            id: songId,
+            name: file.name,
+            artist: '로컬 파일',
+            coverUrl: noSongImage,
+            url: '', // 여기 url을 빈 문자열로 두지 말고
+            isLocal: true,
+        };
 
-            try {
-                await saveFileToDB({ id: songId, fileData: file });
-                addSongToPlaylist(newSong);
-                window.showToast(`${file.name} (로컬 파일)이 재생목록에 추가되었습니다.`, 'success');
-            } catch (error) {
-                window.showToast("파일 저장에 실패했습니다.", 'error');
-                console.error("IndexedDB 저장 실패:", error);
-            }
+        try {
+            await saveFileToDB({ id: songId, fileData: file });
+            // Blob URL 생성
+            const blobUrl = URL.createObjectURL(file);
+            // url 필드에 Blob URL 할당
+            addSongToPlaylist({ ...newSong, url: blobUrl });
+            window.showToast(`${file.name} (로컬 파일)이 재생목록에 추가되었습니다.`, 'success');
+        } catch (error) {
+            window.showToast("파일 저장에 실패했습니다.", 'error');
+            console.error("IndexedDB 저장 실패:", error);
         }
-    };
+    }
+};
 
     const handleCreatePlaylist = () => {
         if (!user) {
