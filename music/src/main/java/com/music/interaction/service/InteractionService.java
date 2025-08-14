@@ -101,9 +101,6 @@ public class InteractionService {
 	public long countLikesBySongId(Long songId) {
 	    return likeRepository.countBySongId(songId);
 	}
-	public long countLikesByAlbumId(Long albumId) {
-	    return likeRepository.countBySong_AlbumId(albumId);
-	}
 
 	public long countLikesByArtistId(Long artistId) {
 	    return likeRepository.countBySong_ArtistId(artistId);

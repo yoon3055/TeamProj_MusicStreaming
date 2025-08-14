@@ -1,13 +1,15 @@
 package com.music.artist.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "artist")
 public class Artist {
@@ -20,8 +22,8 @@ public class Artist {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    // 프로필 이미지 URL (예: S3 주소)
-    @Column(name = "profile_image", length = 255)
+    // 프로필 이미지 URL 또는 Base64 데이터
+    @Column(name = "profile_image", columnDefinition = "LONGTEXT")
     private String profileImage;
 
     // 장르 (예: Pop, Jazz, HipHop)
@@ -36,15 +38,11 @@ public class Artist {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    // 기본 생성자
-    public Artist() {}
-
-    public Artist(String name, String profileImage, String genre, String description, LocalDateTime createdAt) {
-        this.name = name;
-        this.profileImage = profileImage;
-        this.genre = genre;
-        this.description = description;
-        this.createdAt = createdAt;
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     // Getter & Setter
@@ -72,6 +70,7 @@ public class Artist {
 
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
+    @Builder.Default
     @Column(name = "like_count")
     private int likeCount = 0;
 

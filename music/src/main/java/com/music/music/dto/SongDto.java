@@ -44,11 +44,8 @@ public class SongDto {
                     .id(song.getId())
                     .title(song.getTitle())
                     .artist(ArtistInfo.from(song.getArtist()))
-                    .album(song.getAlbum() != null ? AlbumInfo.from(song.getAlbum()) : null)
-                    .duration(song.getDuration())
                     .audioUrl(song.getAudioUrl())
                     .genre(song.getGenre())
-                    .createdAt(song.getCreatedAt())
                     .build();
         }
     }
@@ -100,7 +97,6 @@ public class SongDto {
                     .id(song.getId())
                     .title(song.getTitle())
                     .artistName(song.getArtist().getName())
-                    .duration(song.getDuration())
                     .genre(song.getGenre())
                     .build();
         }

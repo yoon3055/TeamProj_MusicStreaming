@@ -74,7 +74,15 @@ public class WebConfig implements WebMvcConfigurer {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .sessionManagement(session -> session.disable())
-            .headers(headers -> headers.frameOptions().disable())
+            .headers(headers -> headers
+                .frameOptions().disable()
+                .addHeaderWriter((request, response) -> {
+                    response.setHeader("X-Password-Manager", "disabled");
+                    response.setHeader("X-Password-Save", "disabled");
+                    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+                    response.setHeader("Pragma", "no-cache");
+                })
+            )
             .authorizeHttpRequests(auth -> auth
                 // 로그인 관련 엔드포인트는 인증 없이 접근 허용
                 .requestMatchers(

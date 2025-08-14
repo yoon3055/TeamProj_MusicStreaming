@@ -4,7 +4,6 @@ import com.music.user.dto.UserDto;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
@@ -18,6 +17,8 @@ public class User {
     private Long id;
 
     private String nickname;
+    
+    @Column(columnDefinition = "LONGTEXT")
     private String profileImage;
 
     @Column(nullable = false, unique = true)
@@ -35,14 +36,7 @@ public class User {
     private String socialId;
     private String refreshToken;
 
-    // ✅ 가입일 (생성 시 자동 저장)
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     public UserDto toDto() {
         return UserDto.builder()

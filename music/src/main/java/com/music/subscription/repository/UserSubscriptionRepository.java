@@ -1,6 +1,7 @@
 package com.music.subscription.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -33,4 +34,10 @@ public interface UserSubscriptionRepository extends JpaRepository<UserSubscripti
 
     // 특정 사용자가 특정 구독 요금제에 대한 활성 구독을 가지고 있는지 확인하는 메서드
     boolean existsByUserIdAndPlanIdAndIsActiveTrue(Long userId, Long planId);
+
+    // 관리자 통계를 위한 메서드들
+    Long countByIsActiveTrue();
+
+    @Query("SELECT p.name, COUNT(us) FROM UserSubscription us JOIN us.plan p WHERE us.isActive = true GROUP BY p.name")
+    List<Object[]> countActiveSubscriptionsByPlan();
 }

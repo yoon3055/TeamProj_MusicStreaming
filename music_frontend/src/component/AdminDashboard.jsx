@@ -262,8 +262,17 @@ const AdminDashboard = () => {
             onClick={() => handleMenuClick('콘텐츠 관리')}
           >
             <h3>콘텐츠 관리</h3>
-            <p>음악, 앨범, 아티스트 관리</p>
+            <p>음악, 앨범 관리</p>
             <small>총 {stats.totalSongs}곡 등록됨</small>
+          </Link>
+          <Link
+            to="/admin/artists"
+            className="admin-menu-card"
+            onClick={() => handleMenuClick('아티스트 관리')}
+          >
+            <h3>아티스트 관리</h3>
+            <p>아티스트 등록, 수정, 삭제</p>
+            <small>아티스트 정보 관리</small>
           </Link>
           <Link
             to="/admin/comments"

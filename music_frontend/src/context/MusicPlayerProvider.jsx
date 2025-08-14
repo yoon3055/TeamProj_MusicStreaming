@@ -59,6 +59,9 @@ const MusicPlayerProvider = ({ children }) => {
     const [currentSong, setCurrentSong] = useState(null);
     const [repeatMode, setRepeatMode] = useState('none');
     const [currentBlobUrl, setCurrentBlobUrl] = useState(null);
+    const [volume, setVolume] = useState(1); // 볼륨 (0-1)
+    const [currentTime, setCurrentTime] = useState(0); // 현재 재생 시간
+    const [duration, setDuration] = useState(0); // 총 재생 시간
 
     const [toastState, setToastState] = useState({ message: '', type: 'info', timestamp: 0 });
 
@@ -85,19 +88,6 @@ const MusicPlayerProvider = ({ children }) => {
         }
     }, [toastState]);
 
-    // 재생 기록을 서버에 동기화하는 함수 (axios 사용)
-    const syncPlaybackHistory = useCallback(async (historyItem) => {
-        try {
-            await axios.post('http://localhost:8080/api/playback-history', historyItem, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
-            console.log('재생 기록 서버 동기화 성공:', historyItem);
-        } catch (error) {
-            console.error('재생 기록 서버 동기화 실패:', error);
-            setToastState({ message: '서버 동기화 실패. 로컬에 저장됨.', type: 'warning', timestamp: Date.now() });
-        }
-    }, [setToastState]);
-
     // 재생 기록을 로컬 IndexedDB에 저장하고 서버에 동기화를 시도하는 함수
     const savePlaybackHistory = useCallback(async (song) => {
         const historyItem = {
@@ -113,13 +103,13 @@ const MusicPlayerProvider = ({ children }) => {
         };
         try {
             await put(historyStoreName, historyItem);
-            await syncPlaybackHistory(historyItem);
+            // await syncPlaybackHistory(historyItem);
             setToastState({ message: '재생 기록 저장됨.', type: 'success', timestamp: Date.now() });
         } catch (error) {
             console.error('재생 기록 저장 실패:', error);
             setToastState({ message: '재생 기록 저장 실패.', type: 'error', timestamp: Date.now() });
         }
-    }, [ syncPlaybackHistory, setToastState]);
+    }, [setToastState]);
 
     // 특정 곡을 재생하는 핵심 로직
 const playSong = useCallback(async (song) => {
@@ -323,6 +313,22 @@ const playSong = useCallback(async (song) => {
         setToastState({ message: '재생목록이 초기화되었습니다.', type: 'info', timestamp: Date.now() });
     }, [currentBlobUrl, cleanupBlobUrl, setToastState]);
 
+    // 볼륨 조절 함수
+    const setVolumeLevel = useCallback((newVolume) => {
+        const clampedVolume = Math.max(0, Math.min(1, newVolume));
+        setVolume(clampedVolume);
+        audioRef.current.volume = clampedVolume;
+    }, []);
+
+    // 시간 탐색 함수 (seeking)
+    const seekTo = useCallback((time) => {
+        if (audioRef.current && !isNaN(audioRef.current.duration)) {
+            const clampedTime = Math.max(0, Math.min(audioRef.current.duration, time));
+            audioRef.current.currentTime = clampedTime;
+            setCurrentTime(clampedTime);
+        }
+    }, []);
+
     // 오디오 이벤트 리스너 설정
     useEffect(() => {
         const audio = audioRef.current;
@@ -333,17 +339,43 @@ const playSong = useCallback(async (song) => {
             setIsPlaying(false);
             setToastState({ message: '오디오 재생 중 오류가 발생했습니다.', type: 'error', timestamp: Date.now() });
         };
+        
+        // 시간 업데이트 이벤트
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+        };
+        
+        // 메타데이터 로드 이벤트 (총 재생시간 설정)
+        const handleLoadedMetadata = () => {
+            setDuration(audio.duration);
+        };
+        
+        // 재생 준비 완료 이벤트
+        const handleCanPlay = () => {
+            setDuration(audio.duration);
+        };
 
         audio.addEventListener('play', handlePlay);
         audio.addEventListener('pause', handlePause);
         audio.addEventListener('error', handleError);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('canplay', handleCanPlay);
 
         return () => {
             audio.removeEventListener('play', handlePlay);
             audio.removeEventListener('pause', handlePause);
             audio.removeEventListener('error', handleError);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('canplay', handleCanPlay);
         };
     }, [setToastState]);
+
+    // 볼륨 초기 설정
+    useEffect(() => {
+        audioRef.current.volume = volume;
+    }, [volume]);
 
     const value = useMemo(() => ({
         currentSong,
@@ -362,6 +394,13 @@ const playSong = useCallback(async (song) => {
         audioRef,
         repeatMode,
         setRepeatMode,
+        // 볼륨 관련
+        volume,
+        setVolumeLevel,
+        // 시간 탐색 관련
+        currentTime,
+        duration,
+        seekTo,
     }), [
         currentSong,
         isPlaying,
@@ -376,6 +415,11 @@ const playSong = useCallback(async (song) => {
         replacePlaylist,
         clearPlaylist,
         repeatMode,
+        volume,
+        setVolumeLevel,
+        currentTime,
+        duration,
+        seekTo,
     ]);
 
     return (

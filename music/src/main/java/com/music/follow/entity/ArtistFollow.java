@@ -31,7 +31,7 @@ public class ArtistFollow {
     @JoinColumn(name = "artist_id")
     private Artist artist;
 
-    @Column(name = "followed_at", nullable = false)
+    @Column(name = "followed_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime followedAt;
 
     public ArtistFollow() {}
@@ -41,6 +41,13 @@ public class ArtistFollow {
         this.user = user;
         this.artist = artist;
         this.followedAt = followedAt;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.followedAt == null) {
+            this.followedAt = LocalDateTime.now();
+        }
     }
 
     // Lombok 사용 시 @Getter/@Setter 추가

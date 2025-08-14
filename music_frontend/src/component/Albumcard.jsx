@@ -45,7 +45,7 @@ const Albumcard = ({ album, onToggleLike }) => {
         </div>
         <div className="playlist-info">
           <h4 className="playlist-title">{title}</h4>
-          <p className="playlist-artist">{artist}</p>
+          <p className="playlist-artist">{typeof artist === 'object' ? artist?.name : artist}</p>
         </div>
       </Link>
       <div className="playlist-actions">

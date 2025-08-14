@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class PlaylistDto {
@@ -18,7 +17,6 @@ public class PlaylistDto {
     @Builder
     public static class Request {
         private String title;
-        private boolean isPublic;
         private Long userId;
     }
 
@@ -29,7 +27,6 @@ public class PlaylistDto {
     public static class Response {
         private Long id;
         private String title;
-        private boolean isPublic;
         private LocalDateTime createdAt;
         private UserInfo user;
 
@@ -37,8 +34,6 @@ public class PlaylistDto {
             return Response.builder()
                     .id(playlist.getId())
                     .title(playlist.getTitle())
-                    .isPublic(playlist.isPublic())
-                    .createdAt(playlist.getCreatedAt())
                     .user(UserInfo.from(playlist.getUser()))
                     .build();
         }
@@ -51,15 +46,12 @@ public class PlaylistDto {
     public static class SimpleResponse {
         private Long id;
         private String title;
-        private boolean isPublic;
         private LocalDateTime createdAt;
 
         public static SimpleResponse from(Playlist playlist) {
             return SimpleResponse.builder()
                     .id(playlist.getId())
                     .title(playlist.getTitle())
-                    .isPublic(playlist.isPublic())
-                    .createdAt(playlist.getCreatedAt())
                     .build();
         }
     }
@@ -79,14 +71,7 @@ public class PlaylistDto {
         }
     }
     
-    @Getter @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class VisibilityRequest {
-        @JsonProperty("isPublic")
-        private boolean isPublic;   // true = 공개, false = 비공개
-    }
+
 
     
 }

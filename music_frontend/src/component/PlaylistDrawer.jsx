@@ -84,15 +84,6 @@ const PlaylistDrawer = ({
                 </button>
                 <span className="interaction-count">{item.likeCount}</span>
               </div>
-              <div className="interaction-item">
-                <button
-                  onClick={() => onToggleFollow && onToggleFollow(item.id)}
-                  className={`interaction-toggle-btn ${item.isFollowed ? 'followed' : ''}`}
-                >
-                  {item.isFollowed ? <FaUserCheck /> : <FaUserPlus />}
-                </button>
-                <span className="interaction-count">{item.followerCount}</span>
-              </div>
             </div>
           </div>
         );

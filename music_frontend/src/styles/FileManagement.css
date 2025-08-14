@@ -91,6 +91,55 @@
   margin-top: 8px;
 }
 
+/* 곡 정보 입력 필드 스타일 */
+.file-management-song-info {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.file-management-input-group {
+  margin-bottom: 16px;
+}
+
+.file-management-input-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: #2d3748;
+}
+
+.file-management-text-input,
+.file-management-select-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.file-management-text-input:focus,
+.file-management-select-input:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.file-management-text-input::placeholder {
+  color: #a0aec0;
+}
+
+.file-management-select-input {
+  cursor: pointer;
+}
+
+.file-management-select-input option {
+  padding: 8px;
+}
+
 .file-management-preview-buttons {
   display: flex;
   gap: 12px;
@@ -294,6 +343,11 @@
   }
 
   .file-management-preview-audio {
+    max-width: 100%;
+  }
+
+  .file-management-text-input,
+  .file-management-select-input {
     max-width: 100%;
   }
 

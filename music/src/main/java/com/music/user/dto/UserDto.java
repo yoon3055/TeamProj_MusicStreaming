@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+
 
 @Schema(description = "회원")
 @Data
@@ -39,8 +39,7 @@ public class UserDto {
     @Schema(description = "사용자 역할")
     private Role role;
     
-    @Schema(description = "가입일")
-    private LocalDateTime createdAt;
+
 
     // List<Entity> -> List<DTO> 변환을 위함
     public UserDto(User user) {
@@ -51,7 +50,7 @@ public class UserDto {
         this.profileImage = user.getProfileImage();
         this.refreshToken = user.getRefreshToken();
         this.role = user.getRole();
-        this.createdAt = user.getCreatedAt();
+
     }
 
     public User updateUser(long id, UserDto userDto) {

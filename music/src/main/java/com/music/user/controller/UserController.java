@@ -93,6 +93,68 @@ public class UserController {
         }
         return ResponseEntity.ok(FAIL);
     }
+    // :흰색_확인_표시: JWT 토큰 검증
+    @Operation(summary = "JWT 토큰 검증", description = "JWT 토큰의 유효성을 검증하고 사용자 정보를 반환")
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verify(@RequestAttribute("email") String email) {
+        System.out.println("=== [USER_CONTROLLER] VERIFY METHOD CALLED ===");
+        System.out.println("[USER_CONTROLLER] Received email from RequestAttribute: " + email);
+        
+        try {
+            System.out.println("[USER_CONTROLLER] Token verification started for email: " + email);
+            
+            // 이메일 파라미터 검증
+            if (email == null || email.trim().isEmpty()) {
+                System.out.println("[USER_CONTROLLER] Email is null or empty");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "이메일 정보가 없습니다.");
+                errorResponse.put("error", "EMAIL_MISSING");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+            
+            UserDto user = userService.getUser(email);
+            System.out.println("[USER_CONTROLLER] User lookup result: " + (user != null ? "found" : "not found"));
+            
+            if (user == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "사용자를 찾을 수 없습니다.");
+                errorResponse.put("error", "USER_NOT_FOUND");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "토큰이 유효합니다.");
+            
+            // 사용자 정보를 안전하게 구성
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("id", user.getId());
+            userInfo.put("email", user.getEmail());
+            userInfo.put("nickname", user.getNickname() != null ? user.getNickname() : "");
+            userInfo.put("profileImage", user.getProfileImage());
+            userInfo.put("role", user.getRole() != null ? user.getRole() : "USER");
+            userInfo.put("isSubscribed", false); // 기본값 설정
+            
+            response.put("user", userInfo);
+            response.put("subscriptionDetails", null); // 기본값 설정
+            
+            System.out.println("[USER_CONTROLLER] Token verification successful for: " + email);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("[USER_CONTROLLER] Token verification failed for email: " + email);
+            System.err.println("[USER_CONTROLLER] Error details: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "토큰 검증 중 오류가 발생했습니다: " + e.getMessage());
+            errorResponse.put("error", "VERIFICATION_ERROR");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
     // :흰색_확인_표시: 내 프로필 조회
     @Operation(summary = "내 정보 조회", description = "JWT 토큰 기반 사용자 정보 반환")
     @GetMapping("/me")
@@ -117,10 +179,20 @@ public class UserController {
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody UserDto userDto,
                                              @RequestAttribute("email") String email) throws Exception {
+        // 이메일 정보를 userDto에 설정 (서비스에서 사용하기 위해)
+        userDto.setEmail(email);
+        
         Map<String, Object> resultMap = userService.updateUser(userDto, email);
-        return resultMap.get("result").equals(NONE)
-                ? ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(NONE)
-                : ResponseEntity.ok(SUCCESS);
+        
+        if (resultMap.get("result").equals(NONE)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(NONE);
+        } else {
+            System.out.println("프로필 업데이트 성공: " + email);
+            if (userDto.getProfileImage() != null) {
+                System.out.println("프로필 이미지도 업데이트됨");
+            }
+            return ResponseEntity.ok(SUCCESS);
+        }
     }
     // :흰색_확인_표시: 비밀번호 변경
     @Operation(summary = "비밀번호 변경", description = "기존 비밀번호 기반 변경")

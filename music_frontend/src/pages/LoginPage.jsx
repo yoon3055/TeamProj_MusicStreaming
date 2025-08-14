@@ -50,6 +50,33 @@ const LoginPage = () => {
   useEffect(() => {
     console.log('[LOGIN_PAGE] Checking for OAuth redirect');
     handleOAuth2Redirect();
+    
+    // 크롬 비밀번호 경고창 비활성화
+    const disablePasswordManager = () => {
+      // 모든 password input 필드에 속성 추가
+      const passwordInputs = document.querySelectorAll('input[type="password"]');
+      passwordInputs.forEach(input => {
+        input.setAttribute('autocomplete', 'new-password');
+        input.setAttribute('data-lpignore', 'true');
+        input.setAttribute('data-form-type', 'other');
+      });
+      
+      // 모든 email input 필드에 속성 추가
+      const emailInputs = document.querySelectorAll('input[type="email"]');
+      emailInputs.forEach(input => {
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('data-lpignore', 'true');
+      });
+    };
+    
+    // DOM이 로드된 후 실행
+    setTimeout(disablePasswordManager, 100);
+    
+    // 폼 변경 시에도 실행
+    const observer = new MutationObserver(disablePasswordManager);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => observer.disconnect();
   }, [handleOAuth2Redirect]);
 
   return (
@@ -86,7 +113,7 @@ const LoginPage = () => {
           }}
         >
           {({ isSubmitting }) => (
-            <Form className="login-form">
+            <Form className="login-form" autoComplete="off">
               <h2 className="form-title">로그인</h2>
 
               <div className="form-group">
@@ -95,6 +122,9 @@ const LoginPage = () => {
                   name="email"
                   placeholder="이메일"
                   className="form-input"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
                 />
                 <ErrorMessage name="email" component="div" className="form-error" />
               </div>
@@ -105,6 +135,10 @@ const LoginPage = () => {
                   name="password"
                   placeholder="비밀번호"
                   className="form-input"
+                  autoComplete="new-password"
+                  data-lpignore="true"
+                  data-form-type="other"
+                  data-1p-ignore="true"
                 />
                 <ErrorMessage name="password" component="div" className="form-error" />
               </div>

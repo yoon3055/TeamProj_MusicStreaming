@@ -42,43 +42,27 @@ public class PlaylistService {
         Playlist p = Playlist.builder()
                 .user(user)
                 .title(req.getTitle())
-                .isPublic(req.isPublic())
-                .createdAt(java.time.LocalDateTime.now())  // created_at 명시적 설정
                 .build();
         playlistRepo.save(p);
         return PlaylistDto.Response.from(p);
     }
 
-    /* 2) 공개/비공개 상태 변경 */
-    @Transactional
-    public PlaylistDto.Response updateVisibility(Long playlistId, String email, boolean isPublic) {
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + email));
-        
-        Playlist playlist = playlistRepo.findById(playlistId)
-                .orElseThrow(() -> new EntityNotFoundException("플레이리스트를 찾을 수 없습니다: " + playlistId));
-        
-        // 플레이리스트 소유자 확인
-        if (!playlist.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("플레이리스트를 수정할 권한이 없습니다.");
-        }
-        
-        System.out.println("변경 전 isPublic: " + playlist.isPublic());
-        System.out.println("새로운 isPublic 값: " + isPublic);
-        
-        playlist.setPublic(isPublic);
-        System.out.println("변경 후 isPublic: " + playlist.isPublic());
-        
-        Playlist savedPlaylist = playlistRepo.save(playlist);
-        System.out.println("저장 후 isPublic: " + savedPlaylist.isPublic());
-        
-        return PlaylistDto.Response.from(playlist);
-    }
+
 
     /* 3) 내 목록 */
     @Transactional(readOnly = true)
     public List<PlaylistDto.SimpleResponse> listMyPlaylists(Long userId) {
         return playlistRepo.findByUserId(userId).stream()
+                .map(PlaylistDto.SimpleResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    /* 3-1) 이메일 기반 내 목록 조회 */
+    @Transactional(readOnly = true)
+    public List<PlaylistDto.SimpleResponse> listMyPlaylistsByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + email));
+        return playlistRepo.findByUserId(user.getId()).stream()
                 .map(PlaylistDto.SimpleResponse::from)
                 .collect(Collectors.toList());
     }
@@ -100,7 +84,6 @@ public class PlaylistService {
                 .orElseThrow(() ->
                         new EntityNotFoundException("플레이리스트가 없습니다: " + playlistId));
         p.setTitle(req.getTitle());
-        p.setPublic(req.isPublic());
         return PlaylistDto.Response.from(p);
     }
 
@@ -155,29 +138,22 @@ public class PlaylistService {
     	songRepo.deleteByPlaylistIdAndSongId(playlistId, songId);
     }
     
-    /* 9) 공개 비공개 전환*/
-    @Transactional
-    public PlaylistDto.Response changeVisibility(Long id, boolean isPublic) {
-        Playlist p = playlistRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("플레이리스트 없음: " + id));
-        p.setPublic(isPublic);
-        return PlaylistDto.Response.from(p);
-    }
+
     
-    /* 10) 공개 플레이리스트 검색 + 페이징 */
+    /* 9) 플레이리스트 검색 + 페이징 */
     @Transactional(readOnly = true)
     public Page<PlaylistDto.SimpleResponse> searchPublic(String keyword, Pageable pageable) {
-        System.out.println("=== 공개 플레이리스트 검색 디버깅 ===");
+        System.out.println("=== 플레이리스트 검색 디버깅 ===");
         System.out.println("검색 키워드: " + keyword);
         System.out.println("페이지 정보: " + pageable);
         
         Page<Playlist> results = playlistRepo
-                .findByTitleContainingIgnoreCaseAndIsPublicTrue(keyword, pageable);
+                .findByTitleContainingIgnoreCase(keyword, pageable);
         
         System.out.println("검색 결과 개수: " + results.getTotalElements());
         System.out.println("검색된 플레이리스트들:");
         results.getContent().forEach(playlist -> {
-            System.out.println("- ID: " + playlist.getId() + ", 제목: " + playlist.getTitle() + ", 공개여부: " + playlist.isPublic());
+            System.out.println("- ID: " + playlist.getId() + ", 제목: " + playlist.getTitle());
         });
         
         return results.map(PlaylistDto.SimpleResponse::from);

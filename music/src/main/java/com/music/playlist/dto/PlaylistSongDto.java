@@ -47,6 +47,7 @@ public class PlaylistSongDto {
         private Long id;
         private String title;
         private String artist;
+        private String audioUrl;
         private Integer duration;
 
         public static SongInfo from(Song song) {
@@ -54,7 +55,8 @@ public class PlaylistSongDto {
                     song.getId(),
                     song.getTitle(),
                     song.getArtist().getName(),
-                    song.getDuration()
+                    song.getAudioUrl(),
+                    0
             );
         }
     }

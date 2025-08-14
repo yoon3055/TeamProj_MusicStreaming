@@ -36,8 +36,11 @@ const Header = () => {
       <header className="app-header">
         <div className="header-left">
           <Link to="/" className="header-logo-link">
-            <img src="/images/logo.png" alt="Logo" className="header-logo-image" />
-            <h2 className="header-app-title">Music App</h2>
+            <div className="header-logo-container">
+              <div className="music-icon">🎵</div>
+              <h2 className="header-app-title">Frutify</h2>
+              <div className="streaming-badge">STREAMING</div>
+            </div>
           </Link>
         </div>
 

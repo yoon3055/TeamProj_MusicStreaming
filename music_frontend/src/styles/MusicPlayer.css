@@ -19,18 +19,19 @@
     height: 120px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center; /* 재생버튼을 가운데로 */
     padding: 0 24px;
-    background-color: transparent;
+    background-color: white; /* 하얀색 배경 */
     box-shadow: 0 0 14px rgba(0, 0, 0, 0.25);
     border-radius: 14px 14px 0 0;
     z-index: 1000;
 }
 
 .music-player-left {
+    position: absolute;
+    left: 24px;
     display: flex;
     align-items: center;
-    flex-basis: 35%;
     min-width: 300px;
 }
 
@@ -138,35 +139,15 @@
     accent-color: #4B0082;
 }
 
-/* 가사 표시 영역 스타일 수정 */
-.music-player-lyrics-box {
-    background: rgba(200, 200, 200, 0.2);
-    color: #4B0082;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 1 200px; /* flex-grow를 0으로 설정하여 공간을 덜 차지하도록 함 */
-    max-width: 300px; /* 최대 너비 설정 */
-   
-}
 
-.music-player-lyrics-box:empty {
-    color: transparent;
-}
 
 .music-player-extra-controls {
+    position: absolute;
+    right: 24px;
     display: flex;
     align-items: center;
     gap: 16px;
-    flex-basis: 25%;
     min-width: 200px;
-    justify-content: flex-end;
 }
 
 .volume-control-wrapper {
@@ -269,7 +250,7 @@
     right: 20px;
     width: 480px;
     max-height: 600px;
-    background-color: transparent;
+    background-color: white; /* 하얀색 배경 */
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 18px rgba(0, 0, 0, 0.5);
     border-radius: 12px;

@@ -33,8 +33,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // 특정 사용자가 특정 기간 내에 '좋아요'를 표시한 곡들을 조회하는 메서드
     List<Like> findByUserIdAndLikedAtBetween(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime);
-    
-    long countBySong_AlbumId(Long albumId);
 
     long countBySong_ArtistId(Long artistId);
 

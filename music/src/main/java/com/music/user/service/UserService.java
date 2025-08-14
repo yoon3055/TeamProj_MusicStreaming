@@ -350,18 +350,25 @@ public class UserService {
             // 유저가 있는것
             if(user.isPresent()) {
                 System.out.println("===== updateUser =====");
+                User existingUser = user.get();
     
-                // 사용자가 입력한 정보를 가져오는것
-                UserDto newUserDto = user.get().toDto();
-    
-                // 사용자가 입력한 정보를 해당 유저에 수정하는것
-                newUserDto.setNickname(userDto.getNickname());
-                newUserDto.setProfileImage(userDto.getProfileImage());
-    
-                userRepository.save(newUserDto.toEntity());
+                // 기존 사용자 정보를 유지하면서 필요한 필드만 업데이트
+                if (userDto.getNickname() != null && !userDto.getNickname().trim().isEmpty()) {
+                    existingUser.setNickname(userDto.getNickname());
+                    System.out.println("닉네임 업데이트: " + userDto.getNickname());
+                }
                 
-                resultMap.put("result", newUserDto);
+                if (userDto.getProfileImage() != null && !userDto.getProfileImage().trim().isEmpty()) {
+                    existingUser.setProfileImage(userDto.getProfileImage());
+                    System.out.println("프로필 이미지 업데이트 완료");
+                }
+    
+                // 업데이트된 사용자 정보 저장
+                User savedUser = userRepository.save(existingUser);
+                
+                resultMap.put("result", savedUser.toDto());
             } else {
+                System.out.println("updateUser: " + email + "에 해당하는 사용자 없음");
                 resultMap.put("result", NONE);
             }
             return resultMap;

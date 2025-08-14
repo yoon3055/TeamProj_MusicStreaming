@@ -23,6 +23,9 @@ public class SongUploadDto {
     @Schema(description = "장르")
     private String genre;
 
+    @Schema(description = "아티스트 ID", example = "1")
+    private Long artistId;
+
     @Schema(description = "업로드한 관리자 이메일")
     private String uploadedBy;
 }

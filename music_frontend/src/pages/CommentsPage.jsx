@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import '../styles/CommentsPage.css';
 
 // 개발자 모드 여부 환경변수로 읽기
-const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
+
 
 // 더미 데이터 (개발자 모드용)
 const dummyComments = [
@@ -118,7 +118,7 @@ const CommentsPage = () => {
 
   // 댓글 리스트 조회
   const fetchComments = async (page = 1, q = '') => {
-    if (DEV_MODE) {
+    {
       // 개발자 모드 - 더미 데이터 세팅
       setLoading(true);
       setError(null);
@@ -198,7 +198,7 @@ const CommentsPage = () => {
 
   // 서버와 동기화
   const syncWithServer = async () => {
-    if (DEV_MODE) {
+    {
       setIsSyncing(true);
       setTimeout(() => {
         fetchComments(currentPage, searchTerm);
@@ -226,7 +226,7 @@ const CommentsPage = () => {
 
   // 댓글 삭제
   const handleDelete = async (commentId) => {
-    if (DEV_MODE) {
+    {
       if (!window.confirm('댓글을 삭제하시겠습니까? (개발자 모드에서는 실제로 삭제되지 않습니다)')) return;
       window.showToast?.('개발자 모드에서는 실제 댓글 삭제가 불가능합니다.', 'info');
       return;
@@ -262,7 +262,7 @@ const CommentsPage = () => {
 
   // 편집 시작
   const startEdit = (id, content) => {
-    if (DEV_MODE) {
+    {
       window.showToast?.('개발자 모드에서는 댓글 수정이 불가능합니다.', 'info');
       return;
     }
@@ -283,7 +283,7 @@ const CommentsPage = () => {
       return;
     }
 
-    if (DEV_MODE) {
+    {
       window.showToast?.('개발자 모드에서는 댓글 수정이 불가능합니다.', 'info');
       return;
     }

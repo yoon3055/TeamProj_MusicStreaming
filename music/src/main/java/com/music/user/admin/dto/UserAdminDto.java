@@ -26,7 +26,6 @@ public class UserAdminDto {
                     .email(user.getEmail())
                     .nickname(user.getNickname())
                     .role(user.getRole().name()) // ENUM → String
-                    .createdAt(user.getCreatedAt())
                     .build();
         }
     }

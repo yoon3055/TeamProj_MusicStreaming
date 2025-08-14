@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { AuthContext } from './AuthContext';
 import axios from 'axios';
 
-// 개발 모드 설정
-const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
+// 개발 모드 설정 (완전히 비활성화)
+const DEV_MODE = false;
 
 // 개발 모드에서 사용할 목업 데이터
 const mockUser = {
@@ -146,18 +146,36 @@ export const AuthProvider = ({ children }) => {
       try {
         console.log('[AUTH_PROVIDER] Verifying token with server...');
         const response = await apiClient.get('/api/users/verify');
-        const { user: userData, subscriptionDetails } = response.data;
-        console.log('[AUTH_PROVIDER] Token verified, user data:', userData);
         
-        // 서버에서 받은 최신 정보로 상태 업데이트
-        setUser({ ...userData, token });
-        setIsSubscribed(userData.isSubscribed || false);
-        setSubscriptionDetails(subscriptionDetails || null);
-        setProfileBgImage(userData.profileBgImage || '/images/K-045.jpg');
-        localStorage.setItem('user', JSON.stringify(userData));
+        // 응답 데이터 구조 확인
+        if (response.data && response.data.success !== false) {
+          const { user: userData, subscriptionDetails } = response.data;
+          console.log('[AUTH_PROVIDER] Token verified, user data:', userData);
+          
+          // 서버에서 받은 최신 정보로 상태 업데이트
+          setUser({ ...userData, token });
+          setIsSubscribed(userData.isSubscribed || false);
+          setSubscriptionDetails(subscriptionDetails || null);
+          setProfileBgImage(userData.profileBgImage || '/images/K-045.jpg');
+          localStorage.setItem('user', JSON.stringify(userData));
+        } else {
+          console.warn('[AUTH_PROVIDER] Server returned unsuccessful response:', response.data);
+          // 로컬 데이터 유지
+        }
       } catch (error) {
         console.error('[AUTH_PROVIDER] Token verification failed:', error.response?.data || error.message);
-        // 서버 검증 실패 시 로컬 데이터만 유지하고 로딩 완료
+        
+        // 500 에러나 네트워크 오류 시 로컬 데이터 유지하고 계속 진행
+        if (error.response?.status === 500) {
+          console.warn('[AUTH_PROVIDER] Server error (500) - 로컬 데이터로 계속 진행');
+        } else if (error.response?.status === 401) {
+          // 401 Unauthorized인 경우에만 로그아웃 처리
+          console.warn('[AUTH_PROVIDER] Token expired or invalid - logging out');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
+        // 다른 오류는 무시하고 로컬 데이터 유지
       } finally {
         setLoading(false);
       }
@@ -275,6 +293,7 @@ export const AuthProvider = ({ children }) => {
       loading,
       profileBgImage,
       setProfileBgImage,
+      apiClient,
     }),
     [user, isSubscribed, subscriptionDetails, login, handleSocialLoginToken, logout, loading, profileBgImage]
   );

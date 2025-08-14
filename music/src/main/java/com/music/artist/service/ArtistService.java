@@ -8,7 +8,6 @@ import com.music.follow.repository.ArtistFollowRepository;
 import com.music.user.entity.User;
 import com.music.user.repository.UserRepository;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +26,13 @@ public class ArtistService {
 
     // ✅ 아티스트 생성
     public ArtistDto.Response createArtist(ArtistDto.Request request) {
-        Artist artist = new Artist(
-                request.getName(),
-                request.getProfileImage(),
-                request.getGenre(),
-                request.getDescription(),
-                LocalDateTime.now()
-        );
+        Artist artist = Artist.builder()
+                .name(request.getName())
+                .profileImage(request.getProfileImage())
+                .genre(request.getGenre())
+                .description(request.getDescription())
+                .createdAt(LocalDateTime.now())
+                .build();
         artistRepository.save(artist);
         return ArtistDto.Response.from(artist);
     }
@@ -85,10 +84,15 @@ public class ArtistService {
                     return false; // 좋아요 해제됨
                 })
                 .orElseGet(() -> {
+                    LocalDateTime now = LocalDateTime.now();
+                    System.out.println("=== 디버깅: ArtistFollow 생성 시작 ===");
+                    System.out.println("followedAt 값: " + now);
                     ArtistFollow follow = ArtistFollow.builder()
                             .user(user)
                             .artist(artist)
+                            .followedAt(now)
                             .build();
+                    System.out.println("생성된 ArtistFollow의 followedAt: " + follow.getFollowedAt());
                     artistFollowRepository.save(follow);
                     artist.setLikeCount(artist.getLikeCount() + 1);
                     return true; // 좋아요 추가됨

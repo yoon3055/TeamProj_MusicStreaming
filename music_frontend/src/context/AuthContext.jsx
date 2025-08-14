@@ -11,6 +11,7 @@ export const AuthContext = React.createContext({
   loading: false,
   profileBgImage: '/images/K-045.jpg',
   setProfileBgImage: () => {},
+  apiClient: null,
 });
 
 export const useAuth = () => React.useContext(AuthContext);

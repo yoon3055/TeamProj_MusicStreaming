@@ -30,7 +30,7 @@ public class PlaylistController {
         try {
             System.out.println("=== 플레이리스트 생성 디버깅 ===");
             System.out.println("JWT에서 추출한 이메일: " + email);
-            System.out.println("요청 데이터 - 제목: " + req.getTitle() + ", 공개여부: " + req.isPublic());
+            System.out.println("요청 데이터 - 제목: " + req.getTitle());
 
             PlaylistDto.Response response = playlistService.createPlaylist(email, req);
             System.out.println("플레이리스트 생성 성공: " + response.getId());
@@ -43,11 +43,22 @@ public class PlaylistController {
     }
 
     /** 2) 내 플레이리스트 목록 조회 */
-    @Operation(summary = "내 플레이리스트 목록 조회", description = "userId를 기준으로 사용자가 생성한 플레이리스트 목록을 반환합니다.")
+    @Operation(summary = "내 플레이리스트 목록 조회", description = "JWT에서 추출한 이메일을 기준으로 사용자가 생성한 플레이리스트 목록을 반환합니다.")
     @GetMapping
     public ResponseEntity<List<PlaylistDto.SimpleResponse>> listMy(
-            @RequestParam Long userId) {
-        return ResponseEntity.ok(playlistService.listMyPlaylists(userId));
+            @RequestAttribute String email) {  // JWT에서 추출한 이메일
+        try {
+            System.out.println("=== 내 플레이리스트 목록 조회 디버깅 ===");
+            System.out.println("JWT에서 추출한 이메일: " + email);
+            
+            List<PlaylistDto.SimpleResponse> playlists = playlistService.listMyPlaylistsByEmail(email);
+            System.out.println("조회된 플레이리스트 개수: " + playlists.size());
+            return ResponseEntity.ok(playlists);
+        } catch (Exception e) {
+            System.err.println("플레이리스트 목록 조회 중 에러 발생: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     /** 3) 플레이리스트 상세 조회 */
@@ -58,29 +69,7 @@ public class PlaylistController {
         return ResponseEntity.ok(playlistService.getPlaylist(id));
     }
 
-    /** 4) 플레이리스트 공개/비공개 상태 변경 */
-    @Operation(summary = "플레이리스트 공개/비공개 변경", description = "플레이리스트의 공개 여부를 수정합니다. JWT의 이메일을 기준으로 사용자 검증을 수행합니다.")
-    @PutMapping("/{id}/visibility")
-    public ResponseEntity<PlaylistDto.Response> updateVisibility(
-            @RequestAttribute String email,  // JWT에서 추출한 이메일
-            @PathVariable Long id,
-            @RequestBody PlaylistDto.VisibilityRequest req) {
-        try {
-            System.out.println("=== 플레이리스트 공개/비공개 변경 디버깅 ===");
-            System.out.println("JWT에서 추출한 이메일: " + email);
-            System.out.println("플레이리스트 ID: " + id + ", 새 공개상태: " + req.isPublic());
-
-            PlaylistDto.Response response = playlistService.updateVisibility(id, email, req.isPublic());
-            System.out.println("공개/비공개 변경 성공: " + response.getId());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            System.err.println("공개/비공개 변경 중 에러 발생: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    /** 5) 플레이리스트 수정 */
+    /** 4) 플레이리스트 수정 */
     @Operation(summary = "플레이리스트 수정", description = "플레이리스트 제목, 설명 등을 수정합니다.")
     @PutMapping("/{id}")
     public ResponseEntity<PlaylistDto.Response> update(

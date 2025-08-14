@@ -7,6 +7,7 @@ import '../styles/UserProfilePage.css';
 const UserProfilePage = () => {
   const {
     user,
+    setUser, // setUser 함수 추가
     isSubscribed,
     setIsSubscribed,
     subscriptionDetails,
@@ -87,13 +88,72 @@ const UserProfilePage = () => {
   // 프로필 업데이트 처리
   const handleUpdate = async (e) => {
     e.preventDefault();
+    
+    if (!jwt) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
     try {
-      // 실제 백엔드 연동 로직 (현재는 목업)
-      setProfile({ ...profile, nickname });
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`
+      };
+
+      // 닉네임 업데이트
+      if (nickname && nickname !== profile.nickname) {
+        const nicknameResponse = await fetch('http://localhost:8080/api/users', {
+          method: 'PUT',
+          headers: headers,
+          body: JSON.stringify({
+            nickname: nickname,
+            email: user.email
+          })
+        });
+
+        if (!nicknameResponse.ok) {
+          throw new Error('닉네임 업데이트에 실패했습니다.');
+        }
+      }
+
+      // 비밀번호 변경 (비밀번호가 입력된 경우에만)
+      if (password && password.trim() !== '') {
+        const passwordResponse = await fetch('http://localhost:8080/api/users/password', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            newPassword: password,
+            // 현재 비밀번호는 임시로 빈 값으로 설정 (실제로는 현재 비밀번호 입력 필드가 필요)
+            currentPassword: ''
+          })
+        });
+
+        if (!passwordResponse.ok) {
+          throw new Error('비밀번호 변경에 실패했습니다.');
+        }
+      }
+
+      // 성공 시 로컬 상태 업데이트
+      const updatedProfile = { ...profile, nickname };
+      setProfile(updatedProfile);
       setEditMode(false);
       setPassword(''); // 비밀번호 초기화
-      alert('프로필이 업데이트되었습니다!');
+      
+      // AuthContext의 user 정보도 업데이트 (닉네임이 변경된 경우)
+      if (nickname && nickname !== profile.nickname) {
+        const updatedUser = { ...user, nickname };
+        setUser(updatedUser);
+        // localStorage의 user 정보도 업데이트
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+      
+      alert('프로필이 성공적으로 업데이트되었습니다!');
+      
+      // 프로필 정보 다시 가져오기
+      fetchProfile();
+      
     } catch (err) {
+      console.error('Profile update error:', err);
       alert('업데이트 실패: ' + err.message);
     }
   };
@@ -127,18 +187,143 @@ const UserProfilePage = () => {
   };
 
   // 프로필 이미지 업로드 처리
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfileBgImage(reader.result); // AuthContext에 이미지 저장
-      // 로컬 프로필 상태에도 업데이트 (즉시 반영을 위해)
-      setProfile(prev => ({ ...prev, profileImageUrl: reader.result }));
-      setError(null);
-    };
-    reader.readAsDataURL(file);
+    // 파일 크기 체크 (5MB 제한)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('파일 크기는 5MB 이하여야 합니다.');
+      return;
+    }
+
+    // 파일 타입 체크
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    if (!jwt) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      console.log('프로필 이미지 업로드 시작');
+      console.log('사용자 이메일:', user.email);
+      console.log('JWT 토큰 존재:', !!jwt);
+      console.log('파일 크기:', file.size);
+      
+      // FileReader를 사용하여 Base64로 직접 변환 (CSP 에러 방지)
+      const reader = new FileReader();
+      
+      reader.onload = async (e) => {
+        try {
+          // 이미지 크기 최적화를 위한 캔버스 처리
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          
+          img.onload = async () => {
+            try {
+              // 이미지 크기 조정 (최대 300x300)
+              const maxSize = 300;
+              let { width, height } = img;
+              
+              if (width > height) {
+                if (width > maxSize) {
+                  height = (height * maxSize) / width;
+                  width = maxSize;
+                }
+              } else {
+                if (height > maxSize) {
+                  width = (width * maxSize) / height;
+                  height = maxSize;
+                }
+              }
+              
+              canvas.width = width;
+              canvas.height = height;
+              
+              // 캔버스에 이미지 그리기
+              ctx.drawImage(img, 0, 0, width, height);
+              
+              // 압축된 이미지를 Base64로 변환 (품질 0.3 - 더 높은 압축률)
+              const imageDataUrl = canvas.toDataURL('image/jpeg', 0.3);
+              
+              console.log('이미지 데이터 크기:', imageDataUrl.length);
+              
+              // 백엔드 API로 프로필 이미지 업데이트
+              const requestBody = {
+                email: user.email,
+                profileImage: imageDataUrl
+              };
+              
+              console.log('백엔드로 전송할 데이터:', {
+                email: requestBody.email,
+                profileImageLength: requestBody.profileImage.length
+              });
+              
+              const response = await fetch('http://localhost:8080/api/users', {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${jwt}`
+                },
+                body: JSON.stringify(requestBody)
+              });
+
+              console.log('백엔드 응답 상태:', response.status);
+              console.log('백엔드 응답 OK:', response.ok);
+
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('백엔드 에러 응답:', errorText);
+                throw new Error(`프로필 이미지 업데이트에 실패했습니다. 상태: ${response.status}`);
+              }
+
+              const responseText = await response.text();
+              console.log('백엔드 성공 응답:', responseText);
+
+              // 성공 시 로컬 상태 업데이트
+              setProfileBgImage(imageDataUrl); // AuthContext에 이미지 저장
+              setProfile(prev => ({ ...prev, profileImageUrl: imageDataUrl })); // 로컬 프로필 상태 업데이트
+              
+              // AuthContext의 user 정보도 업데이트
+              const updatedUser = { ...user, profileImage: imageDataUrl };
+              setUser(updatedUser);
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+              
+              setError(null);
+              alert('프로필 이미지가 성공적으로 변경되었습니다!');
+              
+            } catch (err) {
+              console.error('Profile image update error:', err);
+              alert('프로필 이미지 업데이트 실패: ' + err.message);
+            }
+          };
+          
+          // CSP 에러를 피하기 위해 Base64 데이터 URL 직접 사용
+          img.src = e.target.result;
+          
+        } catch (err) {
+          console.error('Image processing error:', err);
+          alert('이미지 처리 중 오류가 발생했습니다.');
+        }
+      };
+      
+      reader.onerror = () => {
+        console.error('File reading error');
+        alert('파일을 읽는 중 오류가 발생했습니다.');
+      };
+      
+      // 파일을 Base64로 읽기
+      reader.readAsDataURL(file);
+      
+    } catch (err) {
+      console.error('File reading error:', err);
+      alert('파일을 읽는 중 오류가 발생했습니다.');
+    }
   };
 
   if (loading || authLoading) {
@@ -219,7 +404,23 @@ const UserProfilePage = () => {
 
                 <div className="user-profile-section">
                   <h3 className="user-profile-section-title">프로필 이미지 변경</h3>
-                  <input type="file" accept="image/*" onChange={handleImageUpload} />
+                  <div className="profile-image-upload-container">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleImageUpload} 
+                      id="profile-image-input"
+                      style={{ display: 'none' }}
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => document.getElementById('profile-image-input').click()}
+                      className="btn-default"
+                    >
+                      프로필 이미지 변경
+                    </button>
+                    <p className="upload-help-text">JPG, PNG 파일만 업로드 가능합니다.</p>
+                  </div>
                 </div>
 
                 <div className="user-profile-section">

@@ -35,7 +35,17 @@ public class MusicUploadController {
             @RequestAttribute("email") String email,
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title,
-            @RequestParam(value = "genre", required = false) String genre) {
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "artistId", required = false) Long artistId) {
+        
+        // 받은 파라미터들을 로그로 출력
+        log.info("=== 음악 업로드 파라미터 확인 ===");
+        log.info("Email: {}", email);
+        log.info("File name: {}", file != null ? file.getOriginalFilename() : "null");
+        log.info("Title: '{}'", title);
+        log.info("Genre: '{}'", genre);
+        log.info("Artist ID: {}", artistId);
+        log.info("================================");
         
         Map<String, Object> response = new HashMap<>();
         
@@ -85,6 +95,7 @@ public class MusicUploadController {
                     .file(file)
                     .title(title)
                     .genre(genre)
+                    .artistId(artistId)
                     .uploadedBy(email)
                     .build();
 

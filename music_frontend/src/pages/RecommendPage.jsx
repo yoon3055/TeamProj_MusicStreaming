@@ -5,6 +5,9 @@ import FilterButtons from '../component/FilterButtons';
 import PlaylistDrawer from '../component/PlaylistDrawer';
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 import { loadMusicListFromDB } from '../services/indexDB';
+import { artistApi } from '../api/artistApi';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 import '../styles/RecommendPage.css';
 
@@ -251,6 +254,8 @@ const BACKGROUND_SCHEMES = [
 
 const RecommendPage = () => {
   const { playSong } = useContext(MusicPlayerContext);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [filterHighQuality, setFilterHighQuality] = useState(false);
   const [genreFilter, setGenreFilter] = useState('');
@@ -260,7 +265,7 @@ const RecommendPage = () => {
 
   const [todayAlbums, setTodayAlbums] = useState([]);
   const [hotNewSongs, setHotNewSongs] = useState([]);
-  const [popularArtists, setPopularArtists] = useState(DUMMY_ARTISTS);
+  const [popularArtists, setPopularArtists] = useState([]);
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
 
   const [currentBgSchemeIndex, setCurrentBgSchemeIndex] = useState(0);
@@ -270,6 +275,57 @@ const RecommendPage = () => {
     (data) => (filterHighQuality ? data.filter((item) => item.isHighQuality) : data),
     [filterHighQuality]
   );
+
+  // 아티스트 데이터 로드
+  useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const artists = await artistApi.getAllArtists();
+        
+        // 사용자별 좋아요/팔로우 상태 확인
+        const transformedArtists = await Promise.all(
+          artists.map(async (artist) => {
+            let likeCount = 0;
+            let isLiked = false;
+            let isFollowed = false;
+
+            try {
+              // 좋아요 수 조회
+              likeCount = await artistApi.getLikeCount(artist.id);
+              
+              // 사용자가 로그인한 경우 좋아요/팔로우 상태 확인
+              if (user?.id) {
+                isLiked = await artistApi.isLiked(artist.id, user.id);
+                // 팔로우 상태는 별도 API가 필요 (현재는 기본값)
+              }
+            } catch (error) {
+              console.error(`아티스트 ${artist.id} 상태 조회 실패:`, error);
+            }
+
+            return {
+              id: artist.id,
+              name: artist.name,
+              profileImageUrl: artist.profileImage || '/images/default-artist.jpg',
+              genre: artist.genre,
+              origin: '국내', // 기본값, 필요시 백엔드에서 추가
+              likeCount,
+              followerCount: 0, // 팔로우 API로 별도 조회 필요
+              isLiked,
+              isFollowed, // 팔로우 API로 별도 조회 필요
+            };
+          })
+        );
+        
+        setPopularArtists(transformedArtists);
+      } catch (error) {
+        console.error('아티스트 데이터 로드 실패:', error);
+        // 실패시 더미 데이터 사용
+        setPopularArtists(DUMMY_ARTISTS);
+      }
+    };
+
+    fetchArtists();
+  }, [user]);
 
   useEffect(() => {
     async function fetchLocalMusicData() {
@@ -338,34 +394,66 @@ const RecommendPage = () => {
     setCurrentBgSchemeIndex((prev) => (prev + 1) % BACKGROUND_SCHEMES.length);
   }, []);
 
-  const handleToggleLikeForArtist = (artistId) => {
-    console.log('좋아요 토글:', artistId);
-    setPopularArtists((prev) =>
-      prev.map((artist) =>
-        artist.id === artistId
-          ? {
-              ...artist,
-              isLiked: !artist.isLiked,
-              likeCount: artist.isLiked ? artist.likeCount - 1 : artist.likeCount + 1,
-            }
-          : artist
-      )
-    );
+  const handleToggleLikeForArtist = async (artistId) => {
+    if (!user?.id) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      // API 호출하여 좋아요 토글
+      const isLiked = await artistApi.toggleLike(artistId, user.id);
+      
+      // 좋아요 수 다시 조회
+      const likeCount = await artistApi.getLikeCount(artistId);
+      
+      // UI 업데이트
+      setPopularArtists((prev) =>
+        prev.map((artist) =>
+          artist.id === artistId
+            ? {
+                ...artist,
+                isLiked,
+                likeCount,
+              }
+            : artist
+        )
+      );
+      
+      console.log(`아티스트 ${artistId} 좋아요 ${isLiked ? '추가' : '해제'}됨`);
+    } catch (error) {
+      console.error('좋아요 토글 실패:', error);
+      alert('좋아요 처리에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
-  const handleToggleFollowForArtist = (artistId) => {
-    console.log('팔로우 토글:', artistId);
-    setPopularArtists((prev) =>
-      prev.map((artist) =>
-        artist.id === artistId
-          ? {
-              ...artist,
-              isFollowed: !artist.isFollowed,
-              followerCount: artist.isFollowed ? artist.followerCount - 1 : artist.followerCount + 1,
-            }
-          : artist
-      )
-    );
+  const handleToggleFollowForArtist = async (artistId) => {
+    if (!user?.id) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      // 현재는 팔로우 API가 구현되지 않았으므로 임시로 로컬 상태만 업데이트
+      // TODO: 백엔드에 아티스트 팔로우 API 구현 후 연동
+      console.log('팔로우 토글:', artistId);
+      setPopularArtists((prev) =>
+        prev.map((artist) =>
+          artist.id === artistId
+            ? {
+                ...artist,
+                isFollowed: !artist.isFollowed,
+                followerCount: artist.isFollowed ? artist.followerCount - 1 : artist.followerCount + 1,
+              }
+            : artist
+        )
+      );
+      
+      alert('팔로우 기능은 현재 개발 중입니다.');
+    } catch (error) {
+      console.error('팔로우 토글 실패:', error);
+      alert('팔로우 처리에 실패했습니다.');
+    }
   };
 
   return (
@@ -477,8 +565,8 @@ const RecommendPage = () => {
         containerClassName={BACKGROUND_SCHEMES[currentBgSchemeIndex]}
         onPageChange={handleNextBackgroundScheme}
         onToggleLike={handleToggleLikeForArtist}
-        onToggleFollow={handleToggleFollowForArtist}
       />
+      
     </div>
   );
 };

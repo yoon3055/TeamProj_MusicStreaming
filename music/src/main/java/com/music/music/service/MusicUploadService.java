@@ -2,12 +2,10 @@ package com.music.music.service;
 
 import com.music.music.dto.SongUploadDto;
 import com.music.music.dto.SongListDto;
-import com.music.music.entity.Album;
-import com.music.artist.entity.Artist;
 import com.music.music.entity.Song;
-import com.music.music.repository.AlbumRepository;
-import com.music.artist.repository.ArtistRepository;
 import com.music.music.repository.SongRepository;
+import com.music.artist.entity.Artist;
+import com.music.artist.repository.ArtistRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +29,7 @@ import java.util.UUID;
 public class MusicUploadService {
 
     private final SongRepository songRepository;
+    private final ArtistRepository artistRepository;
 
     // application.properties에서 설정할 파일 저장 경로
     @Value("${music.upload.path:uploads/music}")
@@ -54,7 +53,13 @@ public class MusicUploadService {
             String audioUrl = baseUrl + "/uploads/music/" + savedFileName;
             log.debug("파일 저장 완료: {}", audioUrl);
             
-            // 2. 아티스트는 null로 설정 (아티스트 기능 제거)
+            // Artist 엔티티 조회
+            Artist artist = null;
+            if (uploadDto.getArtistId() != null) {
+                artist = artistRepository.findById(uploadDto.getArtistId())
+                        .orElseThrow(() -> new RuntimeException("아티스트를 찾을 수 없습니다: " + uploadDto.getArtistId()));
+                log.debug("아티스트 처리 완료: {}", artist.getName());
+            }
             
             // 4. 파일 메타데이터 추출
             log.debug("메타데이터 추출 시작");
@@ -66,15 +71,15 @@ public class MusicUploadService {
             log.debug("Song 엔티티 생성 및 저장 시작");
             Song song = Song.builder()
                     .title(uploadDto.getTitle())
-                    .artist(null)  // 아티스트 기능 제거
-                    .album(null)  // 앨범 기능 제거
+                    .artist(artist)  // 사용자가 선택한 아티스트
+
                     .audioUrl(audioUrl)
                     .genre(uploadDto.getGenre())
-                    .originalFileName(file.getOriginalFilename())
-                    .fileSize(file.getSize())
-                    .fileFormat(fileFormat)
-                    .uploadedBy(uploadDto.getUploadedBy())
-                    .duration(duration)
+
+
+
+
+
                     .build();
             
             Song savedSong = songRepository.save(song);
@@ -129,7 +134,7 @@ public class MusicUploadService {
         log.info("음악 파일 목록 조회 시작");
         
         try {
-            List<Song> songs = songRepository.findAllByOrderByCreatedAtDesc();
+            List<Song> songs = songRepository.findAllByOrderByIdDesc();
             log.info("음악 파일 목록 조회 완료: {}개 파일", songs.size());
             
             // 엔티티를 DTO로 변환
@@ -154,14 +159,7 @@ public class MusicUploadService {
                     .id(song.getId())
                     .title(song.getTitle())
                     .genre(song.getGenre())
-                    .originalFileName(song.getOriginalFileName())
-                    .fileSize(song.getFileSize())
-                    .fileFormat(song.getFileFormat())
-                    .duration(song.getDuration())
-                    .audioUrl(song.getAudioUrl())
-                    .uploadedBy(song.getUploadedBy())
-                    .createdAt(song.getCreatedAt())
-                    .updatedAt(song.getUpdatedAt());
+                    .audioUrl(song.getAudioUrl());
             
             // Artist 정보 변환 (Lazy Loading 방지)
             if (song.getArtist() != null) {
@@ -173,15 +171,7 @@ public class MusicUploadService {
                 builder.artistName(song.getArtist().getName());
             }
             
-            // Album 정보 변환 (Lazy Loading 방지)
-            if (song.getAlbum() != null) {
-                SongListDto.AlbumInfo albumInfo = SongListDto.AlbumInfo.builder()
-                        .id(song.getAlbum().getId())
-                        .title(song.getAlbum().getTitle())
-                        .build();
-                builder.album(albumInfo);
-                builder.albumTitle(song.getAlbum().getTitle());
-            }
+
             
             return builder.build();
         } catch (Exception e) {
@@ -190,13 +180,7 @@ public class MusicUploadService {
             return SongListDto.builder()
                     .id(song.getId())
                     .title(song.getTitle())
-                    .originalFileName(song.getOriginalFileName())
-                    .fileSize(song.getFileSize())
-                    .fileFormat(song.getFileFormat())
-                    .duration(song.getDuration())
                     .audioUrl(song.getAudioUrl())
-                    .uploadedBy(song.getUploadedBy())
-                    .createdAt(song.getCreatedAt())
                     .build();
         }
     }

@@ -72,12 +72,6 @@ public class InteractionController {
         return ResponseEntity.ok(interactionService.countLikesBySongId(songId));
     }
 
-    @Operation(summary = "앨범 좋아요 수 조회", description = "특정 앨범의 좋아요 수를 조회합니다.")
-    @GetMapping("/api/albums/{albumId}/likes/count")
-    public ResponseEntity<Long> countLikesByAlbum(@PathVariable Long albumId) {
-        return ResponseEntity.ok(interactionService.countLikesByAlbumId(albumId));
-    }
-
     @Operation(summary = "아티스트 좋아요 수 조회", description = "특정 아티스트의 좋아요 수를 조회합니다.")
     @GetMapping("/api/artists/{artistId}/likes/count")
     public ResponseEntity<Long> countLikesByArtist(@PathVariable Long artistId) {

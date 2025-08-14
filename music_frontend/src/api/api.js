@@ -8,8 +8,12 @@ const API = axios.create({
 
 API.interceptors.request.use(config => {
   const token = localStorage.getItem('jwt');
+  console.log('[API DEBUG] Token from localStorage:', token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('[API DEBUG] Authorization header set:', config.headers.Authorization);
+  } else {
+    console.log('[API DEBUG] No token found in localStorage');
   }
   return config;
 });

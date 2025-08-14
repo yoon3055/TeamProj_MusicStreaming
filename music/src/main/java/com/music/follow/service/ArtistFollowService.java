@@ -39,7 +39,11 @@ public class ArtistFollowService {
             return null; // 언팔로우
         }
 
-        ArtistFollow follow = new ArtistFollow(user, artist, LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("=== ArtistFollowService 디버깅 ===");
+        System.out.println("followedAt 값: " + now);
+        ArtistFollow follow = new ArtistFollow(user, artist, now);
+        System.out.println("생성된 ArtistFollow의 followedAt: " + follow.getFollowedAt());
         followRepository.save(follow);
 
         return ArtistFollowResponse.from(follow);
