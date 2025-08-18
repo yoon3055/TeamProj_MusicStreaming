@@ -24,23 +24,23 @@
 
 /* 배경 그라데이션 스키마 */
 .recommend-section.gradient-scheme-1 {
-  background: linear-gradient(90deg, rgba(0, 123, 255, 0.4), rgba(255, 64, 129, 0.2));
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6), 0 0 15px rgba(255, 64, 129, 0.4);
+  background: linear-gradient(90deg, rgba(68, 153, 49, 0.4), rgba(49, 153, 103, 0.2));
+  box-shadow: 0 0 15px rgba(68, 153, 49, 0.6), 0 0 15px rgba(49, 153, 103, 0.4);
 }
 
 .recommend-section.gradient-scheme-2 {
-  background: linear-gradient(90deg, rgba(255, 165, 0, 0.4), rgba(138, 43, 226, 0.2));
-  box-shadow: 0 0 15px rgba(255, 165, 0, 0.6), 0 0 15px rgba(138, 43, 226, 0.4);
+  background: linear-gradient(90deg, rgba(49, 153, 68, 0.4), rgba(113, 153, 49, 0.2));
+  box-shadow: 0 0 15px rgba(49, 153, 68, 0.6), 0 0 15px rgba(113, 153, 49, 0.4);
 }
 
 .recommend-section.gradient-scheme-3 {
-  background: linear-gradient(90deg, rgba(60, 179, 113, 0.4), rgba(30, 144, 255, 0.2));
-  box-shadow: 0 0 15px rgba(60, 179, 113, 0.6), 0 0 15px rgba(30, 144, 255, 0.4);
+  background: linear-gradient(90deg, rgba(49, 153, 139, 0.4), rgba(89, 158, 101, 0.2));
+  box-shadow: 0 0 15px rgba(49, 153, 139, 0.6), 0 0 15px rgba(89, 158, 101, 0.4);
 }
 
 .recommend-section.gradient-scheme-4 {
-  background: linear-gradient(90deg, rgba(255, 0, 0, 0.4), rgba(255, 255, 0, 0.2));
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 15px rgba(255, 255, 0, 0.4);
+  background: linear-gradient(90deg, rgba(68, 153, 49, 0.4), rgba(49, 153, 139, 0.2));
+  box-shadow: 0 0 15px rgba(68, 153, 49, 0.6), 0 0 15px rgba(49, 153, 139, 0.4);
 }
 
 .section-title {
@@ -52,12 +52,12 @@
   color: var(--flo-accent-color);
   margin-bottom: 15px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #7700ff;
+  border-bottom: 1px solid #449931 !important;
 }
 
 .card-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
   grid-template-rows: auto;
   gap: 15px;
   max-width: 100%;
@@ -67,12 +67,12 @@
 .card-carousel {
   display: flex;
   flex-wrap: nowrap;
-  gap: 15px;
+  gap: 20px;
   overflow-x: scroll;
   scroll-behavior: smooth;
   max-width: 100%;
   padding-bottom: 20px;
-  border-bottom: 1px solid #7700ff;
+  border-bottom: 1px solid var(--accent-green-2);
   margin-bottom: 20px;
 }
 
@@ -93,13 +93,13 @@
 .category-card,
 .artist-card {
   flex-shrink: 0;
-  width: 160px;
+  width: 300px !important;
   height: auto;
   background-color: rgba(249, 249, 249, 0.7);
   backdrop-filter: blur(5px);
   border: none;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4), 0 0 10px rgba(255, 64, 129, 0.2);
+  box-shadow: 0 0 10px rgba(68, 153, 49, 0.4), 0 0 10px rgba(49, 153, 103, 0.2);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   margin: 5px 0;
@@ -118,8 +118,8 @@
 .album-card:hover,
 .category-card:hover,
 .artist-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 18px rgba(0, 123, 255, 0.8), 0 0 18px rgba(255, 64, 129, 0.5);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* 앨범 및 카테고리 카드 내부 요소 */
@@ -156,13 +156,18 @@
 }
 
 .interaction-toggle-btn {
-  background: none;
+  background: none !important;
   border: none;
   cursor: pointer;
   padding: 0;
   display: flex;
   align-items: center;
   color: var(--flo-text-secondary);
+}
+
+.interaction-toggle-btn:hover {
+  background: none !important;
+  background-color: transparent !important;
 }
 
 .interaction-toggle-btn.liked {
@@ -217,7 +222,7 @@
 
 .category-card:hover .category-card-title,
 .category-card:hover .category-card-subtitle {
-  opacity: 1;
+  opacity: 0 !important;
 }
 
 .category-card-overlay {
@@ -234,13 +239,13 @@
 }
 
 .category-card:hover .category-card-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: transparent !important;
 }
 
 .carousel-nav-button {
   width: 36px;
   height: 36px;
-  background-color: rgba(var(--flo-accent-color-rgb), 0.8);
+  background-color: #319967 !important;
   color: var(--flo-text-white);
   border: none;
   border-radius: 50%;
@@ -253,7 +258,7 @@
 }
 
 .carousel-nav-button:hover {
-  background-color: var(--flo-accent-color-hover);
+  background-color: #319967 !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -327,7 +332,7 @@
   padding: 10px 15px;
   background-color: var(--flo-primary-bg);
   border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px rgba(68, 153, 49, 0.6), 0 0 15px rgba(49, 153, 103, 0.4);
   user-select: none;
   width: 100%;
 }
@@ -365,6 +370,7 @@
   max-width: 200px;
   position: relative;
   transition: none;
+  margin-right: 10px;
 }
 
 .genre-filter-toggle-btn:hover {

@@ -1,4 +1,43 @@
 /* src/styles/LikesFollowsPage.css */
+
+/* 좋아요 수 표시 스타일 */
+.playlist-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: all 0.2s ease;
+}
+
+.playlist-like-btn:hover {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+/* 호버 효과 제거 */
+/* .playlist-like-btn:hover {
+  transform: scale(1.1);
+} */
+
+.like-count {
+  font-size: 0.9rem;
+  color: #8e8e93;
+  font-weight: 500;
+  min-width: 20px;
+  text-align: left;
+}
+
+.playlist-like-btn .liked {
+  color: #ff3b30;
+}
+
+.playlist-like-btn svg {
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
 :root {
   --flo-primary-bg: #f5f5f7;
   --flo-secondary-bg: #e8e8ed;
@@ -72,7 +111,7 @@
 }
 
 .tab-btn.active {
-  background-color: #5856d6;
+  background-color: #319967;
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -142,7 +181,7 @@
   align-items: flex-start;
   box-sizing: border-box;
   cursor: pointer;
- 
+  width: 300px !important;
 }
 
 .likes-follows-grid.list .playlist-card {

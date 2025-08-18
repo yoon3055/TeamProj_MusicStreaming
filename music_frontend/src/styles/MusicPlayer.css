@@ -19,10 +19,10 @@
     height: 120px;
     display: flex;
     align-items: center;
-    justify-content: center; /* 재생버튼을 가운데로 */
+    justify-content: center;
     padding: 0 24px;
-    background-color: white; /* 하얀색 배경 */
-    box-shadow: 0 0 14px rgba(0, 0, 0, 0.25);
+    background-color: var(--primary-bg);
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.1);
     border-radius: 14px 14px 0 0;
     z-index: 1000;
 }
@@ -45,9 +45,10 @@
 }
 
 .music-player-text-details {
-    background-color: rgba(200, 200, 200, 0.2);
+    background-color: rgba(39, 245, 125, 0.1);
     padding: 8px 12px;
     border-radius: 10px;
+    border: 1px solid var(--accent-green-6);
     color: #4B0082;
     font-size: 14px;
     display: flex;
@@ -75,31 +76,32 @@
 
 /* 모든 컨트롤 버튼에 배경색을 항상 표시 */
 .control-button {
-    background-color: rgba(75, 0, 130, 0.2); /* 항상 표시되는 배경색 */
+    background-color: #FFFFFF;
     padding: 0;
     border-radius: 10px;
     display: grid;
     place-items: center;
     transition: background-color 0.2s ease;
-    border: none;
+    border: 1px solid #F5F5F5;
     cursor: pointer;
     width: 46px;
     height: 46px;
 }
 
 .control-button.play-button {
-    width: 56px;
-    height: 56px;
+    width: 68px;
+    height: 68px;
     border-radius: 50%;
+    background-color: #F5F5F5;
 }
 
 .control-button.play-button .icon-style {
-    width: 32px;
-    height: 32px;
+    width: 56px;
+    height: 56px;
 }
 
 .control-button:hover {
-    background-color: rgba(75, 0, 130, 0.4); /* 호버 시 더 진해짐 */
+    background-color: #449931 !important;
 }
 
 .control-button:hover .icon-style {
@@ -109,23 +111,23 @@
 .icon-style {
     width: 26px;
     height: 26px;
-    color: #4B0082;
+    color: #319967;
     transition: color 0.2s ease;
 }
 
 /* 활성화 상태 아이콘 스타일 변경 */
 .control-button.active {
-    background-color: rgb(75, 0, 130); /* 활성화 시 진한 보라색 배경 */
+    background-color: #449931;
 }
 
 .control-button.active .icon-style {
-    color: #fff; /* 활성화 시 아이콘 색상을 흰색으로 변경 */
+    color: #FFFFFF;
 }
 
 /* 셔플, 반복 버튼 활성화 시 색상 변경 (위 active 스타일로 통합) */
 .control-button.shuffle.active,
 .control-button.repeat.active {
-    background-color: rgb(75, 0, 130);
+    background-color: #449931;
 }
 
 .music-player-progress {
@@ -136,7 +138,7 @@
 
 .music-player-progress-bar {
     width: 300px;
-    accent-color: #4B0082;
+    accent-color: var(--accent-green-2);
 }
 
 
@@ -158,7 +160,7 @@
 
 /* 음소거 버튼에 배경색 항상 표시 */
 .volume-toggle-button {
-    background-color: rgba(75, 0, 130, 0.2);
+    background-color: rgba(49, 153, 103, 0.2);
     padding: 0;
     border-radius: 10px;
     display: grid;
@@ -173,12 +175,12 @@
 .volume-toggle-button .icon-style {
     width: 22px;
     height: 22px;
-    color: #4B0082;
+    color: var(--accent-green-2);
     transition: color 0.2s ease;
 }
 
 .volume-toggle-button:hover {
-    background-color: rgba(75, 0, 130, 0.4);
+    background-color: var(--accent-green-2);
 }
 
 .volume-toggle-button:hover .icon-style {
@@ -187,12 +189,12 @@
 
 .volume-slider {
     width: 100px;
-    accent-color: #4B0082;
+    accent-color: var(--accent-green-2);
 }
 
 .volume-level {
     font-size: 13px;
-    color: #4B0082;
+    color: var(--accent-green-2);
     text-align: right;
     min-width: 30px;
 }
@@ -274,7 +276,7 @@
 }
 
 .popup-button {
-    background-color: #4B0082;
+    background-color: #319967;
     color: #fff;
     padding: 0;
     margin: 0;
@@ -289,7 +291,7 @@
 }
 
 .popup-button:hover {
-    background-color: #6A0DAD;
+    background-color: #673199;
 }
 
 .icon-style-popup {
@@ -480,16 +482,16 @@
 .playlist-toggle-button .icon-style {
     width: 24px;
     height: 24px;
-    color: #4B0082;
+    color: #319967;
     transition: color 0.2s ease;
 }
 
 .playlist-toggle-button:hover {
-    background-color: rgba(75, 0, 130, 0.2);
+    background-color: transparent;
 }
 
 .playlist-toggle-button:hover .icon-style {
-    color: #fff;
+    color: #319967;
 }
 
 .playlist-item-delete-button {

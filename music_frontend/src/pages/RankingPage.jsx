@@ -1,119 +1,162 @@
-import React, { useState } from 'react';
-import RankingFilterBar from '../component/RankingFilterBar';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/RankingPage.css';
 
-const DUMMY_ALBUMS = [
-  { id: 'da1', title: '봄날의 멜로디', artist: '플로이', coverUrl: '/images/K-051.jpg', songCount: 10, updatedAt: '2024.07.10', genre: '발라드', origin: '국내', length: 240, isHighQuality: true, likes: 120, followers: 500 },
-  { id: 'da2', title: '어느 맑은 날', artist: '클로버', coverUrl: '/images/K-052.jpg', songCount: 12, updatedAt: '2024.07.08', genre: '댄스', origin: '해외', length: 215, isHighQuality: false, likes: 80, followers: 230 },
-  { id: 'da3', title: '향기로운 기억', artist: '레몬트리', coverUrl: '/images/K-053.jpg', songCount: 8, updatedAt: '2024.07.05', genre: '힙합', origin: '국내', length: 198, isHighQuality: true, likes: 140, followers: 340 },
-  { id: 'da4', title: '밤거리 가로등', artist: '레몬트리', coverUrl: '/images/K-054.jpg', songCount: 9, updatedAt: '2024.07.05', genre: '재즈', origin: '국내', length: 320, isHighQuality: false, likes: 40, followers: 100 },
-  { id: 'da5', title: '밥먹는 시간', artist: '레몬트리', coverUrl: '/images/K-055.jpg', songCount: 11, updatedAt: '2024.07.05', genre: '락', origin: '해외', length: 275, isHighQuality: true, likes: 190, followers: 420 },
-  { id: 'da6', title: '퇴근 길', artist: '레몬트리', coverUrl: '/images/K-056.jpg', songCount: 13, updatedAt: '2024.07.05', genre: '트로트', origin: '국내', length: 180, isHighQuality: false, likes: 60, followers: 190 },
-];
 
-function formatLength(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
 
 const RankingPage = () => {
-  const [genreFilter, setGenreFilter] = useState('all');
-  const [regionFilter, setRegionFilter] = useState('all');
+  const { user, apiClient } = useContext(AuthContext);
+  const [songs, setSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [likedSongs, setLikedSongs] = useState({});
+  const [hoveredSongId, setHoveredSongId] = useState(null);
 
-  const [likedAlbums, setLikedAlbums] = useState({});
-  const [followedAlbums, setFollowedAlbums] = useState({});
-  const [addedAlbums, setAddedAlbums] = useState({});
-
-  const [hoveredAlbumId, setHoveredAlbumId] = useState(null);
-
-  const filteredAlbums = DUMMY_ALBUMS.filter(album => {
-    if (genreFilter !== 'all' && album.genre !== genreFilter) return false;
-    if (regionFilter === 'domestic' && album.origin !== '국내') return false;
-    if (regionFilter === 'international' && album.origin !== '해외') return false;
-    return true;
-  });
-
-  const toggleLike = (id) => {
-    setLikedAlbums(prev => ({ ...prev, [id]: !prev[id] }));
+  // API 호출 함수들
+  const fetchSongs = async () => {
+    try {
+      const response = await apiClient.get('/api/songs');
+      return response.data;
+    } catch (error) {
+      console.error('곡 데이터 fetch 오류:', error);
+      throw new Error('곡 데이터를 가져오는데 실패했습니다.');
+    }
   };
 
-  const toggleFollow = (id) => {
-    setFollowedAlbums(prev => ({ ...prev, [id]: !prev[id] }));
+  const fetchLikeCount = async (songId) => {
+    try {
+      const response = await apiClient.get(`/api/songs/${songId}/likes/count`);
+      return response.data;
+    } catch (error) {
+      console.error('좋아요 수 fetch 오류:', error);
+      return 0;
+    }
   };
 
-  const toggleAdd = (id) => {
-    setAddedAlbums(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleSongLike = async (songId, userId) => {
+    try {
+      const response = await apiClient.post(`/api/songs/${songId}/likes?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('좋아요 토글 오류:', error);
+      throw new Error('좋아요 토글에 실패했습니다.');
+    }
   };
+
+  // 컴포넌트 마운트 시 곡 데이터 로드
+  useEffect(() => {
+    // apiClient가 있을 때 데이터 로드 (로그인 여부와 관계없이)
+    if (!apiClient) {
+      setLoading(false);
+      return;
+    }
+
+    const loadSongs = async () => {
+      try {
+        setLoading(true);
+        const songsData = await fetchSongs();
+        
+        // 각 곡의 좋아요 수를 가져와서 추가
+        const songsWithLikes = await Promise.all(
+          songsData.map(async (song) => {
+            const likeCount = await fetchLikeCount(song.id);
+            return { ...song, likeCount };
+          })
+        );
+        
+        // 좋아요 수로 내림차순 정렬
+        const sortedSongs = songsWithLikes.sort((a, b) => b.likeCount - a.likeCount);
+        setSongs(sortedSongs);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSongs();
+  }, [apiClient]);
+
+  const handleLikeToggle = async (songId) => {
+    if (!user) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    try {
+      const isLiked = await toggleSongLike(songId, user.id);
+      setLikedSongs(prev => ({ ...prev, [songId]: isLiked }));
+      
+      // 좋아요 수 업데이트
+      setSongs(prevSongs => 
+        prevSongs.map(song => 
+          song.id === songId 
+            ? { ...song, likeCount: song.likeCount + (isLiked ? 1 : -1) }
+            : song
+        ).sort((a, b) => b.likeCount - a.likeCount) // 다시 정렬
+      );
+    } catch (error) {
+      alert('좋아요 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="ranking-page">
+        <h1>랭킹 차트</h1>
+        <div className="loading-message">로딩 중...</div>
+      </div>
+    );
+  }
+
+
+
+  if (error) {
+    return (
+      <div className="ranking-page">
+        <h1>랭킹 차트</h1>
+        <div className="error-message">오류: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="ranking-page">
       <h1>랭킹 차트</h1>
-
-      <RankingFilterBar
-        genreFilter={genreFilter}
-        regionFilter={regionFilter}
-        onGenreChange={setGenreFilter}
-        onRegionChange={setRegionFilter}
-      />
+      <p className="ranking-description">좋아요 수가 많은 순서로 정렬됩니다</p>
 
       <div className="ranking-list">
-        {filteredAlbums.length === 0 && <p>검색 결과가 없습니다.</p>}
+        {songs.length === 0 && <p>등록된 곡이 없습니다.</p>}
 
-        {filteredAlbums.map((album, idx) => (
+        {songs.map((song, idx) => (
           <div
-            key={album.id}
+            key={song.id}
             className="ranking-item"
-            onMouseEnter={() => setHoveredAlbumId(album.id)}
-            onMouseLeave={() => setHoveredAlbumId(null)}
+            onMouseEnter={() => setHoveredSongId(song.id)}
+            onMouseLeave={() => setHoveredSongId(null)}
           >
             <div className="ranking-index">{idx + 1}</div>
 
-            <div className="thumbnail-wrapper">
-              <img src={album.coverUrl} alt={`${album.title} 앨범 커버`} className="album-thumbnail" />
-              {hoveredAlbumId === album.id && (
-                <button
-                  className="play-button"
-                  onClick={() => alert(`재생: ${album.title}`)}
-                  aria-label="재생"
-                >
-                  ▶
-                </button>
-              )}
-            </div>
+
 
             <div className="album-name-artist">
-              <div className="album-name" title={album.title}>{album.title}</div>
-              <div className="artist-name" title={album.artist}>{album.artist}</div>
+              <div className="album-name" title={song.title}>{song.title}</div>
+              <div className="artist-name" title={song.artist?.name || '알 수 없는 아티스트'}>
+                {song.artist?.name || '알 수 없는 아티스트'}
+              </div>
             </div>
 
             <div className="song-info">
-              곡수: {album.songCount} / 길이: {formatLength(album.length)}
+              장르: {song.genre || '미분류'}
             </div>
 
             <div className="action-buttons">
               <button
-                className={`action-button ${likedAlbums[album.id] ? 'active' : ''}`}
-                onClick={() => toggleLike(album.id)}
+                className={`action-button ${likedSongs[song.id] ? 'active' : ''}`}
+                onClick={() => handleLikeToggle(song.id)}
                 aria-label="좋아요"
               >
-                ❤️ <span className="count">{album.likes + (likedAlbums[album.id] ? 1 : 0)}</span>
-              </button>
-
-              <button
-                className={`action-button ${followedAlbums[album.id] ? 'active' : ''}`}
-                onClick={() => toggleFollow(album.id)}
-                aria-label="팔로우"
-              >
-                👥 <span className="count">{album.followers + (followedAlbums[album.id] ? 1 : 0)}</span>
-              </button>
-
-              <button
-                className={`action-button ${addedAlbums[album.id] ? 'active' : ''}`}
-                onClick={() => toggleAdd(album.id)}
-                aria-label="담기"
-              >
-                ➕ 담기
+                ❤️ <span className="count">{song.likeCount || 0}</span>
               </button>
             </div>
           </div>

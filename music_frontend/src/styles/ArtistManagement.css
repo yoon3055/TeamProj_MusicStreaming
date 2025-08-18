@@ -21,20 +21,22 @@
 }
 
 .create-artist-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #e9ecef;
+  color: #333;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: none;
 }
 
 .create-artist-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  background: #e9ecef;
+  color: #333;
+  transform: none;
+  box-shadow: none;
 }
 
 .artist-management-loading {
@@ -190,13 +192,16 @@
 
 .image-preview {
   margin-top: 10px;
-  position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .image-preview img {
-  max-width: 120px;
-  max-height: 120px;
+  max-width: 160px !important;
+  max-height: 160px !important;
+  width: 160px !important;
+  height: 160px !important;
   border-radius: 8px;
   object-fit: cover;
   border: 2px solid #e1e5e9;
@@ -204,15 +209,13 @@
 }
 
 .remove-image-btn {
-  position: absolute;
-  top: -8px;
-  right: -8px;
   background: #dc3545;
   color: white;
   border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  border-radius: 6px;
+  width: 100px !important;
+  min-width: 100px !important;
+  height: 32px;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -221,6 +224,8 @@
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .remove-image-btn:hover {
@@ -282,22 +287,21 @@
 
 .artist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
 }
 
 .artist-card {
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 25px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 200px;
+  width: 100%;
+  min-width: 100px;
 }
 
-.artist-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
+
 
 .artist-image {
   text-align: center;
@@ -320,7 +324,7 @@
 }
 
 .artist-genre {
-  color: #667eea;
+  color: #333;
   font-weight: 600;
   text-align: center;
   margin: 0 0 10px 0;

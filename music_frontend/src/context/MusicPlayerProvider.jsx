@@ -160,6 +160,9 @@ const playSong = useCallback(async (song) => {
         audioRef.current.src = songUrl;
         audioRef.current.load();
         await audioRef.current.play();
+
+
+        
         setCurrentSong({ ...song, url: songUrl });
         setIsPlaying(true);
         await savePlaybackHistory(song);
@@ -355,12 +358,39 @@ const playSong = useCallback(async (song) => {
             setDuration(audio.duration);
         };
 
+        // 곡이 끝났을 때 자동으로 다음 곡 재생
+        const handleEnded = () => {
+            console.log('곡이 끝남');
+            console.log('현재 플레이리스트 길이:', playlist.length);
+            console.log('현재 곡:', currentSong);
+            
+            if (playlist.length > 1) {
+                const currentIndex = playlist.findIndex(song => song.id === currentSong?.id);
+                console.log('현재 곡 인덱스:', currentIndex);
+                
+                if (currentIndex !== -1) {
+                    // 다음 곡 인덱스 계산 (마지막 곡이면 첫 곡으로)
+                    const nextIndex = (currentIndex + 1) % playlist.length;
+                    const nextSong = playlist[nextIndex];
+                    console.log('다음 곡 재생 (인덱스 ' + nextIndex + '):', nextSong);
+                    playSong(nextSong);
+                } else {
+                    console.log('현재 곡을 찾을 수 없음 - 재생 정지');
+                    setIsPlaying(false);
+                }
+            } else {
+                console.log('플레이리스트에 곡이 하나뿐 - 재생 정지');
+                setIsPlaying(false);
+            }
+        };
+
         audio.addEventListener('play', handlePlay);
         audio.addEventListener('pause', handlePause);
         audio.addEventListener('error', handleError);
         audio.addEventListener('timeupdate', handleTimeUpdate);
         audio.addEventListener('loadedmetadata', handleLoadedMetadata);
         audio.addEventListener('canplay', handleCanPlay);
+        audio.addEventListener('ended', handleEnded);
 
         return () => {
             audio.removeEventListener('play', handlePlay);
@@ -369,8 +399,9 @@ const playSong = useCallback(async (song) => {
             audio.removeEventListener('timeupdate', handleTimeUpdate);
             audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
             audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('ended', handleEnded);
         };
-    }, [setToastState]);
+    }, [setToastState, repeatMode, playlist, currentSong, playSong]);
 
     // 볼륨 초기 설정
     useEffect(() => {

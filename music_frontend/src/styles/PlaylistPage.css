@@ -5,30 +5,30 @@
    별도의 variables.css 파일에 정의되어 있거나, 이 파일을 <style> 태그로 직접 삽입하는 경우에 :root 대신
    적절한 전역 범위에 이 변수들이 정의되어 있는지 확인해야 합니다. */
 :root {
-  --flo-bg-primary: #FFFFFF;        /* 메인 배경색 (순수 흰색) */
-  --flo-bg-secondary: #F9F9F9;      /* 보조 배경색 (카드, 섹션 배경 등, 아주 연한 회색) */
-  --flo-text-primary: #212121;      /* 기본 텍스트 색상 (짙은 회색) */
-  --flo-text-secondary: #616161;    /* 보조 텍스트 색상 (중간 회색, 설명 등) */
-  --flo-text-subtle: #A0A0A0;       /* 약한 텍스트 색상 (플레이스홀더, 비활성 등) */
-  --flo-text-white: #FFFFFF;        /* 어두운 배경에 사용되는 흰색 텍스트 */
-  --flo-accent-color: #6200EE;      /* FLO의 메인 포인트 색상 (밝은 보라색) */
-  --flo-accent-color-hover: #3700B3; /* 포인트 색상 호버 시 (약간 더 진한 보라색) */
-  --flo-accent-color-rgb: 98, 0, 238; /* rgba() 함수 사용을 위한 RGB 값 */
-  --flo-border-color: #E0E0E0;      /* 경계선 및 구분선 색상 (연한 회색) */
-  --flo-shadow-color: rgba(0, 0, 0, 0.1); /* 그림자 색상 */
-  --flo-highlight-bg: #F3E5F5;      /* 마우스 오버 시 강조 배경색 (아주 연한 보라색) */
-  --flo-success-color: #4CAF50;     /* 성공 상태 색상 */
-  --flo-error-color: #F44336;       /* 에러 상태 색상 */
-  --flo-warning-color: #FFC107;     /* 경고 상태 색상 */
+  --flo-bg-primary: #FFFFFF;
+  --flo-bg-secondary: #F9F9F9;
+  --flo-text-primary: #333333;
+  --flo-text-secondary: #666666;
+  --flo-text-subtle: #A0A0A0;
+  --flo-text-white: #FFFFFF;
+  --flo-accent-color: var(--accent-green-2);
+  --flo-accent-color-hover: var(--accent-green-3);
+  --flo-accent-color-rgb: 49, 153, 103;
+  --flo-border-color: #E0E0E0;
+  --flo-shadow-color: rgba(0, 0, 0, 0.1);
+  --flo-highlight-bg: rgba(49, 153, 103, 0.1);
+  --flo-success-color: var(--accent-green-3);
+  --flo-error-color: #F44336;
+  --flo-warning-color: var(--accent-green-4);
 }
 
 
 /* PlaylistPage 컴포넌트의 최상위 컨테이너 */
 .user-playlists-section-container {
   width: 100%;
-  padding: 10px 0; /* ✨ 상하 패딩을 10px로 줄여 섹션 내부 여백 조절 */
-  height: auto;    /* ✨ 중요! 부모 섹션의 max-height를 따르도록 auto로 변경 */
-  overflow-y: hidden; /* ✨ 중요! 부모 섹션에서 overflow: hidden을 했으므로 여기서도 숨김 */
+  padding: 10px 0; /* 상하 패딩을 10px로 줄여 섹션 내부 여백 조절 */
+  height: auto;    /* 중요! 부모 섹션의 max-height를 따르도록 auto로 변경 */
+  overflow-y: hidden; /* 중요! 부모 섹션에서 overflow: hidden을 했으므로 여기서도 숨김 */
   
   /* 스크롤바 숨기기 (웹킷 기반 브라우저) - 시각적으로만 숨기고 기능 유지 */
   -ms-overflow-style: none; /* IE and Edge */
@@ -47,26 +47,26 @@
   font-size: 0.9rem;
 }
 
-/* ✨ 텍스트 기반 플레이리스트 목록 컨테이너 */
+/* 텍스트 기반 플레이리스트 목록 컨테이너 */
 .playlist-text-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  margin-bottom: 10px; /* ✨ 목록과 아래 버튼 사이 여백 */
+  margin-bottom: 10px; /* 목록과 아래 버튼 사이 여백 */
 }
 
-/* ✨ 각 플레이리스트 리스트 아이템 (상단 제목 + 하단 곡 목록) */
+/* 각 플레이리스트 리스트 아이템 (상단 제목 + 하단 곡 목록) */
 .playlist-list-item {
   background-color: var(--flo-bg-secondary);
   border-bottom: 1px solid var(--flo-border-color);
-  margin-bottom: 5px; /* ✨ 각 아이템 사이 여백 */
+  margin-bottom: 5px; /* 각 아이템 사이 여백 */
 }
 .playlist-list-item:last-of-type {
   border-bottom: none;
   margin-bottom: 0;
 }
 
-/* ✨ 플레이리스트 아이템 헤더 (제목 + 토글 아이콘 + 재생 버튼) */
+/* 플레이리스트 아이템 헤더 (제목 + 토글 아이콘 + 재생 버튼) */
 .playlist-list-item-header {
   display: flex;
   justify-content: space-between;
@@ -97,7 +97,7 @@
   flex-shrink: 0;
 }
 
-/* ✨ 앨범(플레이리스트) 재생 버튼 */
+/* 앨범(플레이리스트) 재생 버튼 */
 .play-album-button {
   background: transparent;
   border: none;
@@ -120,7 +120,7 @@
 }
 
 
-/* ✨ 플레이리스트 내부 수록곡 목록 */
+/* 플레이리스트 내부 수록곡 목록 */
 .playlist-song-list {
   list-style: none;
   padding: 5px 0 5px 15px;
@@ -158,7 +158,7 @@
   padding: 15px 0;
 }
 
-/* ✨ 개별 곡 재생 버튼 */
+/* 개별 곡 재생 버튼 */
 .playlist-song-item .song-info-wrapper {
   display: flex;
   justify-content: space-between;
@@ -183,24 +183,24 @@
   height: 18px;
 }
 
-/* ✨ 새 플레이리스트 만들기 버튼 및 '더보기' 버튼 (동일 스타일 적용) */
+/* 새 플레이리스트 만들기 버튼 및 '더보기' 버튼 (동일 스타일 적용) */
 .playlist-create-button {
   display: block;
   width: 100%; /* 부모 너비에 맞게 */
   text-align: center;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #F3E5F5; /* FLO 포인트 색상 */
+  color: var(--flo-text-white);
   text-decoration: none;
   border: 1px solid var(--flo-accent-color); /* FLO 포인트 색상 테두리 */
   border-radius: 20px;
   padding: 8px 0;
-  margin-top: 10px; /* ✨ 위쪽 버튼과의 간격 */
+  margin-top: 10px; /* 위쪽 버튼과의 간격 */
   transition: background-color 0.2s ease, color 0.2s ease;
   background-color: var(--flo-accent-color);
 }
 .playlist-create-button:hover {
-  background-color: #8538f0;
+  background-color: var(--flo-accent-color-hover);
   color: var(--flo-text-white);
 }
 

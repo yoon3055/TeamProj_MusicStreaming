@@ -87,7 +87,7 @@ const AdvancedSearchPage = () => {
             {results.map((song) => (
               <li key={song.id} className="search-result-item">
                 <span className="search-result-item-title">{song.title}</span> -{' '}
-                <span className="search-result-item-artist">{song.artist}</span>
+                <span className="search-result-item-artist">{typeof song.artist === 'object' ? song.artist?.name || '아티스트' : song.artist || '아티스트'}</span>
               </li>
             ))}
           </ul>

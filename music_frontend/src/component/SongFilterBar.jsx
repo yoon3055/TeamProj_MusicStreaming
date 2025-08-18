@@ -11,15 +11,15 @@ const SongFilterBar = ({ filterHighQuality, setFilterHighQuality }) => {
   const isSubscribed = user?.isSubscribed ?? false;
 
   return (
-    <div className="song-filter-bar-container">
+    <div className="song-filter-bar-container" style={{boxShadow: 'none'}}>
       {/*  항상 작동하는 동적 이퀄라이저 (좌측) */}
-      <div className="static-equalizer">
+      {/* <div className="static-equalizer">
         <div className="equalizer-bar">
           {[...Array(20)].map((_, idx) => (
             <div key={idx} className="bar" style={{ '--i': idx }}></div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/*  우측 영역: 안내 메시지 + 토글 버튼 + 연동 이퀄라이저 */}
       <div className="song-filter-bar-options">

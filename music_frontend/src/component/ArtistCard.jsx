@@ -6,7 +6,7 @@ import { FaUserPlus, FaUserCheck } from 'react-icons/fa';
 import '../styles/LikesFollowsPage.css';
 
 const Artistcard = ({ artist, onToggleFollow }) => {
-  const { id, name, profileImageUrl, isFollowed } = artist;
+  const { id, name, profileImage, profileImageUrl, isFollowed } = artist;
 
   const handleFollowToggle = (e) => {
     e.preventDefault();
@@ -19,7 +19,7 @@ const Artistcard = ({ artist, onToggleFollow }) => {
       <Link to={`/artist/${id}`} className="playlist-link">
         <div className="playlist-image-wrapper">
           <img
-            src={profileImageUrl || '/images/default_artist.png'}
+            src={profileImage || profileImageUrl || '/images/default_artist.png'}
             alt={name}
             className="playlist-image artist-image"
           />
@@ -45,9 +45,13 @@ const Artistcard = ({ artist, onToggleFollow }) => {
 
 Artistcard.propTypes = {
   artist: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
+    profileImage: PropTypes.string,
     profileImageUrl: PropTypes.string,
+    genre: PropTypes.string,
+    description: PropTypes.string,
+    likeCount: PropTypes.number,
     isFollowed: PropTypes.bool.isRequired,
   }).isRequired,
   onToggleFollow: PropTypes.func.isRequired,

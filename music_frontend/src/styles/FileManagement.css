@@ -14,21 +14,23 @@
 }
 
 .file-management-controls {
-  display: flex;
-  flex-wrap: wrap;
+  display: flex !important;
+  flex-direction: column !important;
   gap: 16px;
   margin-bottom: 24px;
-  align-items: center;
-  justify-content: center;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .file-management-label {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   gap: 8px;
   font-size: 0.9rem;
   color: #2d3748;
   min-width: 200px;
+  align-items: center !important;
+  text-align: center !important;
 }
 
 .file-management-upload-input {
@@ -155,16 +157,19 @@
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
-  transition: background-color 0.2s;
+  transition: none;
 }
 
 .file-management-btn-upload {
-  background: #3182ce;
-  color: #fff;
+  background: #e9ecef;
+  color: #333;
 }
 
 .file-management-btn-upload:hover {
-  background: #2b6cb0;
+  background: #e9ecef;
+  color: #333;
+  transform: none;
+  box-shadow: none;
 }
 
 .file-management-btn-cancel {

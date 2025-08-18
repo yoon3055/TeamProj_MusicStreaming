@@ -93,7 +93,7 @@
 
 .album-detail-play-button,
 .album-detail-like-button {
-  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+  background-color: var(--accent-green-2);
   color: var(--flo-text-white);
   font-weight: 600;
   padding: 0.75rem 1.5rem; /* py-3 px-6 */
@@ -107,12 +107,12 @@
 
 .album-detail-play-button:hover,
 .album-detail-like-button:hover {
-  background-color: #1a73e8; /* hover:bg-blue-700 */
+  background-color: var(--accent-green-3);
 }
 
 .album-detail-play-button:focus,
 .album-detail-like-button:focus {
-  box-shadow: 0 0 0 2px var(--flo-accent-blue); /* focus:ring-2 focus:ring-blue-500 */
+  box-shadow: 0 0 0 2px var(--accent-green-2);
 }
 
 .album-detail-like-button {
@@ -132,7 +132,7 @@
 }
 
 .album-detail-like-button.album-detail-liked:hover {
-  background-color: #dc2626; /* hover:bg-red-700 */
+  background-color: var(--accent-green-1);
 }
 
 .album-detail-like-button.album-detail-liked:focus {

@@ -7,13 +7,11 @@ import { MusicPlayerContext } from '../context/MusicPlayerContext';
 import '../styles/LikesFollowsPage.css';
 
 const Albumcard = ({ album, onToggleLike }) => {
-  const { id, title, artist, coverUrl, isLiked, songs } = album;
+  const { id, title, artist, coverUrl, isLiked, likeCount, songs } = album;
   const { playSong } = useContext(MusicPlayerContext);
 
   const handleCardClick = () => {
-    if (playSong) {
-      playSong(songs);
-    }
+    // 노래 재생 기능 제거 - 상세 페이지 이동만 수행
   };
 
   const handleLikeToggle = (e) => {
@@ -26,23 +24,9 @@ const Albumcard = ({ album, onToggleLike }) => {
 
   return (
     <div className="playlist-card album-card-custom" onClick={handleCardClick}>
-      <Link to={`/album/${id}`} className="playlist-link">
-        <div className="playlist-image-wrapper">
-          <img src={coverUrl} alt={title} className="playlist-image" />
-          <div className="play-overlay">
-            <button
-              className="play-button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleCardClick();
-              }}
-              aria-label="재생"
-            >
-              <FaPlay />
-            </button>
-          </div>
-        </div>
+      {/* 기존 앨범 페이지 연결 주석 처리 */}
+      {/* <Link to={`/album/${id}`} className="playlist-link"> */}
+      <Link to={`/song/${id}`} className="playlist-link">
         <div className="playlist-info">
           <h4 className="playlist-title">{title}</h4>
           <p className="playlist-artist">{typeof artist === 'object' ? artist?.name : artist}</p>
@@ -51,6 +35,7 @@ const Albumcard = ({ album, onToggleLike }) => {
       <div className="playlist-actions">
         <button onClick={handleLikeToggle} className="playlist-like-btn" aria-label="좋아요 토글">
           {isLiked ? <FaHeart className="liked" /> : <FaRegHeart />}
+          {likeCount !== undefined && <span className="like-count">{likeCount}</span>}
         </button>
       </div>
     </div>
@@ -62,6 +47,7 @@ Albumcard.propTypes = {
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     artist: PropTypes.string.isRequired,
+    likeCount: PropTypes.number,
     coverUrl: PropTypes.string.isRequired,
     isLiked: PropTypes.bool.isRequired,
     songs: PropTypes.arrayOf(

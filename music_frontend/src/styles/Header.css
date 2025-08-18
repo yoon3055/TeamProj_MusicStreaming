@@ -4,9 +4,10 @@
   justify-content: space-between;
   height: 70px;
   padding: 0 20px;
-  background-color: #fff;
+  background-color: var(--primary-bg);
   position: relative;
   z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 /* 왼쪽 로고 그룹 */
@@ -64,8 +65,8 @@
   font-size: 1.6rem;
   font-weight: 800;
   margin: 0;
-  color: #640b8d;
-  background: linear-gradient(135deg, #640b8d, #0d9488);
+  color: var(--accent-green-2);
+  background: linear-gradient(135deg, var(--accent-green-2), var(--accent-green-5));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -76,15 +77,15 @@
 .streaming-badge {
   font-size: 0.6rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  color: var(--text-white);
+  background: linear-gradient(45deg, var(--accent-green-1), var(--accent-green-3));
   padding: 2px 6px;
   border-radius: 8px;
   position: absolute;
   top: -10px;
   right: 50px;
   animation: glow 3s ease-in-out infinite alternate;
-  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  box-shadow: 0 2px 8px rgba(104, 245, 39, 0.3);
   white-space: nowrap;
   z-index: 10;
 }
@@ -119,6 +120,8 @@
   display: flex;
   align-items: center;
   z-index: 1;
+  max-width: 600px;
+  width: auto;
 }
 
 /* 오른쪽 로그인/회원가입 */
@@ -145,8 +148,8 @@
 }
 
 .header-button-login {
-  background-color: var(--flo-accent-blue);
-  color: white;
+  background-color: var(--accent-green-2);
+  color: var(--text-white);
 }
 
 .header-button-login:hover {
@@ -155,14 +158,14 @@
 
 
 .header-button-signup {
-  background-color: #640b8d;
-  color: white;
+  background-color: var(--accent-green-1);
+  color: var(--text-white);
 }
 
 
 
 .header-button-signup:hover {
-  background-color: #0d9488;
+  background-color: var(--accent-green-3);
 }
 
 /* 기존 코드 아래에 추가 */

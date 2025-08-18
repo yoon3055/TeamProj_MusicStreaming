@@ -32,14 +32,10 @@ const Navbar = () => {
             onChange={(e) => setQuery(e.target.value)}
             aria-label="음악 검색 입력"
           />
-          {/* ✨ 아이콘 SVG 요소 완전히 제거 ✨ */}
           <button type="submit" className="navbar-search-button" aria-label="검색 실행">
-            검색 {/* ✨ 필요시 '검색' 텍스트 추가 */}
+            검색
           </button>
         </form>
-        <Link to="/advanced-search" className="navbar-advanced-search-button">
-          여러 곡 한 번에 찾기
-        </Link>
       </nav>
     );
   }
@@ -66,12 +62,10 @@ const Navbar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="음악 검색 입력"
-        />      
+        />
+        <button type="submit" className="navbar-search-button" aria-label="검색 실행">
+        </button>
       </form>
-
-      <Link to="/advanced-search" className="navbar-advanced-search-button">
-        여러 곡 한 번에 찾기
-      </Link>
     </nav>
   );
 };

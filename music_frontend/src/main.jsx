@@ -14,13 +14,12 @@ import { MusicPlayerProvider } from './context/MusicPlayerProvider';
 import MainLayout from './component/MainLayout';
 import PrivateRoute from './component/PrivateRoute';
 import AdminPrivateRoute from './component/AdminPrivateRoute';
-import SubscriptionRouter from './component/SubscriptionRouter';
 
 // Page Components
 import MainPage from './pages/MainPage';
 import RecommendPage from './pages/RecommendPage';
 import AlbumDetailPage  from './pages/AlbumDetailPage';
-import ArtistPage from './pages/ArtistPage';
+import ArtistInfoPage from './pages/ArtistInfoPage';
 import UserProfilePage from './pages/UserProfilePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -30,29 +29,33 @@ import HistoryPage from './pages/PlaybackHistoryPage';
 import LikesFollowsPage from './pages/LikesFollowsPage';
 import PaymentFailPage from './pages/PaymentFailPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import SubscriptionPlansPage from './pages/SubscriptionPlansPage';
 import { PurchasePage } from './pages/PurchasePage';
-import { SubscriptionPage } from './pages/SubscriptionPage';
-import { UserSubscriptionHistory } from './pages/UserSubscriptionHistoryPage';
 import MyPage from './pages/MyPage';
+import ArtistLikes from './pages/ArtistLikes';
 import AdvancedSearchPage from './pages/AdvancedSearchPage';
+import SearchResultPage from './pages/SearchResultPage';
 import RankingPage from './pages/RankingPage';
+import SongDetailPage from './pages/SongDetailPage';
 import PlaylistDrawer from './component/PlaylistDrawer';
 import PlaylistPage from './pages/PlaylistPage';
 import CreatePlaylistPage from './pages/CreatePlaylistPage';
 import FindPasswordPage from './pages/FindPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PaymentPage from './pages/PaymentPage';
-import ArtistCreatePage from './pages/ArtistCreatePage';
+import SubscriptionStatusPage from './pages/SubscriptionStatusPage';
+import SimpleSubscriptionPage from './pages/SimpleSubscriptionPage';
+// import ArtistCreatePage from './pages/ArtistCreatePage';
 import AdminDashboard from './component/AdminDashboard';
 import UserManagement from './component/UserManagement';
 import CommentManagement from './component/CommentManagement';
 import FileManagement from './component/FileManagement';
-import SubscriptionManagement from './component/SubscriptionManagement';
 import ArtistManagement from './component/ArtistManagement';  
 
 // CSS Files
 import './styles/index.css';
 import ContentManagement from './component/ContentManagement';
+import AdminSubscriptionPlansPage from './pages/AdminSubscriptionPlansPage';
 
 const router = createBrowserRouter(
   [
@@ -62,14 +65,17 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <MainPage /> },
         { path: 'explore', element: <RankingPage /> },
+        { path: 'search', element: <SearchResultPage /> },
         { path: 'advanced-search', element: <AdvancedSearchPage /> },
         { path: 'playlists/featured', element: <PlaylistDrawer title="추천 테마 플레이리스트" /> },
         { path: 'recommend', element: <RecommendPage /> },
-        { path: 'artist/create', element: <ArtistCreatePage /> },
+        // { path: 'artist/create', element: <ArtistCreatePage /> },
         { path: 'album/:id', element: <AlbumDetailPage /> },
-        { path: 'artist/:id', element: <ArtistPage /> },
+        { path: 'artist/:id', element: <ArtistInfoPage /> },
+        { path: 'song/:songId', element: <SongDetailPage /> },
         { path: 'art', element: <AlbumArtPage /> },
         { path: 'likes', element: <LikesFollowsPage /> },
+        { path: 'artist-likes', element: <ArtistLikes /> },
         { path: 'comments', element: <CommentsPage /> },
         { path: 'payment/success', element: <PaymentSuccessPage /> },
         { path: 'payment/fail', element: <PaymentFailPage /> },
@@ -79,13 +85,13 @@ const router = createBrowserRouter(
             { path: 'myPage', element: <MyPage /> },
             { path: 'my-playlists', element: <PlaylistPage /> },
             { path: 'create-playlist', element: <CreatePlaylistPage /> },
-            { path: 'subscription-plans', element: <SubscriptionPage /> },
-            { path: 'subscription', element: <SubscriptionRouter /> },
-            { path: 'my-subscription', element: <SubscriptionRouter /> },
+            { path: 'subscription-plans', element: <SubscriptionPlansPage /> },
+            { path: 'subscription-status', element: <SubscriptionStatusPage /> },
+            { path: 'simple-subscription', element: <SimpleSubscriptionPage /> },
+            { path: 'payment', element: <PaymentPage /> },
             { path: 'profile', element: <UserProfilePage /> },
             { path: 'history', element: <HistoryPage /> },
             { path: 'purchase', element: <PurchasePage /> },
-            { path: 'payment/:planId', element: <PaymentPage /> },
           ],
         },
         {
@@ -96,8 +102,8 @@ const router = createBrowserRouter(
             { path: 'admin/artists', element: <ArtistManagement /> },
             { path: 'admin/comments', element: <CommentManagement /> },
             { path: 'admin/contents', element: <ContentManagement /> },
-            { path: 'admin/subscriptions', element: <SubscriptionManagement /> },
             { path: 'admin/files', element: <FileManagement /> },
+            { path: 'admin/subscription-plans', element: <AdminSubscriptionPlansPage /> },
           ],
         },
         { path: '*', element: <Navigate to="/" replace /> },

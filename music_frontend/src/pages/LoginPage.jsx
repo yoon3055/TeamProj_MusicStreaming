@@ -74,7 +74,9 @@ const LoginPage = () => {
     
     // 폼 변경 시에도 실행
     const observer = new MutationObserver(disablePasswordManager);
-    observer.observe(document.body, { childList: true, subtree: true });
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
     
     return () => observer.disconnect();
   }, [handleOAuth2Redirect]);
@@ -83,7 +85,11 @@ const LoginPage = () => {
     <div className="login-page-container">
       <div className="login-box">
         <Link to="/" className="logo-link">
-          <img src="/images/logo.png" alt="FLO 로고" className="logo-image" />
+          <div className="header-logo-container">
+            <div className="music-icon">🎵</div>
+            <h2 className="header-app-title">Fruitify</h2>
+            <div className="streaming-badge">STREAMING</div>
+          </div>
         </Link>
 
         <Formik
@@ -166,20 +172,7 @@ const LoginPage = () => {
                 </p>
               </div>
 
-              <div className="oauth-login">
-                <a
-                  href={`${API_BASE_URL}/oauth2/authorization/google`}
-                  className="google-login-button"
-                >
-                  Google로 로그인
-                </a>
-                <a
-                  href={`${API_BASE_URL}/oauth2/authorization/kakao`}
-                  className="kakao-login-button"
-                >
-                  카카오로 로그인
-                </a>
-              </div>
+
             </Form>
           )}
         </Formik>

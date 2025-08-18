@@ -13,10 +13,10 @@
 }
 
 .footer-app-link {
-  color: var(--flo-accent-blue); /* text-blue-400 */
+  color: var(--accent-green-2);
   text-decoration: none;
-  transition: color 0.2s ease; /* transition-colors duration-200 */
-  font-weight: 600; /* font-semibold */
+  transition: color 0.2s ease;
+  font-weight: 600;
 }
 
 .footer-app-link:hover {

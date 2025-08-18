@@ -25,7 +25,7 @@ const InteractiveSongCard = ({ song, onPlay }) => {
         />
         <div className="interactive-song-card-text-content">
           <span className="interactive-song-card-title">{song.title}</span>
-          <span className="interactive-song-card-artist">{song.artist}</span>
+          <span className="interactive-song-card-artist">{typeof song.artist === 'object' ? song.artist?.name || '아티스트' : song.artist || '아티스트'}</span>
           {song.isHighQuality && (
             <motion.span
               className="interactive-song-card-quality-badge" 

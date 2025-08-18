@@ -29,11 +29,11 @@
 }
 
 .filter-button-active {
-  background-color: var(--flo-accent-blue); /* bg-blue-600 */
+  background-color: var(--accent-green-2);
   color: var(--flo-text-white);
 }
 
 .filter-button-active:hover {
-  background-color: var(--flo-accent-blue); /* 호버 시 색상 유지 */
+  background-color: var(--accent-green-3);
 }
 

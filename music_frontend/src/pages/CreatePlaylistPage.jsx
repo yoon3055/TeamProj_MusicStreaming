@@ -76,7 +76,7 @@ const CreatePlaylistPage = () => {
       }
 
       alert(`플레이리스트 "${playlistTitle}"이(가) 생성되었습니다!`);
-      navigate('/my-playlists');
+      navigate('/');
       
     } catch (error) {
       console.error('플레이리스트 생성 실패:', error);
@@ -87,7 +87,7 @@ const CreatePlaylistPage = () => {
   };
 
   return (
-    <div className="create-playlist-container">
+    <>
       <div className="create-playlist-header">
         <h1>
           <FaPlus className="header-icon" />
@@ -121,15 +121,13 @@ const CreatePlaylistPage = () => {
 
         </div>
 
-        {/* 노래 선택 섹션 */}
         <div className="song-selection-section">
-          <h2>
+          {/* <h2>
             노래 선택 
             <span className="selected-count">({selectedSongs.length}곡 선택됨)</span>
-          </h2>
+          </h2> */}
 
-          {/* 검색 바 */}
-          <div className="search-bar">
+          {/* <div className="search-bar">
             <FaSearch className="search-icon" />
             <input
               type="text"
@@ -137,7 +135,7 @@ const CreatePlaylistPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
+          </div> */}
 
           {/* 선택된 노래 목록 */}
           {selectedSongs.length > 0 && (
@@ -221,7 +219,7 @@ const CreatePlaylistPage = () => {
           </button>
         </div>
       </form>
-    </div>
+    </>
   );
 };
 

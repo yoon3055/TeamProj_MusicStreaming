@@ -69,7 +69,7 @@ const PlaylistSongItem = ({ song, onPlaySong }) => {
     <li className="playlist-song-item">
       <div className="song-info-wrapper">
         <Link to={`/song/${song.id}`}>
-          <span className="song-title">{song.title}</span> - <span className="song-artist">{song.artist}</span>
+          <span className="song-title">{song.title}</span> - <span className="song-artist">{typeof song.artist === 'object' ? song.artist?.name || '아티스트' : song.artist || '아티스트'}</span>
         </Link>
         <button
           onClick={() => onPlaySong(song)}

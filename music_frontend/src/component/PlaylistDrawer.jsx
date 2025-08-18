@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { MusicPlayerContext } from '../context/MusicPlayerContext';
 import CategoryCard from './CategoryCard';
 import Albumcard from './Albumcard';
@@ -24,6 +25,7 @@ const PlaylistDrawer = ({
   onToggleFollow,
 }) => {
   const { playSong } = useContext(MusicPlayerContext);
+  const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(0);
   const containerRef = useRef(null);
@@ -71,13 +73,21 @@ const PlaylistDrawer = ({
     switch (cardType) {
       case 'artist':
         return (
-          <div key={item.id} className="artist-card">
+          <div 
+            key={item.id} 
+            className="artist-card"
+            onClick={() => navigate(`/artist/${item.id}`)}
+            style={{ cursor: 'pointer' }}
+          >
             <img src={item.profileImageUrl} alt={item.name} className="artist-card-profile-image" />
             <div className="artist-card-name">{item.name}</div>
             <div className="artist-card-interactions">
               <div className="interaction-item">
                 <button
-                  onClick={() => onToggleLike && onToggleLike(item.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 카드 클릭 이벤트 방지
+                    onToggleLike && onToggleLike(item.id);
+                  }}
                   className={`interaction-toggle-btn ${item.isLiked ? 'liked' : ''}`}
                 >
                   {item.isLiked ? <FaHeart /> : <FaRegHeart />}
@@ -113,7 +123,6 @@ const PlaylistDrawer = ({
           <button
             className="carousel-nav-button"
             onClick={handlePrevPage}
-            disabled={currentPage === 0}
             aria-label="이전 페이지"
           >
             ◀
@@ -121,7 +130,6 @@ const PlaylistDrawer = ({
           <button
             className="carousel-nav-button"
             onClick={handleNextPage}
-            disabled={currentPage === totalPages - 1}
             aria-label="다음 페이지"
           >
             ▶

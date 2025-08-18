@@ -1,210 +1,220 @@
-/* loginpage.css, signuppage.css 공통 스타일 */
+/* 로그인 페이지 스타일 */
 
 body {
-  background-color: #f9f9f6; /* FLO 라이트 모드 밝은 배경 */
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  color: #4b4b4b;
+  background-color: #FFFFFF !important;
+  font-family: 'Segoe UI', sans-serif !important;
+  margin: 0 !important;
+  color: #A5ADB8 !important;
 }
 
 .login-page-container,
 .signup-page-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  box-sizing: border-box;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 100vh !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+  background-color: #FFFFFF !important;
 }
 
 .login-box,
 .signup-box {
-  background-color: #ffffff00; /* 깨끗한 흰색 배경 */
-  padding: 2.5rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  width: 360px;
-  color: #4b4b4b;
-  box-sizing: border-box;
+  background-color: #FFFFFF !important;
+  padding: 2.5rem 2rem !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 20px rgba(113, 153, 49, 0.2) !important;
+  width: 360px !important;
+  color: #A5ADB8 !important;
+  box-sizing: border-box !important;
+  border: 2px solid #31998B !important;
 }
 
 .logo-link {
-  display: block;
-  margin: 0 auto 2rem auto;
-  width: 120px;
-  cursor: pointer;
+  display: block !important;
+  margin: 0 auto 2rem auto !important;
+  width: 120px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
 }
 
 .logo-image {
-  width: 100%;
-  height: auto;
+  width: 100% !important;
+  height: auto !important;
 }
 
 .form-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  color: #222222;
+  text-align: center !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 2rem !important;
+  color: #319967 !important;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
- 
+  margin-bottom: 1.5rem !important;
 }
+
 .form-group.text {
-  color: #000000;
+  color: #A5ADB8 !important;
 }
 
 .form-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #44308a;
-  background-color: #ffffff; /* 배경 흰색 */
-  color: #4b4b4b !important; /* <--- 이 부분에 !important 추가 */
-  font-size: 1rem;
-  outline: none;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-  box-sizing: border-box;
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 8px !important;
+  border: 2px solid #31998B !important;
+  background-color: #FFFFFF !important;
+  color: black !important;
+  font-size: 1rem !important;
+  outline: none !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+  box-sizing: border-box !important;
 }
 
-
 .form-input::placeholder {
-  color: #999999; /* 플레이스홀더 색상도 연한 회색으로 변경 */
+  color: #319967 !important;
 }
 
 .form-input:focus {
-  box-shadow: 0 0 8px 2px #44308a;
-  border-color: #44308a;
-  color: #222222 !important; /* <--- 이 부분도 !important 추가 */
-  background-color: #ffffff;
+  box-shadow: 0 0 8px 2px #449931 !important;
+  border-color: #449931 !important;
+  color: black;
+  background-color: #FFFFFF !important;
 }
 
 .form-error {
-  color: #d32f2f;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  text-align: center;
+  color: #A5ADB8 !important;
+  font-size: 0.875rem !important;
+  margin-top: 0.25rem !important;
+  text-align: center !important;
 }
 
 .forgot-password-link {
-  text-align: right;
-  margin-bottom: 1rem;
+  text-align: right !important;
+  margin-bottom: 1rem !important;
 }
 
 .forgot-password-link a {
-  color: #7184a8;
-  text-decoration: none;
-  font-size: 0.9rem;
+  color: #319967 !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
 }
 
 .forgot-password-link a:hover {
-  text-decoration: underline;
+  text-decoration: underline !important;
+  color: #A5ADB8 !important;
 }
 
 .form-button {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: none;
-  background-color: #6a85b6; /* FLO 파란색 계열 */
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  width: 100% !important;
+  padding: 0.75rem !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background-color: #449931 !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
 }
 
 .form-button:hover {
-  background-color: #576a9e;
+  background-color: #319967 !important;
 }
 
 .form-links {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #6a85b6;
+  margin-top: 1.5rem !important;
+  text-align: center !important;
+  font-size: 0.9rem !important;
+  color: #319967 !important;
 }
 
 .form-link {
-  color: #6a85b6;
-  text-decoration: none;
-  font-weight: 600;
-  cursor: pointer;
+  color: #319967 !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
 }
 
 .form-link:hover {
-  text-decoration: underline;
+  text-decoration: underline !important;
+  color: #319967 !important;
 }
 
 .oauth-login {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin-top: 20px !important;
 }
 
 .oauth-button {
-  display: block;
-  width: 100%;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
-  color: transparent; /* 텍스트 숨김 (이미지로 대체) */
-  border: none;
-  border-radius: 4px;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
+  display: block !important;
+  width: 100% !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  text-align: center !important;
+  color: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  cursor: pointer !important;
 }
 
 .google-login-button {
-  background-image: url('/images/google_login.png');
-  margin-top: 10px;
-  border: 1px solid #ddd; /* 구글 로그인 버튼 테두리 */
-  border-radius: 10px;
-  box-shadow: 3px 1px 10px rgba(63, 0, 99, 0.3); /* 구글 로그인 버튼 그림자 */
+  background-image: url('/images/google_login.png') !important;
+  margin-top: 10px !important;
+  border: 2px solid #31998B !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(49, 153, 139, 0.3) !important;
+  background-color: #FFFFFF !important;
 }
 
 .kakao-login-button {
-  background-image: url('/images/kakao_login.png');
-  margin-top: 10px;
-  border: 1px solid #ddd; /* 카카오 로그인 버튼 테두리 */
-  border-radius: 10px;
-  box-shadow: 3px 1px 10px rgba(63, 0, 99, 0.3); /* 카카오 로그인 버튼 그림자 */
+  background-image: url('/images/kakao_login.png') !important;
+  margin-top: 10px !important;
+  border: 2px solid #719931 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(113, 153, 49, 0.3) !important;
+  background-color: #FFFFFF !important;
 }
+
 /* 소셜 로그인 버튼 공통 스타일 */
 .oauth-login a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50px;
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  text-indent: -9999px; /* 텍스트 숨기기 */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s ease-in-out;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 50px !important;
+  width: 100% !important;
+  border-radius: 8px !important;
+  margin-bottom: 15px !important;
+  text-indent: -9999px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 4px 8px rgba(49, 153, 139, 0.2) !important;
+  transition: box-shadow 0.2s ease-in-out !important;
+  border: 2px solid #31998B !important;
+  background-color: #FFFFFF !important;
 }
 
 .oauth-login a:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(49, 153, 139, 0.4) !important;
+  transform: translateY(-2px) !important;
 }
 
-/* Google 로그인 버튼 (이미지 경로 수정 필요) */
+/* Google 로그인 버튼 */
 .google-login-button {
-  background-image: url('/images/google_login.png'); /* 여기에 실제 구글 버튼 이미지 경로를 넣어주세요 */
-  background-color: #ffffff;
-  border: 1px solid #ddd;
+  background-image: url('/images/google_login.png') !important;
+  background-color: #FFFFFF !important;
+  border: 2px solid #31998B !important;
 }
 
-/* 카카오 로그인 버튼 (이미지 경로 수정 필요) */
+/* 카카오 로그인 버튼 */
 .kakao-login-button {
-  background-image: url('/images/kakao_login.png'); /* 여기에 실제 카카오 버튼 이미지 경로를 넣어주세요 */
-  background-color: #fee500;
-  border: none;
+  background-image: url('/images/kakao_login.png') !important;
+  background-color: #FFFFFF !important;
+  border: 2px solid #719931 !important;
 }

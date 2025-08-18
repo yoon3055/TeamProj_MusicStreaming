@@ -87,5 +87,45 @@ export const artistApi = {
       console.error('아티스트 좋아요 수 조회 실패:', error);
       throw error;
     }
+  },
+
+  // 아티스트별 노래 목록 조회
+  getArtistSongs: async (artistId) => {
+    try {
+      const response = await API.get(`/api/songs/by-artist/${artistId}`);
+      return response.data;
+    } catch (error) {
+      console.error('아티스트별 노래 목록 조회 실패:', error);
+      throw error;
+    }
+  }
+};
+
+// 좋아요한 아티스트 목록 조회
+export const fetchLikedArtists = async () => {
+  try {
+    const token = localStorage.getItem('jwt');
+    console.log('토큰 확인:', token ? '있음' : '없음');
+    
+    if (!token) {
+      return { success: false, message: '로그인이 필요합니다.' };
+    }
+
+    const response = await API.get('/api/users/me/liked-artists', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return {
+      success: true,
+      data: response.data.artists || []
+    };
+  } catch (error) {
+    console.error('좋아요한 아티스트 조회 실패:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || '아티스트 목록을 불러오는데 실패했습니다.'
+    };
   }
 };

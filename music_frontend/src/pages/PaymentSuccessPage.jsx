@@ -1,94 +1,181 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import '../styles/SubscriptionPage.css';
-
-const dummyPlans = [
-  { id: 'plan_basic', name: 'Basic', price: 9900, durationDays: 30 },
-  { id: 'plan_premium', name: 'Premium', price: 14900, durationDays: 30 },
-  { id: 'plan_pro', name: 'Pro', price: 19900, durationDays: 30 },
-];
-const dummyAlbums = {
-  'album_001': { id: 'album_001', title: '별 헤는 밤', artist: '플로아', price: 15000 },
-  'album_002': { id: 'album_002', title: '도시의 그림자', artist: '멜로디온', price: 18000 },
-  'album_003': { id: 'album_003', title: '새벽의 발자취', artist: '레몬트리', price: 12000 },
-};
+import '../styles/PaymentResultPage.css';
 
 const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const hasLogged = useRef(false);
+  const [loading, setLoading] = useState(true);
+  const [subscriptionData, setSubscriptionData] = useState(null);
   const [error, setError] = useState(null);
+  const [processed, setProcessed] = useState(false);
   
   const paymentKey = searchParams.get('paymentKey');
   const orderId = searchParams.get('orderId');
   const amount = searchParams.get('amount');
-  const type = searchParams.get('type');
-  const planId = searchParams.get('planId');
-  const albumId = searchParams.get('albumId');
 
   useEffect(() => {
-    if (!hasLogged.current) {
-      if (!paymentKey || !orderId || !amount || !type) {
-        setError('필수 결제 정보가 누락되었습니다.');
-      } else {
-        console.log(`🌐 PaymentSuccessPage: type=${type}, planId=${planId}, albumId=${albumId}, amount=${amount}, paymentKey=${paymentKey}, orderId=${orderId}`);
+    if (processed) return; // 이미 처리된 경우 중복 실행 방지
+    if (!paymentKey || !orderId || !amount) return; // 필수 파라미터 체크
+
+    const confirmPayment = async () => {
+      try {
+        setLoading(true);
+        setProcessed(true); // 처리 시작 표시
+
+        const token = localStorage.getItem('jwt');
+        console.log('=== 결제 승인 디버깅 ===');
+        console.log('localStorage에서 가져온 token:', token);
+        console.log('token 존재 여부:', !!token);
+        
+        if (!token) {
+          console.error('토큰이 없음 - localStorage 전체 내용:', localStorage);
+          throw new Error('로그인이 필요합니다.');
+        }
+
+        const response = await fetch('http://localhost:8080/api/payment/confirm', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            paymentKey: paymentKey,
+            orderId: orderId,
+            amount: parseInt(amount)
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('결제 승인 요청이 실패했습니다.');
+        }
+
+        const data = await response.json();
+
+        setSubscriptionData({
+          planType: data.planType,
+          status: data.status,
+          startDate: new Date(data.startDate),
+          endDate: new Date(data.endDate),
+          paymentKey: data.paymentKey,
+          orderId: data.orderId,
+          amount: data.amount
+        });
+
+      } catch (error) {
+        console.error('결제 승인 실패:', error);
+        setError(error.message || '결제 승인 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
       }
-      hasLogged.current = true;
-    }
-  }, [type, planId, albumId, amount, paymentKey, orderId]);
+    };
 
-  const item = type === 'subscription'
-    ? dummyPlans.find((p) => p.id === planId)
-    : type === 'album'
-    ? dummyAlbums[albumId]
-    : null;
+    // 1초 후에 처리 (로딩 효과)
+    setTimeout(confirmPayment, 1000);
+  }, [paymentKey, orderId, amount, processed]); // navigate 제거
 
-  const navigateToPreviousPage = () => {
-    if (type === 'subscription') {
-      navigate('/subscription-plans', { replace: true });
-    } else if (type === 'album') {
-      navigate('/myPage', { replace: true });
-    }
+  const handleGoHome = () => {
+    navigate('/');
   };
 
-  return (
-    <div className="subscription-page-container">
-      <h2>결제 성공</h2>
-      {error ? (
-        <div>
-          <p>{error}</p>
-          <button onClick={navigateToPreviousPage} className="retry-button">다시 시도</button>
+  const handleGoToSubscription = () => {
+    navigate('/subscription-plans');
+  };
+
+  if (loading) {
+    return (
+      <div className="payment-result-container">
+        <div className="loading-section">
+          <div className="loading-spinner"></div>
+          <h2>결제를 처리하고 있습니다...</h2>
+          <p>잠시만 기다려주세요.</p>
         </div>
-      ) : (
-        <>
-          <p>결제가 성공적으로 완료되었습니다!</p>
-          {item && type === 'subscription' && (
-            <>
-              <p>구독 요금제: {item.name}</p>
-              <p>금액: ₩ {Number(amount).toLocaleString()}</p>
-              <p>기간: {item.durationDays}일</p>
-              <p>결제 키: {paymentKey}</p>
-              <p>주문 ID: {orderId}</p>
-              <button onClick={navigateToPreviousPage} className="retry-button">요금제 페이지로 돌아가기</button>
-            </>
-          )}
-          {item && type === 'album' && (
-            <>
-              <p>앨범: {item.title} - {item.artist}</p>
-              <p>금액: ₩ {Number(amount).toLocaleString()}</p>
-              <p>결제 키: {paymentKey}</p>
-              <p>주문 ID: {orderId}</p>
-              <button onClick={navigateToPreviousPage} className="retry-button">마이페이지로 돌아가기</button>
-            </>
-          )}
-          {!item && (
-            <>
-              <p>결제 항목 정보를 불러올 수 없습니다. (type: {type}, planId: {planId}, albumId: {albumId})</p>
-              <button onClick={navigateToPreviousPage} className="retry-button">마이페이지로 돌아가기</button>
-            </>
-          )}
-        </>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="payment-result-container">
+      <div className="success-section">
+        <div className="success-icon">
+          <div className="checkmark">✓</div>
+        </div>
+        
+        <h1>결제가 완료되었습니다!</h1>
+        <p className="success-message">
+          구독이 성공적으로 활성화되었습니다.
+        </p>
+
+        {subscriptionData && (
+          <div className="payment-details">
+            <h3>결제 정보</h3>
+            <div className="detail-grid">
+              <div className="detail-item">
+                <span className="label">구독 플랜:</span>
+                <span className="value">{subscriptionData.planType} 플랜</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">결제 금액:</span>
+                <span className="value">₩{parseInt(amount).toLocaleString()}</span>
+              </div>
+              <div className="detail-item">
+                <span className="label">구독 시작일:</span>
+                <span className="value">
+                  {new Date(subscriptionData.startDate).toLocaleDateString('ko-KR')}
+                </span>
+              </div>
+              <div className="detail-item">
+                <span className="label">구독 만료일:</span>
+                <span className="value">
+                  {new Date(subscriptionData.endDate).toLocaleDateString('ko-KR')}
+                </span>
+              </div>
+              <div className="detail-item">
+                <span className="label">주문번호:</span>
+                <span className="value">{orderId}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="subscription-benefits">
+          <h3>이제 이런 혜택을 누리실 수 있어요!</h3>
+          <ul>
+            {subscriptionData?.planType === 'basic' ? (
+              <>
+                <li>✓ 무제한 음악 스트리밍</li>
+                <li>✓ 기본 음질 (128kbps)</li>
+                <li>✓ 광고 없는 재생</li>
+                <li>✓ 모바일/웹 이용 가능</li>
+              </>
+            ) : (
+              <>
+                <li>✓ 무제한 음악 스트리밍</li>
+                <li>✓ 고품질 음질 (320kbps)</li>
+                <li>✓ 광고 없는 재생</li>
+                <li>✓ 모바일/웹 이용 가능</li>
+                <li>✓ 오프라인 다운로드 (월 50곡)</li>
+                <li>✓ 플레이리스트 무제한 생성</li>
+                <li>✓ 가사 보기 기능</li>
+              </>
+            )}
+          </ul>
+        </div>
+
+        <div className="action-buttons">
+          <button onClick={handleGoHome} className="primary-button">
+            홈으로 가기
+          </button>
+          <button onClick={handleGoToSubscription} className="secondary-button">
+            구독 관리
+          </button>
+        </div>
+
+        <div className="support-info">
+          <p>결제 관련 문의사항이 있으시면 고객센터로 연락해주세요.</p>
+          <p>📞 1588-0000 | 📧 support@musicapp.com</p>
+        </div>
+      </div>
     </div>
   );
 };

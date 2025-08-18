@@ -10,9 +10,22 @@
   border-right: 1px solid #dee2e6;
 }
 
-.admin-title {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+.admin-container .admin-sidebar .admin-title,
+.admin-container .admin-sidebar h1.admin-title,
+.admin-container h1.admin-title {
+  font-size: 1.5rem !important;
+  margin-bottom: 20px !important;
+  color: #449931 !important;
+}
+
+/* 추가 보험용 선택자 - 그라데이션 제거 */
+div.admin-container div.admin-sidebar h1 {
+  color: #449931 !important;
+  background: none !important;
+  background-image: none !important;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
 .admin-menu {
@@ -38,6 +51,7 @@
 .admin-menu-card h3 {
   margin: 0 0 10px;
   font-size: 0.9rem;
+  color: #333;
 }
 
 .admin-menu-card p {

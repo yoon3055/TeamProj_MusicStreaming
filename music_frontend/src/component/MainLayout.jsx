@@ -38,10 +38,6 @@ export default function MainLayout() {
         <main className="main-content-area">
           <Outlet />
         </main>
-
-        <aside className="main-sidebar-area">
-         
-        </aside>
       </div>
 
       <div>

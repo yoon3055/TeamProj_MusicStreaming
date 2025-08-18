@@ -24,7 +24,11 @@ const SignupPage = () => {
     <div className="signup-page-container">
       <div className="signup-box">
         <Link to="/" className="logo-link">
-          <img src="/images/logo.png" alt="Logo" className="logo-image" />
+          <div className="header-logo-container">
+            <div className="music-icon">🎵</div>
+            <h2 className="header-app-title">Fruitify</h2>
+            <div className="streaming-badge">STREAMING</div>
+          </div>
         </Link>
         <h2 className="form-title">회원가입</h2>
 
@@ -74,20 +78,7 @@ const SignupPage = () => {
           )}
         </Formik>
 
-        <div className="oauth-login">
-          <button
-            className="oauth-button google-login-button"
-            onClick={() => handleOAuthLogin('google')}
-          >
-            Google 로그인
-          </button>
-          <button
-            className="oauth-button kakao-login-button"
-            onClick={() => handleOAuthLogin('kakao')}
-          >
-            Kakao 로그인
-          </button>
-        </div>
+
 
         <div className="form-links">
           이미 계정이 있으신가요?{' '}

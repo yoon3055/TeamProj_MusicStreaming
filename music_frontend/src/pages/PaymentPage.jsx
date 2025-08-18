@@ -1,124 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import '../styles/SubscriptionPage.css';
-
-const dummyPlans = [
-  { id: 'plan_basic', name: 'Basic', description: '기본 구독 요금제로, 표준 음질 스트리밍 제공', price: 9900, durationDays: 30, supportsHighQuality: false },
-  { id: 'plan_premium', name: 'Premium', description: '고음질 스트리밍과 오프라인 재생 지원', price: 14900, durationDays: 30, supportsHighQuality: true },
-  { id: 'plan_pro', name: 'Pro', description: '최고 음질과 모든 프리미엄 기능 포함', price: 19900, durationDays: 30, supportsHighQuality: true },
-];
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { loadTossPayments } from '@tosspayments/payment-sdk';
+import '../styles/PaymentPage.css';
 
 const PaymentPage = () => {
-  const { planId } = useParams();
-  const { setIsSubscribed } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
-  const [item, setItem] = useState(null);
+  const { planId, planName, price } = location.state || {};
+  
+  const [tossPayments, setTossPayments] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const jwt = localStorage.getItem('jwt');
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+
+  const clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq'; // 토스 테스트 클라이언트 키
 
   useEffect(() => {
-    console.log(`🌐 현재 planId: ${planId}`);
-    if (!jwt) {
-      setError('로그인이 필요합니다.');
+    if (!planId || !planName || !price) {
+      setError('결제 정보가 없습니다.');
       setLoading(false);
       return;
     }
-    if (planId) {
-      const selectedPlan = dummyPlans.find((p) => p.id === planId);
-      if (selectedPlan) {
-        setItem({ ...selectedPlan, type: 'subscription' });
+
+    const initializeTossPayments = async () => {
+      try {
+        const toss = await loadTossPayments(clientKey);
+        setTossPayments(toss);
         setLoading(false);
-      } else {
-        console.log(`🌐 유효하지 않은 planId: ${planId}, 기본 요금제로 리다이렉트`);
-        setError('선택한 요금제를 찾을 수 없습니다. 기본 요금제로 이동합니다.');
-        navigate('/payment/subscription/plan_basic', { replace: true });
+      } catch (err) {
+        console.error('토스 페이먼츠 초기화 실패:', err);
+        setError('결제 시스템을 불러올 수 없습니다.');
+        setLoading(false);
       }
-    } else {
-      setError('구독 ID가 필요합니다.');
-      setLoading(false);
-    }
-  }, [planId, jwt, navigate]);
+    };
 
-  const generateDummyPaymentData = () => {
-    const paymentKey = `pay_${Math.random().toString(36).substr(2, 9)}`;
-    const orderId = `order_subscription_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    return { paymentKey, orderId };
+    initializeTossPayments();
+  }, [planId, planName, price]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomerInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleConfirmPayment = async (e) => {
-    e.preventDefault();
-    if (isProcessing) {
-      console.log('🌐 결제 처리 중, 중복 요청 무시');
-      return;
-    }
-    setIsProcessing(true);
-    setError(null);
-
-    if (!jwt) {
-      setError('로그인이 필요합니다.');
-      setIsProcessing(false);
-      return;
-    }
-    if (!item) {
-      setError('구독 정보가 없습니다.');
-      setIsProcessing(false);
+  const handlePayment = async () => {
+    if (!tossPayments) {
+      setError('결제 시스템이 준비되지 않았습니다.');
       return;
     }
 
-    const isValidCard = cardNumber.match(/^\d{16}$/);
-    const isValidExpiry = expiry.match(/^(0[1-9]|1[0-2])\/\d{2}$/);
-    const isValidCvc = cvc.match(/^\d{3}$/);
-
-    if (!cardNumber || !expiry || !cvc) {
-      setError('모든 결제 정보를 입력해주세요.');
-      setIsProcessing(false);
-      return;
-    }
-    if (!isValidCard || !isValidExpiry || !isValidCvc) {
-      setError('유효한 결제 정보를 입력해주세요.');
-      setIsProcessing(false);
+    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
+      setError('모든 정보를 입력해주세요.');
       return;
     }
 
+    const orderId = `subscription_${planId}_${Date.now()}`;
+    
     try {
-      const isSuccess = true; // 실제 결제 성공 여부 확인
-      const { paymentKey, orderId } = generateDummyPaymentData();
-      if (isSuccess) {
-        setIsSubscribed(true);
-        console.log(`🌐 더미 구독 결제 성공: 요금제 ID ${planId}`);
-        const successUrl = `/payment/success?paymentKey=${paymentKey}&orderId=${orderId}&amount=${item.price}&type=subscription&planId=${planId}`;
-        navigate(successUrl, { replace: true });
-      } else {
-        throw new Error('결제 처리 중 오류가 발생했습니다.');
-      }
+      await tossPayments.requestPayment('카드', {
+        amount: price,
+        orderId: orderId,
+        orderName: `${planName} 구독`,
+        customerName: customerInfo.name,
+        customerEmail: customerInfo.email,
+        customerMobilePhone: customerInfo.phone,
+        successUrl: `${window.location.origin}/payment/success`,
+        failUrl: `${window.location.origin}/payment/fail`,
+        metadata: {
+          planId: planId,
+          planName: planName
+        }
+      });
     } catch (err) {
-      console.error('🌐 결제 실패:', err);
-      const failUrl = `/payment/fail?error=${encodeURIComponent(err.message)}&type=subscription&planId=${planId}`;
-      navigate(failUrl, { replace: true });
-    } finally {
-      setIsProcessing(false);
+      console.error('결제 요청 실패:', err);
+      setError('결제 요청 중 오류가 발생했습니다.');
     }
   };
 
-  const handleCancel = () => {
-    navigate('/subscription-plans', { replace: true });
+  const handleBack = () => {
+    navigate('/subscription-plans');
   };
 
   if (loading) {
-    return <div className="subscription-page-loading">결제 정보를 불러오는 중입니다...</div>;
+    return (
+      <div className="payment-loading">
+        <div className="loading-spinner"></div>
+        <p>결제 시스템을 불러오는 중...</p>
+      </div>
+    );
   }
 
-  if (error || !item) {
+  if (error) {
     return (
-      <div className="subscription-page-loading subscription-page-error">
-        {error || '결제 정보를 불러올 수 없습니다.'}
-        <button onClick={handleCancel} className="retry-button">
+      <div className="payment-error">
+        <h2>오류 발생</h2>
+        <p>{error}</p>
+        <button onClick={handleBack} className="back-button">
           돌아가기
         </button>
       </div>
@@ -126,59 +109,127 @@ const PaymentPage = () => {
   }
 
   return (
-    <div className="subscription-page-container">
-      <h2 className="subscription-page-title">구독 결제</h2>
-      <div className="subscription-plan-card">
-        <h3 className="plan-name">{item.name}</h3>
-        <p className="plan-description">{item.description}</p>
-        <p className="plan-price">₩ {item.price?.toLocaleString()} / {item.durationDays}일</p>
-        {item.supportsHighQuality && (
-          <span className="plan-high-quality-badge">고음질 지원</span>
-        )}
-        <form onSubmit={handleConfirmPayment} className="payment-form">
-          <div className="form-group">
-            <label htmlFor="cardNumber">카드 번호</label>
-            <input
-              type="text"
-              id="cardNumber"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              placeholder="1234 5678 9012 3456"
-              className="payment-input"
-            />
+    <div className="payment-container">
+      <div className="payment-header">
+        <h1>구독 결제</h1>
+        <button onClick={handleBack} className="back-btn">
+          ← 돌아가기
+        </button>
+      </div>
+
+      <div className="payment-content">
+        <div className="order-summary">
+          <h2>주문 정보</h2>
+          <div className="plan-info">
+            <div className="plan-details">
+              <h3>{planName} 플랜</h3>
+              <p className="plan-description">
+                {planId === 'basic' ? 
+                  '무제한 음악 스트리밍, 기본 음질, 광고 없는 재생' :
+                  '무제한 음악 스트리밍, 고품질 음질, 오프라인 다운로드, 플레이리스트 무제한'
+                }
+              </p>
+            </div>
+            <div className="plan-price">
+              <span className="price">₩{price.toLocaleString()}</span>
+              <span className="period">/월</span>
+            </div>
           </div>
-          <div className="form-group">
-            <label htmlFor="expiry">유효 기간</label>
-            <input
-              type="text"
-              id="expiry"
-              value={expiry}
-              onChange={(e) => setExpiry(e.target.value)}
-              placeholder="MM/YY"
-              className="payment-input"
-            />
+          
+          <div className="benefits">
+            <h4>구독 혜택</h4>
+            <ul>
+              {planId === 'basic' ? (
+                <>
+                  <li>✓ 무제한 음악 스트리밍</li>
+                  <li>✓ 기본 음질 (128kbps)</li>
+                  <li>✓ 광고 없는 재생</li>
+                  <li>✓ 모바일/웹 이용 가능</li>
+                </>
+              ) : (
+                <>
+                  <li>✓ 무제한 음악 스트리밍</li>
+                  <li>✓ 고품질 음질 (320kbps)</li>
+                  <li>✓ 광고 없는 재생</li>
+                  <li>✓ 모바일/웹 이용 가능</li>
+                  <li>✓ 오프라인 다운로드 (월 50곡)</li>
+                  <li>✓ 플레이리스트 무제한 생성</li>
+                  <li>✓ 가사 보기 기능</li>
+                </>
+              )}
+            </ul>
           </div>
-          <div className="form-group">
-            <label htmlFor="cvc">CVC</label>
-            <input
-              type="text"
-              id="cvc"
-              value={cvc}
-              onChange={(e) => setCvc(e.target.value)}
-              placeholder="123"
-              className="payment-input"
-            />
+        </div>
+
+        <div className="payment-form">
+          <h2>결제자 정보</h2>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="form-group">
+              <label htmlFor="name">이름 *</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={customerInfo.name}
+                onChange={handleInputChange}
+                placeholder="홍길동"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">이메일 *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={customerInfo.email}
+                onChange={handleInputChange}
+                placeholder="example@email.com"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="phone">휴대폰 번호 *</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={customerInfo.phone}
+                onChange={handleInputChange}
+                placeholder="010-1234-5678"
+                required
+              />
+            </div>
+
+            {error && <div className="error-message">{error}</div>}
+
+            <div className="payment-actions">
+              <div className="total-amount">
+                <span>총 결제금액: </span>
+                <strong>₩{price.toLocaleString()}</strong>
+              </div>
+              <button 
+                type="button" 
+                onClick={handlePayment}
+                className="payment-button"
+              >
+                결제하기
+              </button>
+            </div>
+          </form>
+
+          <div className="payment-notice">
+            <h4>결제 안내</h4>
+            <ul>
+              <li>• 구독은 결제일로부터 30일간 이용 가능합니다.</li>
+              <li>• 자동 갱신되며, 언제든지 해지할 수 있습니다.</li>
+              <li>• 해지 시 현재 구독 기간 종료까지 서비스 이용 가능합니다.</li>
+              <li>• 결제는 토스페이먼츠를 통해 안전하게 처리됩니다.</li>
+            </ul>
           </div>
-          {error && <p className="payment-error">{error}</p>}
-          <div className="payment-buttons">
-            <button type="submit" className="plan-select-button" disabled={isProcessing}>
-              {isProcessing ? '처리 중...' : '결제 진행'}
-            </button>
-            <button type="button" onClick={handleCancel} className="user-profile-cancel-button">
-              취소
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

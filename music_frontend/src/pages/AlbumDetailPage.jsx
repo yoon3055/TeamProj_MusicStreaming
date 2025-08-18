@@ -308,7 +308,7 @@ const AlbumDetailPage = () => {
                 />
                 <div className="track-details">
                   <span className="track-title">{song.title}</span>
-                  <span className="track-artist">{song.artist}</span>
+                  <span className="track-artist">{typeof song.artist === 'object' ? song.artist?.name || '아티스트' : song.artist || '아티스트'}</span>
                 </div>
               </div>
               <span className="track-duration">

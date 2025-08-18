@@ -257,15 +257,6 @@ const AdminDashboard = () => {
             <small>총 {stats.totalUsers}명의 사용자</small>
           </Link>
           <Link
-            to="/admin/contents"
-            className="admin-menu-card"
-            onClick={() => handleMenuClick('콘텐츠 관리')}
-          >
-            <h3>콘텐츠 관리</h3>
-            <p>음악, 앨범 관리</p>
-            <small>총 {stats.totalSongs}곡 등록됨</small>
-          </Link>
-          <Link
             to="/admin/artists"
             className="admin-menu-card"
             onClick={() => handleMenuClick('아티스트 관리')}
@@ -273,6 +264,24 @@ const AdminDashboard = () => {
             <h3>아티스트 관리</h3>
             <p>아티스트 등록, 수정, 삭제</p>
             <small>아티스트 정보 관리</small>
+          </Link>
+          <Link
+            to="/admin/files"
+            className="admin-menu-card"
+            onClick={() => handleMenuClick('파일 관리')}
+          >
+            <h3>파일 관리</h3>
+            <p>음악 업로드 & 유지 보수 관리</p>
+            <small>{stats.totalSongs}개의 음악 등록 중</small>
+          </Link>
+          <Link
+            to="/admin/subscription-plans"
+            className="admin-menu-card"
+            onClick={() => handleMenuClick('구독 관리')}
+          >
+            <h3>구독 관리</h3>
+            <p>구독 플랜 및 사용자 구독 상태 관리</p>
+            <small>{stats.activeSubscriptions}명이 구독 중</small>
           </Link>
           <Link
             to="/admin/comments"
@@ -284,22 +293,13 @@ const AdminDashboard = () => {
             <small>총 {stats.totalComments}개의 댓글</small>
           </Link>
           <Link
-            to="/admin/subscriptions"
+            to="/admin/contents"
             className="admin-menu-card"
-            onClick={() => handleMenuClick('구독 관리')}
+            onClick={() => handleMenuClick('콘텐츠 관리')}
           >
-            <h3>구독 관리</h3>
-            <p>구독 플랜 및 사용자 구독 상태 관리</p>
-            <small>{stats.activeSubscriptions}명이 구독 중</small>
-          </Link>
-          <Link
-            to="/admin/files"
-            className="admin-menu-card"
-            onClick={() => handleMenuClick('파일 관리')}
-          >
-            <h3>파일 관리</h3>
-            <p>음악 업로드 & 유지 보수 관리</p>
-            <small>{stats.totalSongs}개의 음악 등록 중</small>
+            <h3>콘텐츠 관리</h3>
+            <p>음악, 앨범 관리</p>
+            <small>총 {stats.totalSongs}곡 등록됨</small>
           </Link>
         </div>
       </div>

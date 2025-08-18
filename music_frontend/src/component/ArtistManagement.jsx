@@ -167,7 +167,7 @@ const ArtistManagement = () => {
 
   return (
     <div className="artist-management">
-      <h3 style={{fontSize: '1.2rem', marginBottom: '15px'}}>아티스트 관리</h3>
+      <h3 style={{fontSize: '1.2rem', marginBottom: '15px', color: '#000000 !important'}}>아티스트 관리</h3>
       <div className="artist-management-header">
         <button 
           className="create-artist-btn"
@@ -307,9 +307,6 @@ const ArtistManagement = () => {
                   {artist.description && (
                     <p className="artist-description">{artist.description}</p>
                   )}
-                  <p className="artist-date">
-                    등록일: {new Date(artist.createdAt).toLocaleDateString('ko-KR')}
-                  </p>
                 </div>
                 <div className="artist-actions">
                   <button 

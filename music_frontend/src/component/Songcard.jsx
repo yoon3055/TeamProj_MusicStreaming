@@ -23,18 +23,6 @@ const Songcard = ({ song, onToggleLike }) => {
   return (
     <div className="playlist-card song-card-custom" onClick={handleCardClick}>
       <Link to={`/album/${id}`} className="playlist-link">
-        <div className="playlist-image-wrapper">
-          <img src={coverUrl} alt={title} className="playlist-image" />
-          <div className="play-overlay">
-            <button className="play-button" onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleCardClick();
-            }}>
-              <FaPlay />
-            </button>
-          </div>
-        </div>
         <div className="playlist-info">
           <h4 className="playlist-title">{title}</h4>
           <p className="playlist-artist">{artist}</p>
