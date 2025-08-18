@@ -1,0 +1,368 @@
+.payment-result-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-section,
+.success-section,
+.fail-section {
+  background: white;
+  padding: 50px 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Loading Section */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-section h2 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+}
+
+.loading-section p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Success Section */
+.success-icon {
+  margin-bottom: 30px;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0 auto;
+  animation: checkmarkPulse 0.6s ease-out;
+}
+
+@keyframes checkmarkPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-section h1 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.success-message {
+  color: #666;
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+}
+
+/* Fail Section */
+.fail-icon {
+  margin-bottom: 30px;
+}
+
+.error-mark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0 auto;
+  animation: errorShake 0.6s ease-out;
+}
+
+@keyframes errorShake {
+  0%, 20%, 40%, 60%, 80% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+}
+
+.fail-section h1 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.fail-message {
+  color: #666;
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.error-details {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Payment Details */
+.payment-details {
+  background-color: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 30px 0;
+  text-align: left;
+}
+
+.payment-details h3 {
+  color: #333;
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: #666;
+  font-weight: 500;
+}
+
+.value {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Benefits Section */
+.subscription-benefits {
+  background-color: #e8f5e8;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 30px 0;
+  text-align: left;
+}
+
+.subscription-benefits h3 {
+  color: #333;
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.subscription-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subscription-benefits li {
+  padding: 8px 0;
+  color: #2e7d32;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Fail Reasons */
+.fail-reasons {
+  background-color: #fff3cd;
+  padding: 25px;
+  border-radius: 12px;
+  margin: 30px 0;
+  text-align: left;
+}
+
+.fail-reasons h3 {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.fail-reasons ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fail-reasons li {
+  padding: 6px 0;
+  color: #856404;
+  font-size: 0.95rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin: 40px 0 30px 0;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,123,255,0.3);
+}
+
+.secondary-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+}
+
+.secondary-button:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(108,117,125,0.3);
+}
+
+/* Support Info */
+.support-info {
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 2px solid #e9ecef;
+  color: #666;
+}
+
+.support-info p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.support-info p:first-child {
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payment-result-container {
+    padding: 20px 15px;
+  }
+  
+  .loading-section,
+  .success-section,
+  .fail-section {
+    padding: 30px 25px;
+  }
+  
+  .success-section h1,
+  .fail-section h1 {
+    font-size: 1.8rem;
+  }
+  
+  .success-message,
+  .fail-message {
+    font-size: 1.1rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .checkmark,
+  .error-mark {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+}

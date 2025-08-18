@@ -1,0 +1,339 @@
+/* 필터 바 컨테이너 */
+.ranking-filter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 1rem;
+}
+
+/* 장르 필터 래퍼 - 배경 하얀 박스 */
+.genre-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* 좌우 스크롤 버튼 (페이지 이동 버튼) */
+.scroll-btn {
+  border: none;
+  background: transparent;
+  background-color: #5147e4;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  color: #ececec; /* 장르 필터 버튼 활성화 색깔과 동일 */
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  transition: none; /* 호버 효과 제거 */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-btn:disabled {
+  color: #bfbffb; /* 연한 보라색 계열 */
+  cursor: default;
+}
+
+/* 장르 필터 스크롤 영역 */
+.genre-filter-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex-grow: 1;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.genre-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 필터 버튼 기본 */
+.filter-button {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #5c5c5c;
+  background-color: transparent;
+  user-select: none;
+  transition: none; /* hover 효과 제거 */
+}
+
+/* 필터 버튼 포커스 (접근성) */
+.filter-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #7f7ff3;
+}
+
+/* 활성화 필터 */
+.filter-button.active {
+  background: linear-gradient(90deg, #5147e4 0%, #917fe3 100%);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(81, 71, 228, 0.7);
+}
+
+/* 호버 시에도 활성화된 버튼 색 유지 */
+.filter-button:hover,
+.filter-button.active:hover {
+  background: linear-gradient(90deg, #5147e4 0%, #917fe3 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(81, 71, 228, 0.7) !important;
+}
+
+/* 지역 필터 그룹 - 배경 하얀 박스 */
+.region-filter-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* 지역 필터 버튼 스타일 (종합, 국내, 해외) */
+.region-filter-group .filter-button {
+  border-radius: 20px;
+  padding: 8px 22px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #5c5c5c;
+  background-color: transparent;
+  transition: none;
+}
+
+/* 지역 필터 활성화 */
+.region-filter-group .filter-button.active {
+  background: linear-gradient(90deg, #5147e4 0%, #917fe3 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(81, 71, 228, 0.7);
+  font-weight: 700;
+}
+
+/* 지역 필터 버튼 호버 색 유지 */
+.region-filter-group .filter-button:hover,
+.region-filter-group .filter-button.active:hover {
+  background: linear-gradient(90deg, #5147e4 0%, #917fe3 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(81, 71, 228, 0.7) !important;
+}
+
+/* 랭킹 리스트 */
+.ranking-list {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 랭킹 아이템 */
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #fafafa;
+  box-shadow: 0 0 6px rgba(0,0,0,0.05);
+  transition: background-color 0.25s ease;
+  position: relative;
+}
+
+.ranking-item:hover {
+  background-color: #f0f0ff;
+}
+
+/* 랭킹 인덱스 번호 */
+.ranking-index {
+  font-weight: 700;
+  font-size: 1.1rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+  color: #5147e4;
+}
+
+/* 썸네일 래퍼 - position: relative 로 재생버튼 오버레이 위치 지정 */
+.thumbnail-wrapper {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+/* 앨범 썸네일 */
+.album-thumbnail {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* 호버 시 나타나는 재생 버튼 */
+.thumbnail-wrapper .play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(81, 71, 228, 0.9);
+  color: white;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* 썸네일에 호버 시 재생버튼 보임 */
+.ranking-item:hover .thumbnail-wrapper .play-button {
+  opacity: 1;
+}
+
+/* 앨범명/아티스트 텍스트 박스 */
+.album-name-artist {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0; /* 텍스트 줄바꿈 및 ellipsis 위해 필수 */
+}
+
+.album-name,
+.artist-name {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.album-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #333;
+}
+
+.artist-name {
+  font-weight: 500;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* 곡 정보 텍스트 (곡수 / 길이) */
+.song-info {
+  width: 140px;
+  flex-shrink: 0;
+  text-align: center;
+  color: #444;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+/* 액션 버튼 그룹 */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 140px;
+  justify-content: flex-end;
+}
+
+/* 액션 버튼 기본 스타일 */
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #666;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+  padding: 0;
+  margin: 0;
+  min-width: auto;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.action-button:last-child {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.action-button:last-child > * {
+  vertical-align: middle;
+}
+
+.action-button:hover {
+  background: none;
+  color: #09d3da;
+  box-shadow: none;
+}
+
+/* 클릭(활성화) 시 색 변경 */
+.action-button.active {
+  color: #09d3da;
+  font-weight: 700;
+}
+
+/* 좋아요 & 팔로우 숫자 */
+.action-button .count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  user-select: none;
+  line-height: 1;
+}
+
+/* 반응형: 화면 작을 때 */
+@media screen and (max-width: 600px) {
+  .ranking-item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .album-name-artist {
+    flex-basis: 100%;
+    margin-bottom: 6px;
+  }
+  .song-info {
+    width: 100%;
+    margin-bottom: 6px;
+    text-align: left;
+  }
+  .action-buttons {
+    min-width: auto;
+    justify-content: flex-start;
+  }
+  .thumbnail-wrapper {
+    margin-bottom: 6px;
+  }
+}
+
+.ranking-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+  color: #333;
+}

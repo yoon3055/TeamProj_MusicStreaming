@@ -1,0 +1,220 @@
+/* 로그인 페이지 스타일 */
+
+body {
+  background-color: #FFFFFF !important;
+  font-family: 'Segoe UI', sans-serif !important;
+  margin: 0 !important;
+  color: #A5ADB8 !important;
+}
+
+.login-page-container,
+.signup-page-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 100vh !important;
+  padding: 1rem !important;
+  box-sizing: border-box !important;
+  background-color: #FFFFFF !important;
+}
+
+.login-box,
+.signup-box {
+  background-color: #FFFFFF !important;
+  padding: 2.5rem 2rem !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 20px rgba(113, 153, 49, 0.2) !important;
+  width: 360px !important;
+  color: #A5ADB8 !important;
+  box-sizing: border-box !important;
+  border: 2px solid #31998B !important;
+}
+
+.logo-link {
+  display: block !important;
+  margin: 0 auto 2rem auto !important;
+  width: 120px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+}
+
+.logo-image {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.form-title {
+  text-align: center !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 2rem !important;
+  color: #319967 !important;
+}
+
+.form-group {
+  margin-bottom: 1.5rem !important;
+}
+
+.form-group.text {
+  color: #A5ADB8 !important;
+}
+
+.form-input {
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 8px !important;
+  border: 2px solid #31998B !important;
+  background-color: #FFFFFF !important;
+  color: black !important;
+  font-size: 1rem !important;
+  outline: none !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+  box-sizing: border-box !important;
+}
+
+.form-input::placeholder {
+  color: #319967 !important;
+}
+
+.form-input:focus {
+  box-shadow: 0 0 8px 2px #449931 !important;
+  border-color: #449931 !important;
+  color: black;
+  background-color: #FFFFFF !important;
+}
+
+.form-error {
+  color: #A5ADB8 !important;
+  font-size: 0.875rem !important;
+  margin-top: 0.25rem !important;
+  text-align: center !important;
+}
+
+.forgot-password-link {
+  text-align: right !important;
+  margin-bottom: 1rem !important;
+}
+
+.forgot-password-link a {
+  color: #319967 !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline !important;
+  color: #A5ADB8 !important;
+}
+
+.form-button {
+  width: 100% !important;
+  padding: 0.75rem !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background-color: #449931 !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.form-button:hover {
+  background-color: #319967 !important;
+}
+
+.form-links {
+  margin-top: 1.5rem !important;
+  text-align: center !important;
+  font-size: 0.9rem !important;
+  color: #319967 !important;
+}
+
+.form-link {
+  color: #319967 !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.form-link:hover {
+  text-decoration: underline !important;
+  color: #319967 !important;
+}
+
+.oauth-login {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin-top: 20px !important;
+}
+
+.oauth-button {
+  display: block !important;
+  width: 100% !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  text-align: center !important;
+  color: transparent !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  cursor: pointer !important;
+}
+
+.google-login-button {
+  background-image: url('/images/google_login.png') !important;
+  margin-top: 10px !important;
+  border: 2px solid #31998B !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(49, 153, 139, 0.3) !important;
+  background-color: #FFFFFF !important;
+}
+
+.kakao-login-button {
+  background-image: url('/images/kakao_login.png') !important;
+  margin-top: 10px !important;
+  border: 2px solid #719931 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(113, 153, 49, 0.3) !important;
+  background-color: #FFFFFF !important;
+}
+
+/* 소셜 로그인 버튼 공통 스타일 */
+.oauth-login a {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 50px !important;
+  width: 100% !important;
+  border-radius: 8px !important;
+  margin-bottom: 15px !important;
+  text-indent: -9999px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow: 0 4px 8px rgba(49, 153, 139, 0.2) !important;
+  transition: box-shadow 0.2s ease-in-out !important;
+  border: 2px solid #31998B !important;
+  background-color: #FFFFFF !important;
+}
+
+.oauth-login a:hover {
+  box-shadow: 0 6px 12px rgba(49, 153, 139, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Google 로그인 버튼 */
+.google-login-button {
+  background-image: url('/images/google_login.png') !important;
+  background-color: #FFFFFF !important;
+  border: 2px solid #31998B !important;
+}
+
+/* 카카오 로그인 버튼 */
+.kakao-login-button {
+  background-image: url('/images/kakao_login.png') !important;
+  background-color: #FFFFFF !important;
+  border: 2px solid #719931 !important;
+}
