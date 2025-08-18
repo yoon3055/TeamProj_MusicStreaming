@@ -1,0 +1,350 @@
+/* src/styles/SongDetailPage.css */
+.song-detail-page {
+  min-height: 100vh;
+  background-color: var(--flo-bg-dark);
+  padding: 20px;
+  color: var(--flo-text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.song-detail-header {
+  margin-bottom: 30px;
+}
+
+.back-button {
+  background: var(--flo-accent-color);
+  border: 1px solid var(--flo-accent-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: var(--flo-accent-color-hover);
+  transform: translateY(-2px);
+}
+
+.song-detail-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--flo-bg-medium);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 12px var(--flo-shadow-light);
+  border: 1px solid var(--flo-border-color);
+}
+
+.song-main-info {
+  margin-bottom: 40px;
+}
+
+.song-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.song-basic-info {
+  text-align: center;
+}
+
+.artist-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.artist-profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--flo-accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.song-text-info {
+  text-align: left;
+}
+
+.song-details-table {
+  background: var(--flo-bg-medium);
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid var(--flo-border-color);
+  box-shadow: 0 2px 8px var(--flo-shadow-light);
+}
+
+.song-details-table h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--flo-text-primary);
+  text-align: center;
+}
+
+.song-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  line-height: 1.2;
+  word-break: break-word;
+  color: var(--flo-text-primary);
+}
+
+.song-artist {
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin: 0 0 30px 0;
+  color: var(--flo-text-secondary) !important;
+  opacity: 1 !important;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.info-table tr {
+  border-bottom: 1px solid var(--flo-border-color);
+}
+
+.info-table tr:last-child {
+  border-bottom: none;
+}
+
+.table-label {
+  padding: 12px 15px;
+  font-weight: 600;
+  color: var(--flo-text-secondary);
+  font-size: 0.95rem;
+  width: 35%;
+  vertical-align: top;
+}
+
+.table-value {
+  padding: 12px 15px;
+  font-weight: 500;
+  color: var(--flo-text-primary);
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.song-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.action-button {
+  padding: 15px 30px;
+  border-radius: 30px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.action-button.primary {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+  color: white;
+}
+
+.action-button.primary:hover {
+  background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.action-button.secondary {
+  background: var(--flo-accent-color);
+  color: white;
+  border: 2px solid var(--flo-accent-color);
+}
+
+.action-button.secondary:hover {
+  background: var(--flo-accent-color-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px var(--flo-shadow-light);
+  border-color: var(--flo-accent-color-hover);
+}
+
+.action-button.liked {
+  background: #ff6b6b;
+  color: white;
+  border: 2px solid #ff6b6b;
+}
+
+.action-button.liked:hover {
+  background: #ee5a24;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px var(--flo-shadow-light);
+  border-color: #ee5a24;
+}
+
+.song-description {
+  background: var(--flo-bg-medium);
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  border: 1px solid var(--flo-border-color);
+  box-shadow: 0 2px 8px var(--flo-shadow-light);
+}
+
+.song-description h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.song-description p {
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.technical-info {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.technical-info h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.technical-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tech-label {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.tech-value {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container h2 {
+  margin: 0 0 15px 0;
+  font-size: 2rem;
+}
+
+.error-container p {
+  margin: 0 0 25px 0;
+  opacity: 0.8;
+  font-size: 1.1rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .song-detail-page {
+    padding: 15px;
+  }
+  
+  .song-info-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .artist-profile-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .artist-profile-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .song-text-info {
+    text-align: center;
+  }
+  
+  .song-title {
+    font-size: 2rem;
+  }
+  
+  .song-artist {
+    font-size: 1.2rem;
+  }
+  
+  .song-actions {
+    justify-content: center;
+  }
+  
+  .technical-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .album-cover-large {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .song-title {
+    font-size: 1.5rem;
+  }
+  
+  .play-button-large {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+  
+  .song-description, .technical-info {
+    padding: 20px;
+  }
+}

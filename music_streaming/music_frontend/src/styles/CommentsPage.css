@@ -1,0 +1,313 @@
+:root {
+  --primary-bg: #f0f8ff; /* 연한 푸른색 배경 */
+  --secondary-bg: #e6f0ff; /* 더 연한 푸른색 */
+  --text-color: #333333; /* 짙은 회색 글꼴 */
+  --accent-primary: #8a2be2; /* 보라색 */
+  --accent-secondary: #4169e1; /* 파란색 */
+  --placeholder-color: #a9a9a9; /* 옅은 회색 */
+}
+
+.comment-management {
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--accent-primary);
+  text-align: center;
+}
+
+/* 댓글 작성 영역 */
+.admin-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: stretch;
+}
+
+.admin-controls textarea.search-input {
+  flex-grow: 1;
+  resize: vertical;
+  min-height: 60px;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1px solid var(--secondary-bg);
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  transition: border-color 0.2s;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.admin-controls textarea.search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* 댓글 작성 버튼 */
+.admin-controls button.search-btn {
+  background: linear-gradient(to right, var(--accent-secondary), var(--accent-primary));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-controls button.search-btn:hover {
+  opacity: 0.9;
+}
+
+/* 댓글 검색창 */
+.search-container {
+  margin-bottom: 20px;
+}
+
+.search-container input.search-input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--secondary-bg);
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.search-container input.search-input::placeholder {
+  color: var(--placeholder-color);
+}
+
+.search-container input.search-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* 댓글 리스트 */
+.table-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  position: relative;
+  min-height: 200px;
+}
+
+.table-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.mini-spinner {
+  width: 30px;
+  height: 30px;
+  border: 4px solid var(--accent-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-container {
+  padding: 20px;
+  background: #ffe6e6;
+  border: 1px solid #ff7f7f;
+  border-radius: 10px;
+  text-align: center;
+  color: #a00;
+  margin-bottom: 20px;
+}
+
+.retry-btn {
+  margin-top: 10px;
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.empty-state {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--placeholder-color);
+  font-size: 18px;
+}
+
+/* 댓글 테이블 */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.comment-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+.comment-table th,
+.comment-table td {
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 15px;
+}
+
+.comment-table th {
+  background-color: var(--secondary-bg);
+  color: var(--accent-primary);
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent-primary);
+}
+
+.reported-comment {
+  background-color: #fff0f0;
+}
+
+/* 내용 텍스트 */
+.content-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 날짜 영역 */
+.comment-date .date-text {
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.comment-date .time-text {
+  font-size: 12px;
+  color: var(--placeholder-color);
+}
+
+/* 액션 버튼 */
+.comment-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  margin-right: 8px;
+  color: var(--accent-primary);
+  transition: color 0.2s;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.comment-actions button:hover {
+  color: var(--accent-secondary);
+}
+
+.comment-actions button:last-child {
+  margin-right: 0;
+}
+
+/* 페이지네이션 */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.pagination-container button {
+  border: 1.5px solid var(--accent-primary);
+  background-color: white;
+  color: var(--accent-primary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination-container button:hover:not(:disabled) {
+  background-color: var(--accent-primary);
+  color: white;
+}
+
+.pagination-container button:disabled {
+  border-color: var(--placeholder-color);
+  color: var(--placeholder-color);
+  cursor: default;
+}
+
+.pagination-container button.active {
+  background-color: var(--accent-primary);
+  color: white;
+  font-weight: 700;
+}
+
+/* 페이지네이션 아이콘 크기 */
+.pagination-container svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .admin-controls {
+    flex-direction: column;
+  }
+
+  .admin-controls textarea.search-input {
+    min-height: 80px;
+  }
+
+  .admin-controls button.search-btn {
+    width: 100%;
+    min-height: 50px;
+    font-size: 16px;
+  }
+
+  .comment-table th,
+  .comment-table td {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .pagination-container {
+    gap: 4px;
+  }
+
+  .pagination-container button {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+}

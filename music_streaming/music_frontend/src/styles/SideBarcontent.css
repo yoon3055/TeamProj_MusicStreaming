@@ -1,0 +1,492 @@
+/* SidebarContent.css - 최종 전체 코드 (생략 없음) */
+
+/* FLO 테마 변수 */
+:root {
+  --flo-bg-primary: #FFFFFF;
+  --flo-bg-secondary: #F9F9F9;
+  --flo-text-primary: #212121;
+  --flo-text-secondary: #616161;
+  --flo-text-subtle: #A0A0A0;
+  --flo-text-white: #FFFFFF;
+  --flo-accent-color: #6200EE;
+  --flo-accent-color-hover: #3700B3;
+  --flo-accent-color-rgb: 98, 0, 238;
+  --flo-border-color: #E0E0E0;
+  --flo-shadow-color: rgba(0, 0, 0, 0.1);
+  --flo-highlight-bg: #F3E5F5;
+  --flo-success-color: #4CAF50;
+  --flo-error-color: #F44336;
+  --flo-warning-color: #FFC107;
+
+  /* 새로운 카드 섹션 색상 변수 */
+  --flo-card-color-ad: #E0F7FA;
+  --flo-card-color-links: #F3E5F5;
+  --flo-card-color-playlists: #E8F5E9;
+  --flo-card-color-recommend: #FCE4EC;
+
+  /* 새로운 섹션 타이틀 색상 변수 */
+  --flo-card-color-title-ad: #00796B;
+  --flo-card-color-title-links: #4527A0;
+  --flo-card-color-title-playlists: #2E7D32;
+  --flo-card-color-title-recommend: #D81B60;
+}
+.sidebar-slide-wrapper {
+   overflow-y: hidden;
+  overflow-x: hidden;
+   -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  
+}
+
+
+/* 사이드바 컨테이너 - 전체 스크롤을 담당합니다 */
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--flo-bg-secondary);
+  box-shadow: -2px 0 8px var(--flo-shadow-color);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  
+}
+
+/* 스크롤바 숨기기 (웹킷 기반 브라우저) */
+.sidebar-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* 공통 섹션 스타일 */
+.sidebar-section {
+  padding: 25px 16px 0;
+  border-bottom: 1px solid var(--flo-border-color);
+  flex-shrink: 0; /* 섹션이 줄어들지 않도록 고정 */
+}
+
+.sidebar-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 25px; /* 마지막 섹션은 하단 패딩 추가 */
+}
+
+/* 사용자 섹션 - 스크롤바 문제 해결을 위해 min/max-height 제거 */
+.user-specific-section {
+  display: flex;
+  flex-direction: column;
+  padding: 25px 16px 20px;
+  overflow-y: visible; /* 부모 컨테이너의 스크롤을 사용 */
+  border-bottom: 1px solid var(--flo-border-color);
+}
+.user-specific-section:last-child {
+  border-bottom: none;
+}
+
+/* 카드형 섹션 공통 스타일 */
+.card-section-wrapper {
+  border-radius: 12px;
+  padding: 20px 16px;
+  margin: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+.card-section-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 광고 섹션 카드 스타일 */
+.ad-card-wrapper {
+  background-color: var(--flo-card-color-ad);
+}
+
+/* 바로가기 섹션 카드 스타일 */
+.bottom-links-card-wrapper {
+  background-color: var(--flo-card-color-links);
+}
+
+/* 추천 플레이리스트 카드 스타일 */
+.featured-playlists-card-wrapper {
+  background-color: var(--flo-card-color-playlists);
+}
+
+/* 놓치지 마세요 섹션 카드 스타일 */
+.album-recommendation-card-wrapper {
+  background-color: var(--flo-card-color-recommend);
+}
+
+/* === 섹션 타이틀 헤더 스타일 === */
+.styled-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.styled-section-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* 광고 섹션 타이틀 스타일 */
+.ad-card-wrapper .styled-section-header {
+  background-color: var(--flo-card-color-ad);
+  color: var(--flo-card-color-title-ad);
+}
+
+/* 바로가기 섹션 타이틀 스타일 */
+.bottom-links-card-wrapper .styled-section-header {
+  background-color: var(--flo-card-color-links);
+  color: var(--flo-card-color-title-links);
+}
+
+/* 추천 플레이리스트 타이틀 스타일 */
+.featured-playlists-card-wrapper .styled-section-header {
+  background-color: var(--flo-card-color-playlists);
+  color: var(--flo-card-color-title-playlists);
+}
+
+/* 놓치지 마세요 타이틀 스타일 */
+.album-recommendation-card-wrapper .styled-section-header {
+  background-color: var(--flo-card-color-recommend);
+  color: var(--flo-card-color-title-recommend);
+}
+
+/* === 로그인 유도 섹션 === */
+.auth-prompt {
+  background: linear-gradient(135deg, var(--flo-accent-color) 0%, var(--flo-accent-color-hover) 100%);
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  margin: 16px;
+  padding: 20px;
+}
+.auth-prompt .sidebar-title {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.auth-prompt .sidebar-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.sidebar-button {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  margin-bottom: 10px;
+}
+.sidebar-button:last-of-type {
+  margin-bottom: 0;
+}
+.sidebar-button.primary {
+  background-color: white;
+  color: var(--flo-accent-color);
+}
+.sidebar-button.primary:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-1px);
+}
+.sidebar-button.secondary {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.sidebar-button.secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
+}
+
+/* === 놓치지 마세요 섹션 === */
+.sidebar-album-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+/* albumcard.css와 결합됨 */
+
+/* === 추천 플레이리스트 섹션 === */
+.playlist-text-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.playlist-list-item {
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.playlist-list-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.playlist-list-item-header:hover {
+  background-color: #f5f5f5;
+}
+.playlist-name {
+  flex-grow: 1;
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+.toggle-icon {
+  margin: 0 8px;
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+}
+.play-album-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: #667eea;
+}
+.play-album-button:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+}
+.play-album-button svg {
+  width: 20px;
+  height: 20px;
+}
+.playlist-song-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: #f9f9f9;
+}
+.playlist-song-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.playlist-song-item:last-child {
+  border-bottom: none;
+}
+.song-info-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.song-info-wrapper a {
+  text-decoration: none;
+  color: #333;
+  font-size: 13px;
+  flex-grow: 1;
+}
+.song-info-wrapper a:hover {
+  color: #667eea;
+}
+.song-title {
+  font-weight: 500;
+}
+.song-artist {
+  color: #666;
+}
+.play-song-item-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: #667eea;
+}
+.play-song-item-button:hover {
+  background-color: #e6e9f5;
+  transform: scale(1.1);
+}
+.play-song-item-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* === 사용자 섹션 - 내 음악 === */
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+.sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--flo-accent-color);
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.play-all-library-button {
+  background-color: transparent;
+  border: 1px solid var(--flo-accent-color);
+  color: var(--flo-accent-color);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+.play-all-library-button:hover {
+  background-color: rgba(var(--flo-accent-color-rgb), 0.1);
+}
+.play-all-library-button svg {
+  width: 16px;
+  height: 16px;
+}
+.history-subsection,
+.library-subsection {
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.subsection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.subsection-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--flo-accent-color);
+  margin: 0;
+}
+.view-all-button {
+  background: none;
+  border: none;
+  color: var(--flo-accent-color);
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.view-all-button:hover {
+  color: var(--flo-accent-color-hover);
+  text-decoration: underline;
+}
+.history-song-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.history-song-list::-webkit-scrollbar {
+  display: none;
+}
+.user-playlists-sidebar-container {
+  min-height: 0;
+  overflow-y: visible; /* 부모 컨테이너의 스크롤을 사용 */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.user-playlists-sidebar-container::-webkit-scrollbar {
+  display: none;
+}
+.user-playlists-section {
+  margin-bottom: 20px;
+}
+.user-playlists-section:last-child {
+  margin-bottom: 10px;
+}
+.user-playlists-section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--flo-text-primary);
+  margin-bottom: 12px;
+}
+.user-playlists-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.user-playlists-more-link {
+  display: block;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--flo-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.user-playlists-more-link:hover {
+  color: var(--flo-accent-color);
+  text-decoration: underline;
+}
+
+/* === 광고 섹션 === */
+.sidebar-ad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+.sidebar-ad-item {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--flo-text-primary);
+  text-decoration: none;
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-weight: 500;
+}
+.sidebar-ad-item:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: translateX(3px);
+}
+
+/* === 주요 안내 섹션 === */
+.sidebar-shortcut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+.sidebar-shortcut-item {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--flo-text-primary);
+  text-decoration: none;
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-weight: 500;
+}
+.sidebar-shortcut-item:hover {
+  background-color: rgba(255, 255, 255, 1);
+  transform: translateX(3px);
+}

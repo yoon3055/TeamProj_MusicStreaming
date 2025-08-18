@@ -1,0 +1,278 @@
+.simple-subscription-page {
+  min-height: 100vh;
+  background: #FFFFFF;
+  padding: 20px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 15px;
+  border: none;
+}
+
+.page-header h1 {
+  color: #319944;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.back-button, .refresh-btn {
+  background: #319967;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover, .refresh-btn:hover {
+  background: #319944;
+  transform: translateY(-2px);
+}
+
+.loading-section, .error-section {
+  text-align: center;
+  background: #FFFFFF;
+  padding: 60px 40px;
+  border-radius: 20px;
+  border: 1px solid #599E65;
+  color: #319944;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #599E65;
+  border-left: 4px solid #449931;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.retry-btn, .subscribe-btn {
+  background: #449931;
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover, .subscribe-btn:hover {
+  background: #319967;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(52, 153, 49, 0.3);
+}
+
+.subscriptions-section {
+  margin-top: 20px;
+}
+
+.no-subscriptions {
+  text-align: center;
+  background: #FFFFFF;
+  padding: 60px 40px;
+  border-radius: 20px;
+  border: none;
+  color: #319944;
+}
+
+.no-sub-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.subscriptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.subscription-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #599E65;
+  padding: 25px;
+  transition: all 0.3s ease;
+  color: #319944;
+}
+
+.subscription-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(52, 153, 49, 0.2);
+  background: #FFFFFF;
+  border-color: #449931;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #599E65;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #319944;
+}
+
+.status-badge {
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+  background: #449931;
+  color: #FFFFFF;
+}
+
+.status-badge.inactive {
+  background: #719931;
+  color: #FFFFFF;
+}
+
+.status-badge.expired {
+  background: #31998B;
+  color: #FFFFFF;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.info-row .label {
+  font-weight: 500;
+  color: #599E65;
+  font-size: 0.9rem;
+}
+
+.info-row .value {
+  font-weight: 600;
+  color: #319944;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.info-row .value.price {
+  color: #449931;
+  font-size: 1.1rem;
+}
+
+.info-row .value.remaining-days {
+  color: #719931;
+  font-weight: 700;
+}
+
+.info-row .value.order-id,
+.info-row .value.payment-key {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  background: #FFFFFF;
+  border: 1px solid #599E65;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #31998B;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .simple-subscription-page {
+    padding: 15px;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .subscriptions-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .subscription-card {
+    padding: 20px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .info-row .value {
+    max-width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .simple-subscription-page {
+    padding: 10px;
+  }
+  
+  .page-header {
+    padding: 15px;
+  }
+  
+  .subscription-card {
+    padding: 15px;
+  }
+  
+  .card-header h3 {
+    font-size: 1.2rem;
+  }
+}
