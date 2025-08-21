@@ -1,0 +1,392 @@
+/* src/styles/UserProfilePage.css */
+
+/* -------------------- 최상위 컨테이너 및 전체 배경 -------------------- */
+.user-profile-page-container {
+  width: 100%;
+  min-height: 100vh;
+  /* MainLayout의 색상 체계와 통일 */
+  background-color: var(--flo-primary-bg, #f5f3f0); /* MainLayout과 동일한 배경색 */
+  display: flex;
+  justify-content: center; /* 전체 내용을 중앙으로 정렬 */
+  align-items: flex-start; /* 내용을 상단으로 정렬 */
+  padding: 40px 20px; /* 상하좌우 패딩 */
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--flo-text-primary, #222222); /* MainLayout과 동일한 텍스트 색상 */
+}
+
+/* -------------------- 메인 콘텐츠를 감싸는 액자 역할의 투명한 박스 (단 한 번 감쌈) -------------------- */
+.user-profile-main-wrapper {
+  max-width: 1200px; /* 최대 너비 */
+  width: 100%;
+  background-color: var(--flo-secondary-bg, #ffffff); /* MainLayout과 동일한 흰색 배경 */
+  border-radius: 20px; /* 둥근 모서리 */
+  padding: 30px; /* 내부 여백 */
+  box-sizing: border-box;
+  box-shadow: 0 8px 30px var(--flo-shadow-light, rgba(0, 0, 0, 0.05)); /* MainLayout과 동일한 그림자 */
+  border: 1px solid var(--flo-border-color, #e0e0e0); /* MainLayout과 동일한 테두리 */
+  position: relative;
+}
+
+/* -------------------- 두 개의 컬럼을 감싸고 좌우로 배치하는 컨테이너 (핵심 변경) -------------------- */
+.user-profile-columns {
+  display: flex; /* Flexbox 적용 */
+  flex-direction: row; /* 자식 요소들을 가로로 배치 */
+  flex-wrap: wrap; /* 공간 부족 시 다음 줄로 넘어감 */
+  gap: 24px; /* 컬럼 간 간격 */
+  justify-content: center; /* 컬럼들을 중앙 정렬 */
+  width: 100%; /* 부모 요소의 너비를 꽉 채움 */
+}
+
+/* -------------------- 각 프로필/구독 정보 컬럼 (왼쪽/오른쪽 섹션) -------------------- */
+.user-profile-column {
+  flex: 1; /* 가용한 공간을 균등하게 분배 */
+  min-width: 300px; /* 최소 너비 설정 (이보다 작아지면 flex-wrap에 의해 줄바꿈) */
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* 내부 박스 간 간격 */
+}
+
+/* -------------------- 각 정보 박스 (내 프로필, 구독 정보 등) -------------------- */
+.user-profile-box {
+  background-color: var(--flo-secondary-bg, #ffffff); /* MainLayout과 동일한 흰색 배경 */
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 15px var(--flo-shadow-light, rgba(0, 0, 0, 0.05)); /* MainLayout과 동일한 그림자 */
+  border: 1px solid var(--flo-border-color, #e0e0e0); /* MainLayout과 동일한 테두리 */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 내부 콘텐츠 중앙 정렬 */
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  height: 100%; /* 컬럼 내에서 꽉 채우기 */
+  box-sizing: border-box;
+}
+
+/* 프로필 정보가 있는 상단 박스에만 프로필 배경 이미지 적용 (옵션) */
+.user-profile-box.profile-info-box {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.user-profile-overlay-dark {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 25px; /* 내부 여백 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  color: var(--flo-text-primary, #222222); /* MainLayout과 동일한 텍스트 색상 */
+  background-color: transparent; /* 투명 배경으로 변경 */
+  border-radius: 12px; /* 내부 오버레이도 둥근 모서리 */
+}
+
+/* 프로필 이미지 (K-065.jpg 왼쪽 상단 이미지 부분) */
+.profile-image-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-image-circle {
+  width: 120px; /* 이미지 크기 증가 */
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--flo-primary-bg, #f5f3f0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 4px solid var(--flo-accent-color, #5b4b8a); /* MainLayout 강조색으로 테두리 */
+  box-shadow: 0 4px 15px var(--flo-shadow-light, rgba(0, 0, 0, 0.05));
+  margin-bottom: 15px;
+}
+
+.profile-image-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-nickname-display {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--flo-text-primary, #222222);
+  margin-bottom: 5px;
+}
+
+.profile-email-display {
+  font-size: 1rem;
+  color: var(--flo-text-secondary, #666666);
+}
+
+
+/* -------------------- 섹션 제목 및 내용 -------------------- */
+.user-profile-title {
+  font-size: 2.5rem;
+  margin-bottom: 25px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.user-profile-section {
+  width: 100%;
+  padding: 20px;
+  background-color: var(--flo-primary-bg, #f5f3f0); /* MainLayout 기본 배경색 */
+  border-radius: 12px;
+  border: 1px solid var(--flo-border-color, #e0e0e0);
+  margin-bottom: 20px;
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+
+.user-profile-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.user-profile-section-title {
+  font-size: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--flo-text-primary, #222222);
+  border-bottom: 1px solid var(--flo-border-color, #e0e0e0);
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.user-profile-section-title.green {
+  color: #1DB954; /* Spotify 그린 */
+}
+
+.user-profile-section p {
+  color: var(--flo-text-secondary, #666666);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.user-profile-section strong {
+  color: var(--flo-text-primary, #222222);
+}
+
+/* -------------------- 폼 요소 -------------------- */
+.user-profile-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.user-profile-input {
+  width: calc(100% - 24px); /* 패딩 고려 */
+  padding: 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-profile-input::placeholder {
+  color: #888888;
+}
+
+.user-profile-input:focus {
+  border-color: #9f67e0;
+  box-shadow: 0 0 0 3px rgba(159, 103, 224, 0.3);
+}
+
+/* -------------------- 버튼 스타일 -------------------- */
+.btn-default,
+.btn-green,
+.btn-red {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  color: white; /* 버튼 글자색 통일 */
+}
+
+.btn-default {
+  background-color: #449931;
+}
+
+.btn-default:hover {
+  background-color: #cc6699;
+  transform: translateY(-2px);
+}
+
+.btn-green {
+  background-color: #02a73c;/* Spotify 그린 */
+}
+
+.btn-green:hover {
+  background-color: #03d14b; 
+  transform: translateY(-2px);
+}
+
+.btn-red {
+  background-color: #aa0818;/* 빨간색 계열 */
+}
+
+.btn-red:hover {
+  background-color: #dc3545;
+  transform: translateY(-2px);
+}
+
+.user-profile-button-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+  width: 100%;
+  margin-top: 15px; /* 버튼 상단 여백 추가 */
+}
+
+.user-profile-button-row button {
+  flex-grow: 1; /* 버튼 너비 균등 분배 */
+  min-width: 120px; /* 최소 너비 */
+}
+
+/* 구독 상태 표시 */
+.user-profile-subscription-status {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-shadow: none; /* 상태 글자는 그림자 제거 */
+}
+
+.user-profile-subscription-status.active {
+  background-color: rgba(29, 185, 84, 0.8); /* 초록색 */
+  color: white;
+}
+
+.user-profile-subscription-status.inactive {
+  background-color: rgba(220, 53, 69, 0.8); /* 빨간색 */
+  color: white;
+}
+
+/* 이퀄라이저 스타일 */
+.equalizer-container {
+  width: 80%; /* 컨테이너 너비 */
+  height: 60px; /* 높이 */
+  margin: 0, auto; /* 중앙 정렬 */
+  filter: drop-shadow(0 0 5px rgba(29, 185, 84, 0.5)); /* 초록색 빛 효과 */
+  position: relative; /* 자식 요소의 절대 위치를 위한 기준 */
+  display: flex;
+  justify-content: center; /* 이퀄라이저 바 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+  background: rgba(0, 0, 0, 0.2); /* 배경색 */
+  border-radius: 10px; /* 둥근 모서리 */
+  overflow: hidden; /* 바가 컨테이너 밖으로 나가지 않도록 */
+  box-sizing: border-box; /* 패딩과 보더가 전체 크기에 포함되도록 */
+  background-color: transparent; /* 기본 배경 투명 */
+ 
+ 
+}
+
+.equalizer-svg-icon rect {
+  fill: #1DB954; /* 이퀄라이저 바 색상 */
+  
+}
+
+
+/* 구독 이력 리스트 */
+.subscription-history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+
+.subscription-history-list li {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #c0c0c0;
+  font-size: 0.95rem;
+}
+
+.subscription-history-list li strong {
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.subscription-history-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* 로딩 및 에러 메시지 */
+.user-profile-page-loading,
+.user-profile-page-error {
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff; /* 밝은 색상으로 변경 */
+  font-size: 1.5rem; /* 더 크게 */
+  font-weight: 600;
+  user-select: none;
+  background: rgba(0, 0, 0, 0.4); /* 배경 추가 */
+  border-radius: 15px;
+}
+
+.user-profile-page-error {
+  color: #ff6b6b; /* 에러 메시지 색상 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .user-profile-main-wrapper {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .user-profile-columns {
+    flex-direction: column; /* 모바일에서는 세로로 쌓이도록 */
+    gap: 20px;
+  }
+
+  .user-profile-column {
+    min-width: unset; /* 모바일에서 최소 너비 제한 해제 */
+    width: 100%; /* 전체 너비 차지 */
+  }
+
+  .user-profile-box {
+    padding: 20px;
+  }
+
+  .user-profile-title {
+    font-size: 2rem;
+  }
+
+  .user-profile-section-title {
+    font-size: 1.4rem;
+  }
+
+  .user-profile-button-row {
+    flex-direction: column; /* 버튼 세로 정렬 */
+  }
+
+  .user-profile-button-row button {
+    width: 100%; /* 버튼 너비 100% */
+  }
+}

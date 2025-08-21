@@ -1,0 +1,29 @@
+/* src/styles/footer.css */
+.app-footer {
+  background-color: var(--flo-bg-dark); /* bg-gray-900 */
+  color: var(--flo-text-gray); /* text-gray-400 */
+  padding: 1.5rem; /* py-6 px-6 */
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  border-top: 1px solid var(--flo-bg-medium); /* border-t border-gray-800 */
+}
+
+.footer-copyright {
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.footer-app-link {
+  color: var(--accent-green-2);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 600;
+}
+
+.footer-app-link:hover {
+  text-decoration: underline; /* hover:underline */
+}
+
+.footer-app-link h4 {
+  font-size: 1rem; /* text-base */
+  margin: 0; /* h4 기본 마진 제거 */
+}
