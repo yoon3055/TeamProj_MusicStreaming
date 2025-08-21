@@ -1,0 +1,402 @@
+/* src/styles/LikesFollowsPage.css */
+
+/* 좋아요 수 표시 스타일 */
+.playlist-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: all 0.2s ease;
+}
+
+.playlist-like-btn:hover {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+/* 호버 효과 제거 */
+/* .playlist-like-btn:hover {
+  transform: scale(1.1);
+} */
+
+.like-count {
+  font-size: 0.9rem;
+  color: #8e8e93;
+  font-weight: 500;
+  min-width: 20px;
+  text-align: left;
+}
+
+.playlist-like-btn .liked {
+  color: #ff3b30;
+}
+
+.playlist-like-btn svg {
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+:root {
+  --flo-primary-bg: #f5f5f7;
+  --flo-secondary-bg: #e8e8ed;
+  --flo-text-primary: #1c1c1e;
+  --flo-text-secondary: #8e8e93;
+  --flo-accent-color: #5856d6;
+  --flo-accent-color-hover: #6c6ce8;
+  --flo-text-white: #ffffff;
+  --flo-border-color: #d1d1d6;
+}
+
+.likes-follows-page-container {
+  padding: 20px;
+  background-color: #f5f5f7;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* --- 헤더 및 컨트롤 --- */
+.likes-follows-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #8e8e93;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.likes-follows-page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1c1c1e;
+}
+
+.likes-follows-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+}
+
+.tab-btn {
+  background-color: #d1d1d6;
+  color: #8e8e93;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn.active {
+  background-color: #319967;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.search-and-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-input {
+  width: 250px;
+  padding: 10px 15px;
+  border: 1px solid #d1d1d6;
+  border-radius: 20px;
+  background-color: #e8e8ed;
+  color: #1c1c1e;
+  font-size: 1rem;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid #d1d1d6;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.view-btn {
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #8e8e93;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.view-btn.active {
+  background-color: #5856d6;
+  color: #ffffff;
+}
+
+/* --- 콘텐츠 그리드 --- */
+.likes-follows-grid {
+  display: grid;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.likes-follows-grid.grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.likes-follows-grid.list {
+  grid-template-columns: 1fr;
+}
+
+/* --- 플레이리스트 카드 스타일 (모든 카드에 공통 적용) --- */
+.playlist-card {
+  border: 1px solid #d1d1d6;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  cursor: pointer;
+  width: 300px !important;
+}
+
+.likes-follows-grid.list .playlist-card {
+  flex-direction: row;
+  align-items: center;
+}
+
+.playlist-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.playlist-link {
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.likes-follows-grid.list .playlist-link {
+  flex-direction: row;
+  align-items: center;
+}
+
+.playlist-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.likes-follows-grid.list .playlist-image-wrapper {
+  width: 60px;
+  height: 60px;
+  margin-right: 15px;
+}
+
+.playlist-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* 재생 버튼 오버레이 (아티스트 카드에는 적용되지 않음) */
+.play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 4px;
+}
+
+.song-card-custom:hover .play-overlay,
+.album-card-custom:hover .play-overlay {
+  opacity: 1;
+}
+
+.play-button {
+  background-color: #5856d6;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+}
+
+.playlist-info {
+  margin-top: 10px;
+  width: 100%;
+  flex-grow: 1;
+}
+
+.likes-follows-grid.list .playlist-info {
+  margin-top: 0;
+  flex-grow: 1;
+}
+
+.playlist-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-artist {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #8e8e93;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- 액션 버튼 (공통) --- */
+.playlist-actions {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.likes-follows-grid.list .playlist-actions {
+  width: auto;
+  margin-left: auto;
+  margin-top: 0;
+}
+
+.playlist-like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  font-size: 1.2rem;
+  color: #8e8e93;
+  transition: color 0.2s;
+}
+
+.playlist-like-btn .liked {
+  color: #ff3b30;
+}
+
+/* --- 아티스트 카드 고유 스타일 --- */
+.artist-card-custom .playlist-image-wrapper {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 10px auto;
+}
+
+.likes-follows-grid.list .artist-card-custom .playlist-image-wrapper {
+  width: 60px;
+  height: 60px;
+  margin: 0;
+  margin-right: 15px;
+}
+
+.artist-card-custom .artist-image {
+  border-radius: 50%;
+}
+
+.artist-card-custom .playlist-info {
+  text-align: center;
+}
+
+.likes-follows-grid.list .artist-card-custom .playlist-info {
+  text-align: left;
+}
+
+.artist-card-custom .artist-actions {
+  margin-top: 15px;
+  justify-content: center;
+}
+
+.likes-follows-grid.list .artist-card-custom .artist-actions {
+  margin-top: 0;
+}
+
+.artist-follow-btn {
+  background: none;
+  border: 1px solid #d1d1d6;
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #8e8e93;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.artist-follow-btn.followed {
+  background-color: #5856d6;
+  color: #ffffff;
+  border-color: #5856d6;
+}
+
+.artist-follow-text {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .likes-follows-grid.list .artist-card-custom .artist-actions {
+    justify-content: flex-end;
+  }
+  .artist-follow-btn {
+    padding: 8px 12px;
+  }
+  .artist-follow-btn svg {
+    font-size: 1rem;
+  }
+  .artist-follow-text {
+    display: inline-block;
+  }
+}

@@ -1,0 +1,93 @@
+/* src/styles/index.css */
+
+/* 새로운 컬러 팔레트 CSS 변수 */
+:root {
+  /* 기본 배경색 */
+  --primary-bg: #FFFFFF;
+  --primary-white: #FFFFFF;
+  --secondary-bg: #FFFFFF;
+  
+  /* 새로운 그린 계열 색상 팔레트 */
+  --accent-green-1: #449931;
+  --accent-green-2: #319967;
+  --accent-green-3: #319944;
+  --accent-green-4: #719931;
+  --accent-green-5: #31998B;
+  --accent-green-6: #599E65;
+  
+  /* 텍스트 색상 */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-white: #FFFFFF;
+  
+  /* 기존 변수들을 새 색상으로 매핑 */
+  --flo-bg-dark: var(--primary-bg);
+  --flo-bg-medium: var(--primary-bg);
+  --flo-bg-light: var(--primary-bg);
+  --flo-primary-bg: var(--primary-bg);
+  --flo-secondary-bg: var(--primary-bg);
+  --flo-text-white: var(--text-white);
+  --flo-text-primary: var(--text-primary);
+  --flo-text-secondary: var(--text-secondary);
+  --flo-text-gray: var(--text-secondary);
+  --flo-accent-color: var(--accent-green-2);
+  --flo-accent-color-hover: var(--accent-green-3);
+  --flo-accent-blue: var(--accent-green-2);
+  --flo-accent-blue-hover: var(--accent-green-3);
+  --flo-accent-emerald: var(--accent-green-5);
+  --flo-accent-red: var(--accent-green-1);
+  --flo-text-strong: var(--text-primary);
+  --flo-border-light: var(--accent-green-6);
+  --flo-border-medium: var(--accent-green-4);
+  --flo-border-color: var(--accent-green-6);
+  --flo-shadow-light: rgba(68, 153, 49, 0.1);
+  --flo-primary-bg-hover: var(--accent-green-6);
+}
+
+/* 기본 바디 스타일 */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 커스텀 애니메이션 정의 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 스크롤바 숨김 (Tailwind 플러그인 없이 직접 구현) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

@@ -1,0 +1,361 @@
+package com.music.music.service;
+
+import com.music.music.dto.SongUploadDto;
+import com.music.music.dto.SongListDto;
+import com.music.music.entity.Song;
+import com.music.music.repository.SongRepository;
+import com.music.music.repository.SongLikeRepository;
+import com.music.artist.entity.Artist;
+import com.music.artist.repository.ArtistRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
+public class MusicUploadService {
+
+    private final SongRepository songRepository;
+    private final ArtistRepository artistRepository;
+    private final SongLikeRepository songLikeRepository;
+
+    // application.properties에서 설정할 파일 저장 경로
+    @Value("${music.upload.path:uploads/musicfile}")
+    private String uploadPath;
+
+    @Value("${music.base.url:http://localhost:8080}")
+    private String baseUrl;
+
+    /**
+     * 음악 파일 업로드 처리
+     */
+    public Long uploadMusic(SongUploadDto uploadDto) throws IOException {
+        log.info("음악 파일 업로드 시작: {}", uploadDto.getTitle());
+        
+        try {
+            MultipartFile file = uploadDto.getFile();
+            
+            // 1. 파일 저장
+            log.debug("파일 저장 시작: {}", file.getOriginalFilename());
+            String savedFileName = saveFile(file);
+            String audioUrl = baseUrl + "/uploads/musicfile/" + savedFileName;
+            log.debug("파일 저장 완료: {}", audioUrl);
+            
+            // Artist 엔티티 조회
+            Artist artist = null;
+            if (uploadDto.getArtistId() != null) {
+                artist = artistRepository.findById(uploadDto.getArtistId())
+                        .orElseThrow(() -> new RuntimeException("아티스트를 찾을 수 없습니다: " + uploadDto.getArtistId()));
+                log.debug("아티스트 처리 완료: {}", artist.getName());
+            }
+            
+            // 4. 파일 메타데이터 추출
+            log.debug("메타데이터 추출 시작");
+            String fileFormat = getFileFormat(file.getOriginalFilename());
+            Integer duration = extractDuration(file); // 실제 구현에서는 오디오 라이브러리 사용
+            log.debug("메타데이터 추출 완료: format={}, duration={}", fileFormat, duration);
+            
+            // 5. Song 엔티티 생성 및 저장
+            log.debug("Song 엔티티 생성 및 저장 시작");
+            Song song = Song.builder()
+                    .title(uploadDto.getTitle())
+                    .artist(artist)  // 사용자가 선택한 아티스트
+
+                    .audioUrl(audioUrl)
+                    .genre(uploadDto.getGenre())
+
+
+
+
+
+                    .build();
+            
+            Song savedSong = songRepository.save(song);
+            log.info("음악 파일 업로드 완료: {} (ID: {})", savedSong.getTitle(), savedSong.getId());
+            return savedSong.getId();
+            
+        } catch (IOException e) {
+            log.error("파일 저장 중 IO 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("파일 저장 중 오류가 발생했습니다: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("음악 파일 업로드 중 예상치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("음악 파일 업로드 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 음악 파일 삭제
+     */
+    public boolean deleteMusic(Long songId) {
+        log.info("음악 파일 삭제 시작: songId={}", songId);
+        
+        try {
+            Optional<Song> songOpt = songRepository.findById(songId);
+            if (songOpt.isEmpty()) {
+                log.warn("삭제할 음악 파일을 찾을 수 없음: songId={}", songId);
+                return false;
+            }
+            
+            Song song = songOpt.get();
+            String audioUrl = song.getAudioUrl();
+            
+            // 1. 먼저 해당 노래의 좋아요 데이터 삭제 (외래 키 제약 조건 해결)
+            log.debug("노래 좋아요 데이터 삭제 시작: songId={}", songId);
+            songLikeRepository.deleteBySongId(songId);
+            log.debug("노래 좋아요 데이터 삭제 완료: songId={}", songId);
+            
+            // 2. 데이터베이스에서 노래 삭제
+            songRepository.delete(song);
+            log.debug("데이터베이스에서 삭제 완료: {}", song.getTitle());
+            
+            // 3. 파일 시스템에서 삭제
+            deleteFile(audioUrl);
+            
+            log.info("음악 파일 삭제 완료: {} (ID: {})", song.getTitle(), songId);
+            return true;
+            
+        } catch (Exception e) {
+            log.error("음악 파일 삭제 중 오류 발생: songId={}", songId, e);
+            return false;
+        }
+    }
+
+    /**
+     * 모든 음악 파일 목록 조회 (DTO 반환)
+     */
+    public List<SongListDto> getAllSongs() {
+        log.info("음악 파일 목록 조회 시작");
+        
+        try {
+            List<Song> songs = songRepository.findAllByOrderByIdDesc();
+            log.info("음악 파일 목록 조회 완료: {}개 파일", songs.size());
+            
+            // 엔티티를 DTO로 변환
+            List<SongListDto> songDtos = songs.stream()
+                    .map(this::convertToDto)
+                    .toList();
+            
+            log.info("DTO 변환 완료: {}개 파일", songDtos.size());
+            return songDtos;
+        } catch (Exception e) {
+            log.error("음악 파일 목록 조회 중 오류 발생", e);
+            throw new RuntimeException("음악 파일 목록 조회에 실패했습니다", e);
+        }
+    }
+    
+    /**
+     * Song 엔티티를 SongListDto로 변환
+     */
+    private SongListDto convertToDto(Song song) {
+        try {
+            SongListDto.SongListDtoBuilder builder = SongListDto.builder()
+                    .id(song.getId())
+                    .title(song.getTitle())
+                    .genre(song.getGenre())
+                    .audioUrl(song.getAudioUrl());
+            
+            // Artist 정보 변환 (Lazy Loading 방지)
+            if (song.getArtist() != null) {
+                SongListDto.ArtistInfo artistInfo = SongListDto.ArtistInfo.builder()
+                        .id(song.getArtist().getId())
+                        .name(song.getArtist().getName())
+                        .build();
+                builder.artist(artistInfo);
+                builder.artistName(song.getArtist().getName());
+            }
+            
+
+            
+            return builder.build();
+        } catch (Exception e) {
+            log.error("DTO 변환 중 오류 발생 - Song ID: {}", song.getId(), e);
+            // 기본 정보만으로 DTO 생성
+            return SongListDto.builder()
+                    .id(song.getId())
+                    .title(song.getTitle())
+                    .audioUrl(song.getAudioUrl())
+                    .build();
+        }
+    }
+
+    /**
+     * 파일을 서버에 저장
+     */
+    private String saveFile(MultipartFile file) throws IOException {
+        try {
+            // 업로드 디렉토리 생성
+            Path uploadDir = Paths.get(uploadPath);
+            log.debug("업로드 디렉토리 경로: {}", uploadDir.toAbsolutePath());
+            
+            if (!Files.exists(uploadDir)) {
+                log.info("업로드 디렉토리가 존재하지 않아 생성합니다: {}", uploadDir.toAbsolutePath());
+                Files.createDirectories(uploadDir);
+                log.info("업로드 디렉토리 생성 완료: {}", uploadDir.toAbsolutePath());
+            } else {
+                log.debug("업로드 디렉토리 존재 확인: {}", uploadDir.toAbsolutePath());
+            }
+            
+            // 고유한 파일명 생성 (UUID + 원본 확장자)
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || !originalFilename.contains(".")) {
+                log.error("유효하지 않은 파일명: {}", originalFilename);
+                throw new IllegalArgumentException("유효하지 않은 파일명입니다: " + originalFilename);
+            }
+            
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String savedFileName = UUID.randomUUID().toString() + extension;
+            log.debug("생성된 파일명: {} -> {}", originalFilename, savedFileName);
+            
+            // 파일 저장
+            Path filePath = uploadDir.resolve(savedFileName);
+            log.info("=== 파일 저장 시작 ===");
+            log.info("업로드 디렉토리 절대 경로: {}", uploadDir.toAbsolutePath());
+            log.info("저장할 파일명: {}", savedFileName);
+            log.info("최종 파일 저장 경로: {}", filePath.toAbsolutePath());
+            log.info("원본 파일 크기: {} bytes", file.getSize());
+            
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            
+            // 파일 저장 확인
+            if (Files.exists(filePath)) {
+                long fileSize = Files.size(filePath);
+                log.info("✅ 파일 저장 성공!");
+                log.info("저장된 파일 경로: {}", filePath.toAbsolutePath());
+                log.info("저장된 파일 크기: {} bytes", fileSize);
+                log.info("파일 읽기 권한: {}", Files.isReadable(filePath));
+                log.info("파일 쓰기 권한: {}", Files.isWritable(filePath));
+            } else {
+                log.error("❌ 파일 저장 실패: 파일이 생성되지 않았습니다");
+                log.error("실패한 경로: {}", filePath.toAbsolutePath());
+                throw new IOException("파일 저장에 실패했습니다: " + filePath.toAbsolutePath());
+            }
+            
+            return savedFileName;
+            
+        } catch (IOException e) {
+            log.error("파일 저장 중 IO 오류: {}", e.getMessage(), e);
+            throw new IOException("파일 저장 중 오류가 발생했습니다: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("파일 저장 중 예상치 못한 오류: {}", e.getMessage(), e);
+            throw new RuntimeException("파일 저장 중 예상치 못한 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 파일 삭제
+     */
+    private void deleteFile(String audioUrl) {
+        try {
+            // URL에서 파일명 추출
+            String fileName = audioUrl.substring(audioUrl.lastIndexOf("/") + 1);
+            Path filePath = Paths.get(uploadPath, fileName);
+            
+            if (Files.exists(filePath)) {
+                Files.delete(filePath);
+                log.debug("파일 삭제 완료: {}", filePath);
+            }
+        } catch (Exception e) {
+            log.warn("파일 삭제 실패: {}", e.getMessage());
+        }
+    }
+
+
+
+
+
+    /**
+     * 음악 파일 다운로드
+     */
+    public ResponseEntity<?> downloadMusic(Long songId) {
+        log.info("음악 파일 다운로드 시작: songId={}", songId);
+        
+        try {
+            Optional<Song> songOpt = songRepository.findById(songId);
+            if (songOpt.isEmpty()) {
+                log.warn("다운로드할 음악 파일을 찾을 수 없음: songId={}", songId);
+                return ResponseEntity.notFound().build();
+            }
+            
+            Song song = songOpt.get();
+            String audioUrl = song.getAudioUrl();
+            
+            if (audioUrl == null || audioUrl.isEmpty()) {
+                log.warn("음악 파일 URL이 없음: songId={}", songId);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // URL에서 파일명 추출
+            String fileName = audioUrl.substring(audioUrl.lastIndexOf("/") + 1);
+            Path filePath = Paths.get(uploadPath, fileName);
+            
+            if (!Files.exists(filePath)) {
+                log.warn("실제 파일이 존재하지 않음: {}", filePath);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 파일 다운로드를 위한 Resource 생성
+            Resource resource = new FileSystemResource(filePath);
+            
+            // 파일명을 곡 제목으로 설정 (확장자는 항상 .mp3)
+            String downloadFileName = song.getTitle();
+            if (!downloadFileName.contains(".")) {
+                downloadFileName += ".mp3";
+            }
+            
+            log.info("음악 파일 다운로드 준비 완료: {} -> {}", fileName, downloadFileName);
+            
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
+                    .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
+                    .body(resource);
+                    
+        } catch (Exception e) {
+            log.error("음악 파일 다운로드 중 오류 발생: songId={}", songId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * 파일 확장자에서 형식 추출
+     */
+    private String getFileFormat(String filename) {
+        if (filename == null) return "unknown";
+        
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        return switch (extension) {
+            case "mp3" -> "mp3";
+            case "wav" -> "wav";
+            case "flac" -> "flac";
+            default -> "unknown";
+        };
+    }
+
+    /**
+     * 오디오 파일의 재생 시간 추출 (간단한 구현)
+     * 실제 구현에서는 Apache Tika나 JAudioTagger 등의 라이브러리 사용 권장
+     */
+    private Integer extractDuration(MultipartFile file) {
+        // TODO: 실제 오디오 메타데이터 추출 라이브러리 구현
+        // 현재는 기본값 반환
+        return 180; // 3분 기본값
+    }
+}

@@ -1,0 +1,43 @@
+/* src/styles/UserPlaylistsSidebar.css */
+
+/*
+  :root 변수 정의는 MainLayout.css 등 상위 CSS 파일에 이미 포함되어 있다고 가정합니다.
+*/
+
+
+
+.user-playlists-section {
+  /* user-playlists-section은 SidebarContent.css에서 이미 스타일링됩니다. */
+  /* 이곳에서는 섹션별 내부 레이아웃을 정의합니다. */
+  margin-top: 15px; /* 내부 섹션 간의 여백 */
+}
+.user-playlists-section:first-of-type {
+  margin-top: 0; /* 첫 번째 섹션의 상단 마진 제거 */
+}
+
+.user-playlists-section-title {
+  font-size: 1rem; /* SidebarContent의 sidebar-title보다 약간 작게 */
+  font-weight: 600;
+  color: var(--flo-accent-color);
+  margin-bottom: 15px;
+}
+
+.user-playlists-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✨ 2열 그리드 */
+  gap: 10px; /* 아이템 간 간격 */
+}
+
+.user-playlists-more-link {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--flo-text-secondary);
+  text-decoration: none;
+  margin-top: 10px;
+  transition: color 0.2s ease;
+}
+.user-playlists-more-link:hover {
+  color: var(--flo-accent-color);
+}
+

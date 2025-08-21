@@ -1,0 +1,58 @@
+/* src/styles/manage.css */
+
+/*
+  이전에 정의한 라이트 모드 CSS 변수가
+  :root{} 블록에 포함되어 있어야 합니다.
+  (예: Navbar.css 또는 MainLayout.css에 정의)
+
+  :root {
+    --flo-primary-bg: #f5f3f0;
+    --flo-secondary-bg: #ffffff;
+    --flo-text-primary: #222222;
+    --flo-text-secondary: #666666;
+    --flo-accent-color: #5b4b8a;
+    --flo-accent-color-hover: #7e6fc1;
+    --flo-border-color: #e0e0e0;
+    --flo-shadow-light: rgba(0,0,0,0.05);
+  }
+*/
+
+.main-page-container {
+  flex: 1; /* flex-1 */
+  /* 배경: 어두운 그라디언트 대신, 라이트 모드 컨테이너 배경색 사용 */
+  background-color: var(--flo-secondary-bg);
+  /* 텍스트 색상: 흰색 대신, 라이트 모드 기본 텍스트 색상 사용 */
+  color: var(--flo-text-primary);
+  font-family: 'Noto Sans KR', sans-serif; /* 통일된 폰트 */
+  box-sizing: border-box;
+  /* 그림자 추가하여 플로 디자인 느낌 강화 */
+  box-shadow: 0 4px 10px var(--flo-shadow-light);
+  border-radius: 12px; /* 깔끔한 모서리 */
+  padding: 1.5rem; /* 기존 패딩 유지 */
+}
+
+.main-page-content-area {
+  flex: 1; /* flex-1 */
+  /* main-page-container에 이미 패딩이 있으므로, 이 내부에서는 패딩 조절 */
+  /* 여기는 내부 콘텐츠 블록의 레이아웃을 잡는 역할이므로, 배경색은 그대로 두거나 투명하게 설정 */
+  /* background-color: transparent; */ /* 또는 삭제 */
+  padding: 0; /* 내부 콘텐츠 블록별로 패딩 조절 */
+  overflow-y: auto; /* overflow-y-auto */
+  max-width: 100%; /* max-w-full */
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* 반응형 최대 너비 조정 */
+@media (min-width: 768px) { /* md: */
+  .main-page-content-area {
+    max-width: 56rem; /* max-w-4xl (896px) */
+  }
+}
+
+@media (min-width: 1024px) { /* lg: */
+  .main-page-content-area {
+    max-width: 72rem; /* max-w-6xl (1152px) */
+  }
+}

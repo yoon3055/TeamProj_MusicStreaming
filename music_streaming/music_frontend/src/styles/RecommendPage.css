@@ -1,0 +1,450 @@
+/* src/styles/RecommendPage.css */
+
+.recommend-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* --- .recommend-section (각 추천 섹션의 전체 컨테이너) --- */
+.recommend-section {
+  padding: 15px;
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 12px;
+  max-width: 100%;
+  overflow-x: hidden;
+  transition: background 0.8s ease-in-out;
+}
+
+/* 배경 그라데이션 스키마 */
+.recommend-section.gradient-scheme-1 {
+  background: linear-gradient(90deg, rgba(68, 153, 49, 0.4), rgba(49, 153, 103, 0.2));
+  box-shadow: 0 0 15px rgba(68, 153, 49, 0.6), 0 0 15px rgba(49, 153, 103, 0.4);
+}
+
+.recommend-section.gradient-scheme-2 {
+  background: linear-gradient(90deg, rgba(49, 153, 68, 0.4), rgba(113, 153, 49, 0.2));
+  box-shadow: 0 0 15px rgba(49, 153, 68, 0.6), 0 0 15px rgba(113, 153, 49, 0.4);
+}
+
+.recommend-section.gradient-scheme-3 {
+  background: linear-gradient(90deg, rgba(49, 153, 139, 0.4), rgba(89, 158, 101, 0.2));
+  box-shadow: 0 0 15px rgba(49, 153, 139, 0.6), 0 0 15px rgba(89, 158, 101, 0.4);
+}
+
+.recommend-section.gradient-scheme-4 {
+  background: linear-gradient(90deg, rgba(68, 153, 49, 0.4), rgba(49, 153, 139, 0.2));
+  box-shadow: 0 0 15px rgba(68, 153, 49, 0.6), 0 0 15px rgba(49, 153, 139, 0.4);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--flo-accent-color);
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #449931 !important;
+}
+
+.card-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  grid-template-rows: auto;
+  gap: 15px;
+  max-width: 100%;
+  height: auto;
+}
+
+.card-carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  max-width: 100%;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--accent-green-2);
+  margin-bottom: 20px;
+}
+
+/* 캐러셀 스크롤바 숨김 */
+.card-carousel::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.card-carousel {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+/* --- .album-card, .category-card, .artist-card (개별 카드) --- */
+/* 아티스트 카드 스타일 추가 */
+.album-card,
+.category-card,
+.artist-card {
+  flex-shrink: 0;
+  width: 300px !important;
+  height: auto;
+  background-color: rgba(249, 249, 249, 0.7);
+  backdrop-filter: blur(5px);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(68, 153, 49, 0.4), 0 0 10px rgba(49, 153, 103, 0.2);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 5px 0;
+  position: relative;
+  text-align: center; /* 아티스트 카드 내용 가운데 정렬 */
+}
+
+/* 인기 아티스트 섹션의 카드 그리드 스타일 */
+.recommend-section.popular-artists .card-grid .artist-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+}
+
+.album-card:hover,
+.category-card:hover,
+.artist-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 앨범 및 카테고리 카드 내부 요소 */
+.album-card-image,
+.category-card-image,
+.artist-card-profile-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.artist-card-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--flo-text-primary);
+  margin-bottom: 4px;
+}
+
+/* 좋아요 및 팔로우 섹션 스타일 */
+.artist-card-interactions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.interaction-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--flo-text-secondary);
+}
+
+.interaction-toggle-btn {
+  background: none !important;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: var(--flo-text-secondary);
+}
+
+.interaction-toggle-btn:hover {
+  background: none !important;
+  background-color: transparent !important;
+}
+
+.interaction-toggle-btn.liked {
+  color: red; /* 좋아요 활성화 시 빨간색 */
+}
+.interaction-toggle-btn.followed {
+  color: var(--flo-accent-color); /* 팔로우 활성화 시 강조색 */
+}
+
+.interaction-count {
+  font-weight: 500;
+  color: var(--flo-text-primary);
+}
+
+/* 카테고리 카드 내부 요소 */
+.category-card-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffffff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.category-card-subtitle {
+  font-size: 0.85rem;
+  color: #ffffff;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.category-card:hover .category-card-title,
+.category-card:hover .category-card-subtitle {
+  opacity: 0 !important;
+}
+
+.category-card-overlay {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  z-index: 1;
+}
+
+.category-card:hover .category-card-overlay {
+  background-color: transparent !important;
+}
+
+.carousel-nav-button {
+  width: 36px;
+  height: 36px;
+  background-color: #319967 !important;
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.carousel-nav-button:hover {
+  background-color: #319967 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-nav-button:disabled {
+  background-color: gray !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(80%);
+  box-shadow: none;
+}
+
+.carousel-nav-button:disabled:hover {
+  background-color: gray !important;
+  box-shadow: none;
+}
+
+.carousel-nav-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- 페이지 도트 버튼 크기 조정 (4분의 1) --- */
+.pagination-dots-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.pagination-dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: var(--flo-border-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  transform: scale(0.5);
+}
+
+.pagination-dot.active {
+  background-color: var(--flo-accent-color);
+  transform: scale(0.5);
+}
+
+.pagination-dot:hover:not(.active) {
+  background-color: var(--flo-text-secondary);
+}
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.recommend-loading-message,
+.recommend-error-message,
+.recommend-empty-message {
+  text-align: center;
+  color: var(--flo-accent-color);
+  font-size: 0.9rem;
+}
+
+/* --- .song-filter-bar-container (상단 필터 바 컨테이너) --- */
+.song-filter-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  gap: 0;
+  padding: 10px 15px;
+  background-color: var(--flo-primary-bg);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(68, 153, 49, 0.6), 0 0 15px rgba(49, 153, 103, 0.4);
+  user-select: none;
+  width: 100%;
+}
+
+/* 필터 버튼 스타일 */
+.filter-button {
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  max-width: 200px;
+  position: relative;
+}
+
+.filter-button:hover {
+  background-color: var(--flo-accent-color-hover);
+}
+
+.genre-filter-toggle-btn {
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 200px;
+  position: relative;
+  transition: none;
+  margin-right: 10px;
+}
+
+.genre-filter-toggle-btn:hover {
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+}
+
+/* genre-filter-options-popup */
+.genre-filter-options-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  background-color: rgba(36, 6, 119, 0);
+  border: 2px solid rgba(255, 255, 255, 0);
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.514);
+  padding: 10px;
+  min-width: 200px;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-options-content {
+  max-width: 450px;
+  display: grid;
+  grid-template-columns: repeat(5, 4fr);
+  grid-template-rows: auto;
+  padding: auto;
+}
+
+.filter-option-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: #4a4a4a;
+  font-size: 0.95rem;
+}
+
+.filter-option-item:hover {
+  background-color: var(--flo-primary-bg-hover);
+  color: var(--flo-accent-color);
+}
+
+.filter-option-item input[type="radio"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--flo-accent-color);
+}
+
+.filter-option-item input[type="radio"]:checked + span {
+  color: var(--flo-accent-color);
+  font-weight: 500;
+}
+
+.filter-option-item input[type="radio"]:checked {
+  accent-color: var(--flo-accent-color);
+}
+
+.song-filter-bar-options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.song-filter-bar-message {
+  font-size: 0.75rem;
+  color: var(--flo-text-gray);
+  margin-right: 0;
+}
