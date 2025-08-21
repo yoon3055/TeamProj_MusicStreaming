@@ -1,0 +1,184 @@
+.app-navbar {
+  display: flex;
+  align-items: center;
+  height: auto;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  background-color: transparent;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+  width: auto;
+  min-width: auto;
+  max-width: none;
+  margin: 0;
+  flex-wrap: nowrap;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.navbar-link {
+  color: var(--flo-accent-blue);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 중앙 정렬 */
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+.navbar-link:hover {
+  color: var(--flo-accent-blue-hover);
+}
+
+.navbar-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 400px;
+  min-width: 300px;
+  height: 3rem;
+  border: 2px solid var(--accent-green-2);
+  border-radius: 30px;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  background-color: var(--primary-bg);
+  margin: 0;
+  gap: 0;
+  box-shadow: 0 2px 8px rgba(39, 245, 125, 0.1);
+  transition: all 0.2s ease;
+}
+
+.navbar-search-input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none !important;
+  border-radius: 25px;
+  background-color: transparent !important;
+  color: #333;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+  line-height: 1.5;
+  height: 2rem;
+  margin: 0;
+  margin-bottom: 0 !important;
+  display: block;
+  font-family: inherit;
+}
+
+.navbar-search-input::placeholder {
+  color: #999;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.navbar-search-input:focus {
+  background-color: transparent !important;
+  color: #333;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.navbar-search-button {
+  height: 2rem;
+  width: 2rem;
+  background-color: var(--accent-green-2);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.navbar-search-button:hover {
+  background-color: var(--accent-green-3);
+  transform: scale(1.05);
+}
+
+.navbar-search-button::before {
+  content: '🔍';
+  font-size: 0.9rem;
+}
+
+
+
+.navbar-advanced-search-button {
+  background-color: var(--flo-accent-blue);
+  color: var(--flo-text-white);
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.navbar-advanced-search-button:hover {
+  background-color: var(--flo-accent-blue-hover);
+}
+
+.header-button {
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* 반응형 */
+@media (max-width: 900px) {
+  .app-navbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    justify-content: center; /* space-between 대신 중앙 정렬 */
+  }
+
+  .navbar-search-container {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .navbar-advanced-search-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-link {
+    font-size: 0.85rem;
+  }
+
+  .navbar-search-input {
+    font-size: 0.85rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+  }
+
+  .navbar-advanced-search-button {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

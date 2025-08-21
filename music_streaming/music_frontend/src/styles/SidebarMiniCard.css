@@ -1,0 +1,112 @@
+/* src/styles/SidebarMiniCard.css */
+
+/*
+  :root 변수는 MainLayout.css 등 전역 CSS 파일에 정의되어 있다고 가정합니다.
+*/
+
+.sidebar-mini-card {
+  display: flex;
+  flex-direction: column; /* 이미지 위, 텍스트 아래 */
+  align-items: center; /* 내용 중앙 정렬 */
+  flex-shrink: 0;
+  width: 100%; /* 그리드 컬럼에 꽉 차도록 */
+  padding: 5px; /* 내부 여백 */
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.1s ease; /* 호버 시 미세한 반응 */
+  border-radius: 8px; /* 카드 전체 둥근 모서리 */
+  overflow: hidden;
+  position: relative; /* 재생 버튼 위치 */
+}
+
+.sidebar-mini-card:hover {
+  transform: translateY(-2px); /* 살짝 위로 이동 */
+  background-color: var(--flo-primary-bg); /* 연한 배경으로 호버 효과 */
+}
+
+.sidebar-mini-card-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar-mini-card-image {
+  width: 70px; /* 고정 크기 이미지 */
+  height: 70px;
+  object-fit: cover;
+  border-radius: 12px; /* 앱 아이콘 형태 */
+  margin-bottom: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 그림자 */
+}
+
+.sidebar-mini-card-info {
+  text-align: center;
+  width: 100%;
+  padding: 0 2px;
+}
+
+.sidebar-mini-card-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--flo-text-primary);
+  line-height: 1.2;
+  white-space: normal; /* 줄바꿈 허용 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box; /* 웹킷 기반 다중 줄 말줄임표 */
+  -webkit-line-clamp: 2; /* 두 줄까지 표시 */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin: 0;
+}
+
+.sidebar-mini-card-artist {
+  font-size: 0.75rem;
+  color: var(--flo-text-secondary);
+  line-height: 1.2;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 한 줄만 표시 */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  margin-top: 2px; /* 제목과의 간격 */
+  margin-bottom: 0;
+}
+
+/* 재생 버튼 (옵션: 필요 시 추가) */
+.sidebar-mini-card-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(var(--flo-accent-color-rgb), 0.85); /* 반투명 배경 */
+  color: var(--flo-text-white);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0; /* 기본 숨김 */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-mini-card:hover .sidebar-mini-card-play-button {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+.sidebar-mini-card-play-button:hover {
+  background-color: var(--flo-accent-color-hover);
+}
+.sidebar-mini-card-play-button svg {
+  width: 18px;
+  height: 18px;
+}

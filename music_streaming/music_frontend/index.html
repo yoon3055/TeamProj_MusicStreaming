@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%22 y=%2250%22 font-size=%2260%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>🎵</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Chrome 비밀번호 경고창 비활성화 -->
+    <meta name="password-manager" content="disabled" />
+    <meta name="password-save" content="disabled" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' *; img-src 'self' data: blob: *; form-action 'self';" />
+    <meta name="referrer" content="no-referrer" />
+    
+    <script src="https://js.tosspayments.com/v1"></script>
+    <script src="https://pay.naver.com/customer/js/naverPayButton.js" type="text/javascript" charset="UTF-8"></script>
+    
+    <!-- 크롬 비밀번호 경고창 완전 비활성화 스크립트 -->
+    <script>
+      // 크롬 비밀번호 관리자 완전 비활성화
+      (function() {
+        // 페이지 로드 시 실행
+        const disablePasswordManager = () => {
+          // 모든 form 요소에 autocomplete="off" 추가
+          document.querySelectorAll('form').forEach(form => {
+            form.setAttribute('autocomplete', 'off');
+            form.setAttribute('data-lpignore', 'true');
+          });
+          
+          // 모든 input 요소에 속성 추가
+          document.querySelectorAll('input').forEach(input => {
+            if (input.type === 'password') {
+              input.setAttribute('autocomplete', 'new-password');
+              input.setAttribute('data-lpignore', 'true');
+              input.setAttribute('data-form-type', 'other');
+              input.setAttribute('data-1p-ignore', 'true');
+              input.setAttribute('data-bwignore', 'true');
+            } else if (input.type === 'email' || input.type === 'text') {
+              input.setAttribute('autocomplete', 'off');
+              input.setAttribute('data-lpignore', 'true');
+              input.setAttribute('data-form-type', 'other');
+            }
+          });
+        };
+        
+        // DOM 로드 완료 후 실행
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', disablePasswordManager);
+        } else {
+          disablePasswordManager();
+        }
+        
+        // 동적으로 추가되는 요소들도 처리
+        const observer = new MutationObserver(disablePasswordManager);
+        observer.observe(document.body, { 
+          childList: true, 
+          subtree: true, 
+          attributes: true 
+        });
+        
+        // 브라우저의 password manager API 비활성화 시도
+        if (window.PasswordCredential) {
+          window.PasswordCredential = undefined;
+        }
+        
+        // 크롬의 자동완성 기능 비활성화
+        Object.defineProperty(window, 'chrome', {
+          get: function() { return undefined; },
+          set: function() {}
+        });
+      })();
+    </script>
+    
+    <title>Fruitify</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
