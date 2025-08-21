@@ -1,0 +1,123 @@
+/* src/styles/PlaylistPageOverride.css */
+
+/* PlaylistPage 전체 컨테이너 및 제목 스타일 */
+.playlist-page-container {
+  padding: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.playlist-page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--flo-text-primary);
+  margin-bottom: 30px;
+}
+
+/* PlaylistDrawer 컴포넌트에 적용될 스타일 */
+.recommend-section {
+  padding: 15px;
+  background: linear-gradient(90deg, rgba(0, 123, 255, 0.4), rgba(255, 64, 129, 0.2));
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6), 0 0 15px rgba(255, 64, 129, 0.4);
+  max-width: 100%;
+  overflow-x: hidden;
+  margin-bottom: 30px; /* 섹션 간 간격 추가 */
+}
+
+/* 앨범 카드 스타일 */
+.album-card {
+  flex-shrink: 0;
+  width: 160px;
+  height: auto;
+  background-color: rgba(249, 249, 249, 0.7);
+  backdrop-filter: blur(5px);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4), 0 0 10px rgba(255, 64, 129, 0.2);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 5px 0;
+  position: relative;
+}
+
+.album-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 18px rgba(0, 123, 255, 0.8), 0 0 18px rgba(255, 64, 129, 0.5);
+}
+
+/* 카드 그리드 스타일 */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  height: auto;
+}
+
+/* 섹션 제목 및 컨트롤 버튼 스타일 */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--flo-accent-color);
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #7700ff;
+  justify-content: space-between; /* 제목과 컨트롤 버튼을 양쪽 끝으로 정렬 */
+}
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.carousel-nav-button {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(var(--flo-accent-color-rgb), 0.8);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.carousel-nav-button:disabled {
+  background-color: gray !important;
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: grayscale(80%);
+  box-shadow: none;
+}
+
+/* Pagination 스타일 */
+.pagination-dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+.pagination-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--flo-border-color);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pagination-dot.active {
+  background-color: var(--flo-accent-color);
+}

@@ -1,0 +1,155 @@
+/* src/styles/Artistcard.css */
+
+.artist-card {
+  display: flex;
+  background-color: var(--flo-secondary-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.artist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.artist-card-link {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  flex-grow: 1;
+}
+
+/* 그리드 뷰 스타일 */
+.artist-card.grid {
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  text-align: center;
+}
+
+.artist-card.grid .artist-card-image-wrapper {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.artist-card.grid .artist-card-image {
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.artist-card.grid:hover .artist-card-image {
+  transform: scale(1.05);
+}
+
+.artist-card.grid .artist-card-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.artist-card.grid .artist-card-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--flo-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-card.grid .artist-card-genre,
+.artist-card.grid .artist-card-followers {
+  font-size: 0.85rem;
+  color: var(--flo-text-secondary);
+  margin: 2px 0;
+}
+
+/* 리스트 뷰 스타일 */
+.artist-card.list {
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 15px;
+}
+
+.artist-card.list .artist-card-image-wrapper {
+  width: 60px;
+  height: 60px;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.artist-card.list .artist-card-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.artist-card.list .artist-card-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.artist-card.list .artist-card-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--flo-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-card.list .artist-card-genre,
+.artist-card.list .artist-card-followers {
+  font-size: 0.85rem;
+  color: var(--flo-text-secondary);
+  margin: 2px 0;
+}
+
+/* 공통 액션 버튼 */
+.artist-card-actions {
+  margin-left: auto;
+}
+
+.artist-follow-btn {
+  background: none;
+  border: 1px solid var(--flo-border-color);
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--flo-text-secondary);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.artist-follow-btn svg {
+  font-size: 1rem;
+}
+
+.artist-follow-btn:hover {
+  background-color: var(--flo-border-color);
+}
+
+.artist-follow-btn.followed {
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+  border-color: var(--flo-accent-color);
+}
+
+.artist-follow-btn.followed:hover {
+  background-color: var(--flo-accent-color-hover);
+}

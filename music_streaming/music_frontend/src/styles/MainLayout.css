@@ -1,0 +1,50 @@
+/* src/styles/mainlayout.css */
+:root {
+  --flo-primary-bg: #FFFFFF;
+  --flo-secondary-bg: #ffffff;
+
+  --flo-text-primary: #333333;
+  --flo-text-secondary: #666666;
+  --flo-text-white: #ffffff;
+
+  --flo-accent-color: var(--accent-green-2);
+  --flo-accent-color-hover: var(--accent-green-3);
+  --flo-accent-color-rgb: 49, 153, 103;
+
+  --flo-border-color: #e0e0e0;
+  --flo-shadow-light: rgba(0,0,0,0.05);
+}
+
+/* body { ... } 이 부분도 이 변수들을 사용하도록 되어 있어야 합니다. */
+body {
+  background-color: var(--flo-primary-bg);
+  color: var(--flo-text-primary);
+  /* ... */
+}
+
+
+.main-layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.main-layout-content-wrapper {
+  display: flex;
+  flex: 1; /* 남은 세로 공간을 모두 차지 */
+  overflow: hidden; /* 내부 스크롤 관리 */
+}
+
+.main-content-area {
+  width: 100%;
+  max-width: 1400px; /* 최대 너비 제한 */
+  margin: 0 auto; /* 중앙 정렬 */
+  overflow-y: auto; /* 세로 스크롤 가능 */
+  padding: 1.5rem; /* p-6 */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+}
+
+/* 사이드바 제거됨 */

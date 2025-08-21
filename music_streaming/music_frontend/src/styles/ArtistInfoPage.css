@@ -1,0 +1,567 @@
+/* src/styles/ArtistInfoPage.css */
+
+.artist-info-page {
+  min-height: 100vh;
+  background-color: transparent;
+  color: #333;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 로딩 및 에러 상태 */
+.artist-info-loading,
+.artist-info-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: transparent;
+  color: #333;
+}
+
+.loading-circle {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #ddd;
+  border-top: 3px solid #1db954;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-back-btn {
+  background-color: #1db954;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.error-back-btn:hover {
+  background-color: #1ed760;
+}
+
+/* 헤더 섹션 */
+.artist-header {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.artist-main-info {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.artist-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.artist-details {
+  flex: 1;
+}
+
+.artist-name {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.artist-genre {
+  margin-bottom: 20px;
+}
+
+.genre-label {
+  color: #666;
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+.genre-value {
+  color: #1db954;
+  font-weight: 600;
+  background: rgba(29, 185, 84, 0.1);
+  padding: 4px 12px;
+  border-radius: 15px;
+}
+
+.artist-stats {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 25px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1db954;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.like-btn {
+  padding: 12px 32px !important;
+  border: none !important;
+  border-radius: 25px !important;
+  cursor: pointer;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease;
+  background-color: rgba(29, 185, 84, 0.1) !important;
+  border: 2px solid #1db954 !important;
+  color: #1db954 !important;
+  width: auto !important;
+  min-width: auto !important;
+  flex-shrink: 0;
+  white-space: nowrap !important;
+}
+
+.like-btn.liked {
+  background-color: #1db954;
+  color: white;
+}
+
+.like-btn:hover {
+  background-color: #1db954;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+}
+
+/* 아티스트 설명 섹션 */
+.artist-description-section {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.artist-description-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 2px solid #1db954;
+  padding-bottom: 10px;
+}
+
+.description-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: nowrap;
+}
+
+.artist-profile-image {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 3px solid #1db954;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.artist-profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  box-shadow: none;
+}
+
+.description-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #666;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  word-wrap: break-word;
+}
+
+/* 아티스트 정보 요약 섹션 */
+.artist-info-summary {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.artist-info-summary h3 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+  color: #333;
+  border-bottom: 2px solid #1db954;
+  padding-bottom: 10px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid #1db954;
+}
+
+.info-label {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .artist-info-page {
+    padding: 15px;
+  }
+
+  .artist-header {
+    padding: 20px;
+  }
+
+  .artist-main-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .avatar-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .artist-name {
+    font-size: 2rem;
+  }
+
+  .artist-stats {
+    justify-content: center;
+  }
+
+  .action-buttons {
+    justify-content: center;
+  }
+
+  .artist-description-section,
+  .artist-info-summary {
+    padding: 20px;
+  }
+
+  .description-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .artist-profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .artist-info-page {
+    padding: 10px;
+  }
+
+  .artist-header {
+    padding: 15px;
+  }
+
+  .artist-name {
+    font-size: 1.5rem;
+  }
+
+  .avatar-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .artist-stats {
+    gap: 20px;
+  }
+
+  .stat-number {
+    font-size: 1.2rem;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .like-btn {
+    width: 100%;
+  }
+
+  .artist-description-section,
+  .artist-info-summary {
+    padding: 15px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* 아티스트 노래 목록 섹션 */
+.artist-songs-section {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-top: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.artist-songs-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+  color: #333;
+  border-bottom: 2px solid #1db954;
+  padding-bottom: 10px;
+}
+
+.songs-loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.songs-table {
+  width: 100%;
+  background: #f8f9fa;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.songs-header {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  gap: 20px;
+  padding: 15px 20px;
+  background: #e9ecef;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.songs-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.song-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  gap: 20px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+  align-items: center;
+}
+
+.song-row:hover {
+  background: #ffffff;
+}
+
+.song-row:last-child {
+  border-bottom: none;
+}
+
+.song-rank {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  text-align: center;
+}
+
+.song-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  font-size: 0.9rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-genre {
+  font-size: 0.9rem;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-date {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: right;
+}
+
+.no-songs {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.no-songs-icon {
+  font-size: 3rem;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.no-songs p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* 반응형 - 노래 목록 */
+@media (max-width: 768px) {
+  .artist-songs-section {
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .songs-header {
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+    padding: 12px 15px;
+  }
+
+  .song-row {
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+    padding: 12px 15px;
+  }
+
+  .header-artist,
+  .song-artist {
+    display: none;
+  }
+
+  .song-title {
+    font-size: 0.9rem;
+  }
+
+  .song-genre {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .artist-songs-section {
+    padding: 15px;
+  }
+
+  .songs-header {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .song-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .header-artist,
+  .song-artist,
+  .header-genre,
+  .song-genre {
+    display: none;
+  }
+
+  .song-title {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,109 @@
+
+/* src/styles/PlaylistDrawer.css */
+.playlist-drawer-loading,
+.playlist-drawer-error,
+.playlist-drawer-empty {
+  text-align: center;
+  color: var(--flo-text-secondary);
+  font-size: 1rem;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.playlist-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start; /* 여러 개일 때는 왼쪽 정렬 */
+}
+
+.playlist-grid.single {
+  justify-content: center; /* 하나일 때는 중앙 정렬 */
+}
+
+.controls-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+
+.playlist-card {
+  width: 200px; /* 카드 고정 너비 */
+  flex: 0 0 auto; /* 크기 자동 확장 방지 */
+}
+
+/* 기존 grid 대신 flex 기반 */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+}
+
+.card-grid.single {
+  justify-content: center; /* 카드가 하나면 중앙 정렬 */
+}
+
+.card-grid .album-card,
+.card-grid .artist-card,
+.card-grid .category-card {
+  width: 310px; /* 고정 크기 - 더 넓게 */
+  flex: 0 0 auto; /* 커지지 않게 */
+}
+
+
+.play-all-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--flo-accent-color);
+  color: var(--flo-text-white);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.play-all-button:hover {
+  background-color: var(--flo-accent-color-hover);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+
+.play-all-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 768px) {
+  .play-all-button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  .play-all-button svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .play-all-button {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+  .play-all-button svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* src/styles/PlaylistDrawer.css (추가) */
+.recommend-section {
+  margin-bottom: 80px; /* "추천 플레이리스트"와 아래 박스 사이의 여백 */
+}

@@ -1,0 +1,39 @@
+/* src/styles/filterbuttons.css */
+.filter-buttons-container {
+  display: flex;
+  gap: 0.5rem; /* space-x-2 */
+  margin-bottom: 1rem; /* mb-4 */
+  justify-content: center;
+}
+
+@media (min-width: 768px) { /* md: */
+  .filter-buttons-container {
+    justify-content: flex-end; /* md:justify-end */
+  }
+}
+
+.filter-button {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  background-color: var(--flo-bg-medium); /* bg-gray-700 */
+  color: var(--flo-text-gray); /* text-gray-300 */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease; /* transition-colors duration-200 */
+}
+
+.filter-button:hover {
+  background-color: var(--flo-bg-light); /* hover:bg-gray-600 */
+}
+
+.filter-button-active {
+  background-color: var(--accent-green-2);
+  color: var(--flo-text-white);
+}
+
+.filter-button-active:hover {
+  background-color: var(--accent-green-3);
+}
+
