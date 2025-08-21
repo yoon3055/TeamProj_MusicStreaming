@@ -1,0 +1,371 @@
+package com.music.user.controller;
+import com.music.jwt.JwtUtil;
+import com.music.user.dto.*;
+import com.music.user.dto.PasswordChangeDto;
+import com.music.user.service.MailService;
+import com.music.user.service.UserService;
+import com.music.interaction.repository.LikeRepository;
+import com.music.artist.repository.ArtistLikeRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+@RestController
+@RequestMapping("/api/users")  // :흰색_확인_표시: 통일된 URL Prefix
+public class UserController {
+    @Autowired private UserService userService;
+    @Autowired private JwtUtil jwtUtil;
+    @Autowired private MailService mailService;
+    @Autowired private LikeRepository likeRepository;
+    @Autowired private ArtistLikeRepository artistLikeRepository;
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
+    private static final String UNAUTHORIZED = "unauthorized";
+    private static final String DELETED = "이미 삭제됨";
+    private static final String NONE = "사용자 없음";
+    private static final String PW_FAIL = "비밀번호 틀림";
+    private static final String PRESENT = "이미 가입된 사용자";
+    private static final String EXPIRED = "token expired";
+    // :흰색_확인_표시: 회원가입
+    @Operation(summary = "회원가입", description = "회원 정보 저장 (JWT 인증x)")
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody UserDto userDto) throws Exception {
+        Map<String, Object> resultMap = userService.registUser(userDto);
+        if (PRESENT.equals(resultMap.get("result"))) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(PRESENT);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(SUCCESS);
+    }
+    // :흰색_확인_표시: 로그인
+    @Operation(summary = "로그인", description = "이메일/비밀번호 기반 로그인 (JWT 인증x)")
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserDto userDto) throws Exception {
+        Map<String, Object> resultLogin = userService.login(userDto.getEmail(), userDto.getPassword());
+        Map<String, Object> resultMap = new HashMap<>();
+        if (FAIL.equals(resultLogin.get("type"))) {
+            String result = (String) resultLogin.get("result");
+            resultMap.put("result", result);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resultMap);
+        }
+        resultMap.put("jwt-auth-token", resultLogin.get("authToken"));
+        resultMap.put("id", resultLogin.get("id"));
+        resultMap.put("email", resultLogin.get("email"));
+        resultMap.put("nickname", resultLogin.get("nickname"));
+        resultMap.put("profileImage", resultLogin.get("profileImage"));
+        resultMap.put("role", resultLogin.get("role"));
+        resultMap.put("result", SUCCESS);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(resultMap);
+    }
+    // :흰색_확인_표시: 로그아웃
+    @Operation(summary = "로그아웃", description = "토큰을 무효화합니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestAttribute("email") String email) {
+        userService.logout(email);
+        return ResponseEntity.ok(SUCCESS);
+    }
+    // :흰색_확인_표시: 비밀번호 찾기 (임시 발급)
+    @Operation(summary = "비밀번호 찾기", description = "임시 비밀번호 이메일 전송 (JWT 인증x)")
+    @PostMapping("/send-password")
+    public ResponseEntity<String> sendTemporaryPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String tmpPw = userService.getTmpPw();
+        String result = userService.updatePw(tmpPw, email);
+        if (SUCCESS.equals(result)) {
+            MailDto mailDto = mailService.createMail(tmpPw, email);
+            mailService.sendMail(mailDto);
+            return ResponseEntity.ok(SUCCESS);
+        }
+        return ResponseEntity.ok(FAIL);
+    }
+    // :흰색_확인_표시: JWT 토큰 검증
+    @Operation(summary = "JWT 토큰 검증", description = "JWT 토큰의 유효성을 검증하고 사용자 정보를 반환")
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verify(@RequestAttribute("email") String email) {
+        System.out.println("=== [USER_CONTROLLER] VERIFY METHOD CALLED ===");
+        System.out.println("[USER_CONTROLLER] Received email from RequestAttribute: " + email);
+        
+        try {
+            System.out.println("[USER_CONTROLLER] Token verification started for email: " + email);
+            
+            // 이메일 파라미터 검증
+            if (email == null || email.trim().isEmpty()) {
+                System.out.println("[USER_CONTROLLER] Email is null or empty");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "이메일 정보가 없습니다.");
+                errorResponse.put("error", "EMAIL_MISSING");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            }
+            
+            UserDto user = userService.getUser(email);
+            System.out.println("[USER_CONTROLLER] User lookup result: " + (user != null ? "found" : "not found"));
+            
+            if (user == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "사용자를 찾을 수 없습니다.");
+                errorResponse.put("error", "USER_NOT_FOUND");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "토큰이 유효합니다.");
+            
+            // 사용자 정보를 안전하게 구성
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("id", user.getId());
+            userInfo.put("email", user.getEmail());
+            userInfo.put("nickname", user.getNickname() != null ? user.getNickname() : "");
+            userInfo.put("profileImage", user.getProfileImage());
+            userInfo.put("role", user.getRole() != null ? user.getRole() : "USER");
+            userInfo.put("isSubscribed", false); // 기본값 설정
+            
+            response.put("user", userInfo);
+            response.put("subscriptionDetails", null); // 기본값 설정
+            
+            System.out.println("[USER_CONTROLLER] Token verification successful for: " + email);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("[USER_CONTROLLER] Token verification failed for email: " + email);
+            System.err.println("[USER_CONTROLLER] Error details: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "토큰 검증 중 오류가 발생했습니다: " + e.getMessage());
+            errorResponse.put("error", "VERIFICATION_ERROR");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+    // :흰색_확인_표시: 내 프로필 조회
+    @Operation(summary = "내 정보 조회", description = "JWT 토큰 기반 사용자 정보 반환")
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getMyInfo(@RequestAttribute("email") String email) throws Exception {
+        return ResponseEntity.ok(userService.getUser(email));
+    }
+    // :흰색_확인_표시: 닉네임 변경
+    @Operation(summary = "닉네임 변경", description = "로그인한 사용자의 닉네임을 수정합니다.")
+    @PutMapping("/nickname")
+    public ResponseEntity<String> updateNickname(@RequestBody Map<String, String> request,
+                                                 HttpServletRequest httpRequest) {
+        String email = (String) httpRequest.getAttribute("email");
+        String newNickname = request.get("nickname");
+        if (newNickname == null || newNickname.isBlank()) {
+            return ResponseEntity.badRequest().body("닉네임이 비어있습니다.");
+        }
+        String result = userService.updateNickname(newNickname, email);
+        return result.equals(SUCCESS) ? ResponseEntity.ok(SUCCESS) : ResponseEntity.badRequest().body(result);
+    }
+    // :흰색_확인_표시: 프로필 전체 수정
+    @Operation(summary = "회원 정보 수정", description = "이메일 기반 사용자 정보 수정")
+    @PutMapping
+    public ResponseEntity<String> updateUser(@RequestBody UserDto userDto,
+                                             @RequestAttribute("email") String email) throws Exception {
+        // 이메일 정보를 userDto에 설정 (서비스에서 사용하기 위해)
+        userDto.setEmail(email);
+        
+        Map<String, Object> resultMap = userService.updateUser(userDto, email);
+        
+        if (resultMap.get("result").equals(NONE)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(NONE);
+        } else {
+            System.out.println("프로필 업데이트 성공: " + email);
+            if (userDto.getProfileImage() != null) {
+                System.out.println("프로필 이미지도 업데이트됨");
+            }
+            return ResponseEntity.ok(SUCCESS);
+        }
+    }
+    // :흰색_확인_표시: 비밀번호 변경
+    @Operation(summary = "비밀번호 변경", description = "기존 비밀번호 기반 변경")
+    @PostMapping("/password")
+    public ResponseEntity<Map<String, Object>> changePassword(
+            @RequestBody PasswordChangeDto passwordChangeDto,
+            @RequestAttribute("email") String email) {
+        Map<String, Object> resultMap = userService.changePassword(passwordChangeDto, email);
+        String result = (String) resultMap.get("result");
+        if (SUCCESS.equals(result)) return ResponseEntity.ok(resultMap);
+        if (NONE.equals(result)) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultMap);
+        return ResponseEntity.badRequest().body(resultMap);
+    }
+    // :흰색_확인_표시: 이메일 중복 확인
+    @Operation(summary = "이메일 중복 확인", description = "가입된 이메일인지 확인 (JWT 인증x)")
+    @GetMapping("/check-email")
+    public ResponseEntity<String> checkEmail(@RequestParam String email) throws Exception {
+        return userService.getUser(email) == null
+                ? ResponseEntity.status(HttpStatus.ACCEPTED).body(NONE)
+                : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(PRESENT);
+    }
+    // :흰색_확인_표시: 닉네임으로 유저 검색
+    @Operation(summary = "닉네임으로 검색", description = "특정 닉네임을 포함하는 사용자 목록 조회")
+    @GetMapping("/search")
+    public ResponseEntity<List<UserDto>> searchUser(@RequestParam String nickname) throws Exception {
+        return ResponseEntity.ok(userService.searchUser(nickname));
+    }
+    // :흰색_확인_표시: 모든 유저 조회 (관리자용)
+    @Operation(summary = "전체 유저 조회", description = "모든 사용자 정보를 반환합니다.")
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers() throws Exception {
+        return ResponseEntity.ok(userService.getAllUser());
+    }
+    
+    // 사용자의 좋아요/팔로우 정보 조회
+    @Operation(summary = "사용자 좋아요/팔로우 정보 조회", description = "로그인한 사용자의 좋아요한 곡과 팔로우한 아티스트 목록을 반환합니다.")
+    @GetMapping("/me/likes-follows")
+    public ResponseEntity<Map<String, Object>> getLikesFollows(@RequestAttribute("email") String email) {
+        try {
+            UserDto user = userService.getUser(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "사용자를 찾을 수 없습니다."));
+            }
+            
+            Long userId = user.getId();
+            
+            // 사용자가 좋아요한 곡 ID 목록 조회
+            List<Long> likedSongIds = likeRepository.findByUserId(userId)
+                .stream()
+                .map(like -> like.getSong().getId())
+                .toList();
+            
+            // 사용자가 좋아요한 아티스트 ID 목록 조회
+            List<Long> likedArtistIds = artistLikeRepository.findByUserId(userId)
+                .stream()
+                .map(like -> like.getArtist().getId())
+                .toList();
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("likedSongs", likedSongIds);
+            result.put("likedArtists", likedArtistIds);
+            
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "데이터 조회 중 오류가 발생했습니다."));
+        }
+    }
+
+    // 사용자의 좋아요한 노래 상세 정보 조회
+    @Operation(summary = "좋아요한 노래 상세 정보 조회", description = "로그인한 사용자가 좋아요한 노래들의 상세 정보를 반환합니다.")
+    @GetMapping("/me/liked-songs")
+    public ResponseEntity<Map<String, Object>> getLikedSongs(@RequestAttribute("email") String email) {
+        try {
+            UserDto user = userService.getUser(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "사용자를 찾을 수 없습니다."));
+            }
+            
+            Long userId = user.getId();
+            
+            // 사용자가 좋아요한 곡들의 상세 정보 조회
+            List<Map<String, Object>> likedSongs = likeRepository.findByUserId(userId)
+                .stream()
+                .map(like -> {
+                    Map<String, Object> songInfo = new HashMap<>();
+                    songInfo.put("id", like.getSong().getId());
+                    songInfo.put("title", like.getSong().getTitle());
+                    songInfo.put("artist", like.getSong().getArtist().getName());
+                    songInfo.put("genre", like.getSong().getGenre());
+                    songInfo.put("audioUrl", like.getSong().getAudioUrl());
+                    return songInfo;
+                })
+                .toList();
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("songs", likedSongs);
+            result.put("totalCount", likedSongs.size());
+            
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "데이터 조회 중 오류가 발생했습니다."));
+        }
+    }
+
+    // 사용자가 팔로우한 가수 상세 정보 조회
+    @Operation(summary = "팔로우한 가수 상세 정보 조회", description = "로그인한 사용자가 팔로우한 가수들의 상세 정보를 반환합니다.")
+    @GetMapping("/me/followed-artists")
+    public ResponseEntity<Map<String, Object>> getFollowedArtists(@RequestAttribute("email") String email) {
+        try {
+            UserDto user = userService.getUser(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "사용자를 찾을 수 없습니다."));
+            }
+            
+            Long userId = user.getId();
+            
+            // 사용자가 좋아요한 가수들의 상세 정보 조회
+            List<Map<String, Object>> likedArtists = artistLikeRepository.findByUserId(userId)
+                .stream()
+                .map(like -> {
+                    Map<String, Object> artistInfo = new HashMap<>();
+                    artistInfo.put("id", like.getArtist().getId());
+                    artistInfo.put("name", like.getArtist().getName());
+                    artistInfo.put("profileImage", like.getArtist().getProfileImage());
+                    artistInfo.put("genre", like.getArtist().getGenre());
+                    artistInfo.put("description", like.getArtist().getDescription());
+                    return artistInfo;
+                })
+                .toList();
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("artists", likedArtists);
+            result.put("totalCount", likedArtists.size());
+            
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "데이터 조회 중 오류가 발생했습니다."));
+        }
+    }
+
+    // 좋아요한 아티스트 목록 조회
+    @Operation(summary = "좋아요한 아티스트 조회", description = "사용자가 좋아요한 아티스트 목록을 조회합니다.")
+    @GetMapping("/me/liked-artists")
+    public ResponseEntity<Map<String, Object>> getLikedArtists(@RequestAttribute("email") String email) {
+        try {
+            Long userId = userService.getUser(email).getId();
+            
+            List<Map<String, Object>> likedArtists = artistLikeRepository.findByUserIdWithArtist(userId)
+                .stream()
+                .map(artistLike -> {
+                    Map<String, Object> artistInfo = new HashMap<>();
+                    artistInfo.put("id", artistLike.getArtist().getId());
+                    artistInfo.put("name", artistLike.getArtist().getName());
+                    artistInfo.put("profileImage", artistLike.getArtist().getProfileImage());
+                    artistInfo.put("genre", artistLike.getArtist().getGenre());
+                    artistInfo.put("description", artistLike.getArtist().getDescription());
+                    return artistInfo;
+                })
+                .toList();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("artists", likedArtists);
+            response.put("totalCount", likedArtists.size());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "좋아요한 아티스트 조회 실패");
+            errorResponse.put("artists", new ArrayList<>());
+            errorResponse.put("totalCount", 0);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+}
